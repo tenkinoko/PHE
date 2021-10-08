@@ -35,6 +35,9 @@
 #include <stdio.h>
 #include <limits.h>
 #include <unistd.h>
+// PBC library
+// #define PBC_DEBUG
+#include "pbc/pbc.h"
 // Needed for definition of remote attestation messages.
 #include "remote_attestation_result.h"
 
@@ -197,6 +200,20 @@ int main(int argc, char *argv[])
 
     FILE *OUTPUT = stdout;
 
+    pairing_t pairing;
+    char param[1024];
+    FILE *path = fopen("../param/a.param", "r");
+    size_t count = fread(param, 1, 1024, path);
+    if (!count) pbc_die("input error");
+    pairing_init_set_buf(pairing, param, count);
+    element_t g;
+    fprintf(OUTPUT, "\nValid invocations are:\n");
+    element_init_G1(g, pairing);
+    element_random(g);
+    element_printf("%B\n", g);
+    // uint8_t *data = (unsigned char*)malloc(256);
+    // element_to_bytes(data, x_s);
+
 #define VERIFICATION_INDEX_IS_VALID() (verify_index > 0 && \
                                        verify_index <= verification_samples)
 #define GET_VERIFICATION_ARRAY_INDEX() (verify_index - 1)
@@ -252,7 +269,6 @@ int main(int argc, char *argv[])
         }
         p_msg0_full->type = TYPE_RA_MSG0;
         p_msg0_full->size = sizeof(uint32_t);
-
         *(uint32_t *)((uint8_t *)p_msg0_full + sizeof(ra_samp_request_header_t)) = extended_epid_group_id;
         {
 

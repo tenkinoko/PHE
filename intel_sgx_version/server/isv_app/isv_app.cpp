@@ -468,7 +468,7 @@ int main(int argc, char *argv[])
                 goto CLEANUP;
             }
             fprintf(OUTPUT, "\nCall sgx_create_enclave success.");
-
+            //* STEP 1: initialize the enclave
             ret = enclave_init_ra(enclave_id,
                                   &status,
                                   false,
