@@ -37,10 +37,12 @@
 package phe
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/sha1"
 	"crypto/sha512"
 	"io"
 	"math/big"
@@ -256,4 +258,19 @@ func Decrypt(ciphertext, key []byte) ([]byte, error) {
 	dst := make([]byte, 0)
 	return aesGcm.Open(dst, keyNonce[symKeyLen:], ciphertext[symSaltLen:], nil)
 
+}
+
+func HashPwd(pw1 []byte, n1 []byte, num1 int) []byte{
+	var str0 string
+	if num1 == 0 {
+		str0 = "0"
+	} else {
+		str0 = "1"
+	}
+	byte0 := []byte(str0)
+	pwn0 := [][]byte{pw1, n1, byte0}
+	pwn0Bytes := bytes.Join(pwn0, []byte{})
+	Hpwn0 := sha1.Sum(pwn0Bytes)
+	Hpwn0_ := Hpwn0[:]
+	return Hpwn0_
 }

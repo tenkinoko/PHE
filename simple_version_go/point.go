@@ -4,7 +4,6 @@ import (
 	"crypto/elliptic"
 	"errors"
 	"math/big"
-
 )
 
 // Point represents an elliptic curve point
