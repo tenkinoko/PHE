@@ -14,17 +14,21 @@ goos: windows
 goarch: amd64
 pkg: virgil-phe-go
 cpu: AMD Ryzen 9 5900X 12-Core Processor            
+BenchmarkInitialize
+BenchmarkInitialize-24           	   52340	     22786 ns/op	     864 B/op	      20 allocs/op
 BenchmarkEnrolling
-BenchmarkEnrolling-24          	 1551001	       753.5 ns/op	    1120 B/op	      28 allocs/op
+BenchmarkEnrolling-24            	 2617575	       451.5 ns/op	     640 B/op	      16 allocs/op
 BenchmarkEncryption
-BenchmarkEncryption-24         	   12753	     94030 ns/op	    3091 B/op	      58 allocs/op
+BenchmarkEncryption-24           	   13700	     87643 ns/op	    6142 B/op	      99 allocs/op
 BenchmarkDecryption
-BenchmarkDecryption-24         	   14854	     80594 ns/op	    8552 B/op	     126 allocs/op
+BenchmarkDecryption-24           	   14872	     80666 ns/op	    8745 B/op	     128 allocs/op
 Benchmark_proofOfSuccess
-Benchmark_proofOfSuccess-24    	    4892	    246866 ns/op	   16175 B/op	     191 allocs/op
+Benchmark_proofOfSuccess-24      	    7052	    172250 ns/op	    8170 B/op	      96 allocs/op
+Benchmark_veriferOfSuccess
+Benchmark_veriferOfSuccess-24    	   15309	     78659 ns/op	    7658 B/op	      86 allocs/op
 PASS
 
-TOTAL = Enrolling + Encryption + Decryption + proofOfSuccess = 422243 ns/op
+TOTAL = Initialize + Enrolling + Encryption + Decryption + proofOfSuccess + veriferOfSuccess= 442455 ns/op
 
 # 18 LAI
 

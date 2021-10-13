@@ -2,8 +2,18 @@ package phe
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
 )
+var(
+	c0 *big.Int
+	c1 *big.Int
+	u *big.Int
+	gx1r *Point
+)
+func TestInitialize(t *testing.T){
+	initialize()
+}
 
 func TestEnrolling(t *testing.T){
 	enrolling()
@@ -18,7 +28,16 @@ func TestDecryption(t *testing.T){
 }
 
 func Test_proofOfSuccess(t *testing.T){
-	fmt.Println(proofOfSuccess())
+	proofOfSuccess()
+}
+
+func BenchmarkInitialize(b *testing.B){
+	MockRandom()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		MockRandom()
+		initialize()
+	}
 }
 
 func BenchmarkEnrolling(b *testing.B){
@@ -45,8 +64,17 @@ func BenchmarkDecryption(b *testing.B){
 }
 
 func Benchmark_proofOfSuccess(b *testing.B){
+	MockRandom()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		proofOfSuccess()
+		MockRandom()
+		c0, c1, u, gx1r = proofOfSuccess()
+	}
+}
+
+func Benchmark_veriferOfSuccess(b *testing.B){
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		verifierOfSuccess(c0, c1, u, gx1r)
 	}
 }
