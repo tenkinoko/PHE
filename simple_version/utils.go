@@ -37,10 +37,12 @@
 package phe
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/sha1"
 	"crypto/sha512"
 	"io"
 	"math/big"
@@ -48,8 +50,6 @@ import (
 	"golang.org/x/crypto/hkdf"
 
 	"github.com/VirgilSecurity/virgil-phe-go/swu"
-	"github.com/golang/protobuf/proto"
-
 	"github.com/pkg/errors"
 )
 
@@ -168,25 +168,25 @@ func hashToPoint(domain []byte, data ...[]byte) *Point {
 	return &Point{x, y}
 }
 
-func marshalKeypair(publicKey, privateKey []byte) ([]byte, error) {
-	kp := &Keypair{
-		PublicKey:  publicKey,
-		PrivateKey: privateKey,
-	}
-
-	return proto.Marshal(kp)
-}
-
-func unmarshalKeypair(serverKeypair []byte) (kp *Keypair, err error) {
-
-	kp = &Keypair{}
-	err = proto.Unmarshal(serverKeypair, kp)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid keypair")
-	}
-
-	return
-}
+//func marshalKeypair(publicKey, privateKey []byte) ([]byte, error) {
+//	kp := &Keypair{
+//		PublicKey:  publicKey,
+//		PrivateKey: privateKey,
+//	}
+//
+//	return proto.Marshal(kp)
+//}
+//
+//func unmarshalKeypair(serverKeypair []byte) (kp *Keypair, err error) {
+//
+//	kp = &Keypair{}
+//	err = proto.Unmarshal(serverKeypair, kp)
+//	if err != nil {
+//		return nil, errors.Wrap(err, "invalid keypair")
+//	}
+//
+//	return
+//}
 
 // Encrypt generates 32 byte salt, uses master key & salt to generate per-data key & nonce with the help of HKDF
 // Salt is concatenated to the ciphertext
@@ -256,4 +256,19 @@ func Decrypt(ciphertext, key []byte) ([]byte, error) {
 	dst := make([]byte, 0)
 	return aesGcm.Open(dst, keyNonce[symKeyLen:], ciphertext[symSaltLen:], nil)
 
+}
+
+func HashPwd(pw1 []byte, n1 []byte, num1 int) []byte{
+	var str0 string
+	if num1 == 0 {
+		str0 = "0"
+	} else {
+		str0 = "1"
+	}
+	byte0 := []byte(str0)
+	pwn0 := [][]byte{pw1, n1, byte0}
+	pwn0Bytes := bytes.Join(pwn0, []byte{})
+	Hpwn0 := sha1.Sum(pwn0Bytes)
+	Hpwn0_ := Hpwn0[:]
+	return Hpwn0_
 }

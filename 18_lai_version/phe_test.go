@@ -52,11 +52,13 @@ func BenchmarkAddP256(b *testing.B) {
 	p256 := elliptic.P256()
 	_, x, y, _ := elliptic.GenerateKey(p256, randReader)
 	_, x1, y1, _ := elliptic.GenerateKey(p256, randReader)
+
 	b.ReportAllocs()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		p256.Add(x, y, x1, y1)
 	}
+
 }
 
 func Test_PHE(t *testing.T) {
