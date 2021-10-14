@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	n []byte
-	r []byte
-	k []byte
+	n  []byte
+	r  []byte
+	k  []byte
 	x0 []byte // sk_s 不存
 	X0 *Point
 	x1 []byte // sk_ks
@@ -19,9 +19,8 @@ var (
 	T2 *Point
 )
 
-
 // Server + Key Server(最初始的方案）
-func initialize(){
+func initialize() {
 	x0 = randomZ().Bytes() // sk_s
 	X0 = new(Point).ScalarBaseMult(x0)
 	x1 = randomZ().Bytes() // sk_ks
@@ -29,7 +28,7 @@ func initialize(){
 }
 
 // Client
-func enrolling(){
+func enrolling() {
 	n = randomZ().Bytes()
 	r = randomZ().Bytes()
 	k = randomZ().Bytes()
@@ -56,7 +55,7 @@ func encryption() {
 }
 
 // Key Server
-func decryption(pw0 []byte) bool{
+func decryption(pw0 []byte) bool {
 	// C0 = T1 / g^(H(pw0, n, 0))
 	hpwn0 := HashPwd(pw0, n, 0)
 	denominator := new(Point).ScalarBaseMult(hpwn0).Neg()
@@ -99,7 +98,7 @@ func proofOfSuccess() (*big.Int, *big.Int, *big.Int, *Point) {
 }
 
 // server
-func verifierOfSuccess(c0, c1, u *big.Int, gx1r *Point)(bool){
+func verifierOfSuccess(c0, c1, u *big.Int, gx1r *Point) bool {
 	cx0 := gf.Mul(c0, new(big.Int).SetBytes(x0))
 	cx1 := gf.Mul(c1, new(big.Int).SetBytes(x1))
 
@@ -123,11 +122,9 @@ func verifierOfSuccess(c0, c1, u *big.Int, gx1r *Point)(bool){
 	return true
 }
 
+func proofOfFailure() {}
 
-
-func proofOfFailure(){}
-
-func main(){
+func main() {
 	initialize()
 	enrolling()
 	encryption()

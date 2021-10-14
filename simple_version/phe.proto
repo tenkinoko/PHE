@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option go_package ="../phe";
+package phe;
+
+message NegotiationBegin {
+  bytes Xs = 1;
+}
+
+message NegotiationResponse {
+  bytes X0 = 1;
+}
+
+message T2Generation{
+  bytes E1 = 1;
+  bytes E2 = 2;
+  bytes E3 = 3;
+}
+
+message T2Response{
+  bytes T2 = 1;
+}
+
+message ProofOfX{
+    bytes Flag = 1;
+    bytes TT0 = 2;
+}
+
+message ProverResponse{
+  bytes C0 = 1;
+  bytes C1 = 2;
+  bytes U = 3;
+  bytes GX1R = 4;
+  bytes X1 = 5;
+}
