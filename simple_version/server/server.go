@@ -1,17 +1,18 @@
 package server
 
 import (
+	"context"
 	"crypto/sha1"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
+	"log"
 	"math/big"
+	"time"
 
 	. "simple_phe/utils"
 
 	. "simple_phe/phe"
-
-	//"math/big"
-	//"github.com/golang/protobuf"
 )
 
 var (
@@ -27,11 +28,13 @@ var (
 	T2 *Point
 )
 
-func GenerateServerKey()([]byte, error){
+const (
+	address 	= "localhost:50051"
+)
+
+func GenerateServerKey()[]byte{
 	xs := RandomZ()
-	return proto.Marshal(&NegotiationBegin{
-		Xs: xs.Bytes(),
-	})
+	return xs.Bytes()
 }
 
 // SystemInitialization Complete
@@ -140,6 +143,24 @@ func Verifier(respBytes []byte) bool{
 	return true
 }
 
+func RunServer(){
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := NewKeyPairGenClient(conn)
+
+	msg1 := GenerateServerKey()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := c.Negotiation(ctx, &NegotiationBegin{Xs: msg1})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	log.Printf("Greeting: %b", r.GetX0())
+}
 
 
 

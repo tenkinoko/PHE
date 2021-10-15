@@ -3,6 +3,10 @@ syntax = "proto3";
 option go_package ="../phe";
 package phe;
 
+service KeyPairGen{
+  rpc Negotiation (NegotiationBegin) returns (NegotiationResponse){}
+}
+
 message NegotiationBegin {
   bytes Xs = 1;
 }
@@ -22,8 +26,8 @@ message T2Response{
 }
 
 message ProofOfX{
-    bytes Flag = 1;
-    bytes TT0 = 2;
+  bytes Flag = 1;
+  bytes TT0 = 2;
 }
 
 message ProverResponse{

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.26.0
 // 	protoc        v3.18.1
-// source: phe.proto
+// source: phe/phe.proto
 
 package phe
 
@@ -31,7 +31,7 @@ type NegotiationBegin struct {
 func (x *NegotiationBegin) Reset() {
 	*x = NegotiationBegin{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_proto_msgTypes[0]
+		mi := &file_phe_phe_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -44,7 +44,7 @@ func (x *NegotiationBegin) String() string {
 func (*NegotiationBegin) ProtoMessage() {}
 
 func (x *NegotiationBegin) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_proto_msgTypes[0]
+	mi := &file_phe_phe_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +57,7 @@ func (x *NegotiationBegin) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NegotiationBegin.ProtoReflect.Descriptor instead.
 func (*NegotiationBegin) Descriptor() ([]byte, []int) {
-	return file_phe_proto_rawDescGZIP(), []int{0}
+	return file_phe_phe_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *NegotiationBegin) GetXs() []byte {
@@ -78,7 +78,7 @@ type NegotiationResponse struct {
 func (x *NegotiationResponse) Reset() {
 	*x = NegotiationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_proto_msgTypes[1]
+		mi := &file_phe_phe_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -91,7 +91,7 @@ func (x *NegotiationResponse) String() string {
 func (*NegotiationResponse) ProtoMessage() {}
 
 func (x *NegotiationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_proto_msgTypes[1]
+	mi := &file_phe_phe_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +104,7 @@ func (x *NegotiationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NegotiationResponse.ProtoReflect.Descriptor instead.
 func (*NegotiationResponse) Descriptor() ([]byte, []int) {
-	return file_phe_proto_rawDescGZIP(), []int{1}
+	return file_phe_phe_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *NegotiationResponse) GetX0() []byte {
@@ -127,7 +127,7 @@ type T2Generation struct {
 func (x *T2Generation) Reset() {
 	*x = T2Generation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_proto_msgTypes[2]
+		mi := &file_phe_phe_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -140,7 +140,7 @@ func (x *T2Generation) String() string {
 func (*T2Generation) ProtoMessage() {}
 
 func (x *T2Generation) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_proto_msgTypes[2]
+	mi := &file_phe_phe_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -153,7 +153,7 @@ func (x *T2Generation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use T2Generation.ProtoReflect.Descriptor instead.
 func (*T2Generation) Descriptor() ([]byte, []int) {
-	return file_phe_proto_rawDescGZIP(), []int{2}
+	return file_phe_phe_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *T2Generation) GetE1() []byte {
@@ -188,7 +188,7 @@ type T2Response struct {
 func (x *T2Response) Reset() {
 	*x = T2Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_proto_msgTypes[3]
+		mi := &file_phe_phe_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -201,7 +201,7 @@ func (x *T2Response) String() string {
 func (*T2Response) ProtoMessage() {}
 
 func (x *T2Response) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_proto_msgTypes[3]
+	mi := &file_phe_phe_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -214,7 +214,7 @@ func (x *T2Response) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use T2Response.ProtoReflect.Descriptor instead.
 func (*T2Response) Descriptor() ([]byte, []int) {
-	return file_phe_proto_rawDescGZIP(), []int{3}
+	return file_phe_phe_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *T2Response) GetT2() []byte {
@@ -236,7 +236,7 @@ type ProofOfX struct {
 func (x *ProofOfX) Reset() {
 	*x = ProofOfX{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_proto_msgTypes[4]
+		mi := &file_phe_phe_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -249,7 +249,7 @@ func (x *ProofOfX) String() string {
 func (*ProofOfX) ProtoMessage() {}
 
 func (x *ProofOfX) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_proto_msgTypes[4]
+	mi := &file_phe_phe_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -262,7 +262,7 @@ func (x *ProofOfX) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProofOfX.ProtoReflect.Descriptor instead.
 func (*ProofOfX) Descriptor() ([]byte, []int) {
-	return file_phe_proto_rawDescGZIP(), []int{4}
+	return file_phe_phe_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ProofOfX) GetFlag() []byte {
@@ -294,7 +294,7 @@ type ProverResponse struct {
 func (x *ProverResponse) Reset() {
 	*x = ProverResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_proto_msgTypes[5]
+		mi := &file_phe_phe_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -307,7 +307,7 @@ func (x *ProverResponse) String() string {
 func (*ProverResponse) ProtoMessage() {}
 
 func (x *ProverResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_proto_msgTypes[5]
+	mi := &file_phe_phe_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -320,7 +320,7 @@ func (x *ProverResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProverResponse.ProtoReflect.Descriptor instead.
 func (*ProverResponse) Descriptor() ([]byte, []int) {
-	return file_phe_proto_rawDescGZIP(), []int{5}
+	return file_phe_phe_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ProverResponse) GetC0() []byte {
@@ -358,48 +358,53 @@ func (x *ProverResponse) GetX1() []byte {
 	return nil
 }
 
-var File_phe_proto protoreflect.FileDescriptor
+var File_phe_phe_proto protoreflect.FileDescriptor
 
-var file_phe_proto_rawDesc = []byte{
-	0x0a, 0x09, 0x70, 0x68, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x03, 0x70, 0x68, 0x65,
-	0x22, 0x22, 0x0a, 0x10, 0x4e, 0x65, 0x67, 0x6f, 0x74, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
-	0x65, 0x67, 0x69, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x58, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c,
-	0x52, 0x02, 0x58, 0x73, 0x22, 0x25, 0x0a, 0x13, 0x4e, 0x65, 0x67, 0x6f, 0x74, 0x69, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x58,
-	0x30, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x58, 0x30, 0x22, 0x3e, 0x0a, 0x0c, 0x54,
-	0x32, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x45,
-	0x31, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x45, 0x31, 0x12, 0x0e, 0x0a, 0x02, 0x45,
-	0x32, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x45, 0x32, 0x12, 0x0e, 0x0a, 0x02, 0x45,
-	0x33, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x45, 0x33, 0x22, 0x1c, 0x0a, 0x0a, 0x54,
-	0x32, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x54, 0x32, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x54, 0x32, 0x22, 0x30, 0x0a, 0x08, 0x50, 0x72, 0x6f,
-	0x6f, 0x66, 0x4f, 0x66, 0x58, 0x12, 0x12, 0x0a, 0x04, 0x46, 0x6c, 0x61, 0x67, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0c, 0x52, 0x04, 0x46, 0x6c, 0x61, 0x67, 0x12, 0x10, 0x0a, 0x03, 0x54, 0x54, 0x30,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x03, 0x54, 0x54, 0x30, 0x22, 0x62, 0x0a, 0x0e, 0x50,
-	0x72, 0x6f, 0x76, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a,
-	0x02, 0x43, 0x30, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x43, 0x30, 0x12, 0x0e, 0x0a,
-	0x02, 0x43, 0x31, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x43, 0x31, 0x12, 0x0c, 0x0a,
-	0x01, 0x55, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x01, 0x55, 0x12, 0x12, 0x0a, 0x04, 0x47,
-	0x58, 0x31, 0x52, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x47, 0x58, 0x31, 0x52, 0x12,
-	0x0e, 0x0a, 0x02, 0x58, 0x31, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x58, 0x31, 0x42,
-	0x08, 0x5a, 0x06, 0x2e, 0x2e, 0x2f, 0x70, 0x68, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+var file_phe_phe_proto_rawDesc = []byte{
+	0x0a, 0x0d, 0x70, 0x68, 0x65, 0x2f, 0x70, 0x68, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
+	0x03, 0x70, 0x68, 0x65, 0x22, 0x22, 0x0a, 0x10, 0x4e, 0x65, 0x67, 0x6f, 0x74, 0x69, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x42, 0x65, 0x67, 0x69, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x58, 0x73, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x58, 0x73, 0x22, 0x25, 0x0a, 0x13, 0x4e, 0x65, 0x67, 0x6f,
+	0x74, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x0e, 0x0a, 0x02, 0x58, 0x30, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x58, 0x30, 0x22,
+	0x3e, 0x0a, 0x0c, 0x54, 0x32, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x0e, 0x0a, 0x02, 0x45, 0x31, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x45, 0x31, 0x12,
+	0x0e, 0x0a, 0x02, 0x45, 0x32, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x45, 0x32, 0x12,
+	0x0e, 0x0a, 0x02, 0x45, 0x33, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x45, 0x33, 0x22,
+	0x1c, 0x0a, 0x0a, 0x54, 0x32, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a,
+	0x02, 0x54, 0x32, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x54, 0x32, 0x22, 0x30, 0x0a,
+	0x08, 0x50, 0x72, 0x6f, 0x6f, 0x66, 0x4f, 0x66, 0x58, 0x12, 0x12, 0x0a, 0x04, 0x46, 0x6c, 0x61,
+	0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x46, 0x6c, 0x61, 0x67, 0x12, 0x10, 0x0a,
+	0x03, 0x54, 0x54, 0x30, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x03, 0x54, 0x54, 0x30, 0x22,
+	0x62, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x0e, 0x0a, 0x02, 0x43, 0x30, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x43,
+	0x30, 0x12, 0x0e, 0x0a, 0x02, 0x43, 0x31, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x43,
+	0x31, 0x12, 0x0c, 0x0a, 0x01, 0x55, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x01, 0x55, 0x12,
+	0x12, 0x0a, 0x04, 0x47, 0x58, 0x31, 0x52, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x47,
+	0x58, 0x31, 0x52, 0x12, 0x0e, 0x0a, 0x02, 0x58, 0x31, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0c, 0x52,
+	0x02, 0x58, 0x31, 0x32, 0x4e, 0x0a, 0x0a, 0x4b, 0x65, 0x79, 0x50, 0x61, 0x69, 0x72, 0x47, 0x65,
+	0x6e, 0x12, 0x40, 0x0a, 0x0b, 0x4e, 0x65, 0x67, 0x6f, 0x74, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x15, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x4e, 0x65, 0x67, 0x6f, 0x74, 0x69, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x42, 0x65, 0x67, 0x69, 0x6e, 0x1a, 0x18, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x4e, 0x65,
+	0x67, 0x6f, 0x74, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2e, 0x2f, 0x70, 0x68, 0x65, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
-	file_phe_proto_rawDescOnce sync.Once
-	file_phe_proto_rawDescData = file_phe_proto_rawDesc
+	file_phe_phe_proto_rawDescOnce sync.Once
+	file_phe_phe_proto_rawDescData = file_phe_phe_proto_rawDesc
 )
 
-func file_phe_proto_rawDescGZIP() []byte {
-	file_phe_proto_rawDescOnce.Do(func() {
-		file_phe_proto_rawDescData = protoimpl.X.CompressGZIP(file_phe_proto_rawDescData)
+func file_phe_phe_proto_rawDescGZIP() []byte {
+	file_phe_phe_proto_rawDescOnce.Do(func() {
+		file_phe_phe_proto_rawDescData = protoimpl.X.CompressGZIP(file_phe_phe_proto_rawDescData)
 	})
-	return file_phe_proto_rawDescData
+	return file_phe_phe_proto_rawDescData
 }
 
-var file_phe_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_phe_proto_goTypes = []interface{}{
+var file_phe_phe_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_phe_phe_proto_goTypes = []interface{}{
 	(*NegotiationBegin)(nil),    // 0: phe.NegotiationBegin
 	(*NegotiationResponse)(nil), // 1: phe.NegotiationResponse
 	(*T2Generation)(nil),        // 2: phe.T2Generation
@@ -407,21 +412,23 @@ var file_phe_proto_goTypes = []interface{}{
 	(*ProofOfX)(nil),            // 4: phe.ProofOfX
 	(*ProverResponse)(nil),      // 5: phe.ProverResponse
 }
-var file_phe_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
+var file_phe_phe_proto_depIdxs = []int32{
+	0, // 0: phe.KeyPairGen.Negotiation:input_type -> phe.NegotiationBegin
+	1, // 1: phe.KeyPairGen.Negotiation:output_type -> phe.NegotiationResponse
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_phe_proto_init() }
-func file_phe_proto_init() {
-	if File_phe_proto != nil {
+func init() { file_phe_phe_proto_init() }
+func file_phe_phe_proto_init() {
+	if File_phe_phe_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_phe_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_phe_phe_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NegotiationBegin); i {
 			case 0:
 				return &v.state
@@ -433,7 +440,7 @@ func file_phe_proto_init() {
 				return nil
 			}
 		}
-		file_phe_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_phe_phe_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NegotiationResponse); i {
 			case 0:
 				return &v.state
@@ -445,7 +452,7 @@ func file_phe_proto_init() {
 				return nil
 			}
 		}
-		file_phe_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_phe_phe_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*T2Generation); i {
 			case 0:
 				return &v.state
@@ -457,7 +464,7 @@ func file_phe_proto_init() {
 				return nil
 			}
 		}
-		file_phe_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_phe_phe_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*T2Response); i {
 			case 0:
 				return &v.state
@@ -469,7 +476,7 @@ func file_phe_proto_init() {
 				return nil
 			}
 		}
-		file_phe_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_phe_phe_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ProofOfX); i {
 			case 0:
 				return &v.state
@@ -481,7 +488,7 @@ func file_phe_proto_init() {
 				return nil
 			}
 		}
-		file_phe_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_phe_phe_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ProverResponse); i {
 			case 0:
 				return &v.state
@@ -498,18 +505,18 @@ func file_phe_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_phe_proto_rawDesc,
+			RawDescriptor: file_phe_phe_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
-		GoTypes:           file_phe_proto_goTypes,
-		DependencyIndexes: file_phe_proto_depIdxs,
-		MessageInfos:      file_phe_proto_msgTypes,
+		GoTypes:           file_phe_phe_proto_goTypes,
+		DependencyIndexes: file_phe_phe_proto_depIdxs,
+		MessageInfos:      file_phe_phe_proto_msgTypes,
 	}.Build()
-	File_phe_proto = out.File
-	file_phe_proto_rawDesc = nil
-	file_phe_proto_goTypes = nil
-	file_phe_proto_depIdxs = nil
+	File_phe_phe_proto = out.File
+	file_phe_phe_proto_rawDesc = nil
+	file_phe_phe_proto_goTypes = nil
+	file_phe_phe_proto_depIdxs = nil
 }

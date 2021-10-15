@@ -1,9 +1,13 @@
 package key_server
 
 import (
+	"context"
+	"log"
 	"math/big"
+	"net"
 
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
 
 	. "simple_phe/utils"
 
@@ -18,21 +22,24 @@ var (
 	X_1 *Point
 )
 
+const (
+	port = ":50051"
+)
+
+type server struct {
+	UnimplementedKeyPairGenServer
+}
+
 // Negotiation between Server and Key Server At the very beginning
-func Negotiation(respBytes []byte) ([]byte, error) {
-	resp := &NegotiationBegin{}
-	if err := proto.Unmarshal(respBytes, resp); err != nil {
-		return nil, err
-	}
-	xs := resp.Xs
+func (s *server) Negotiation(ctx context.Context, in *NegotiationBegin) (*NegotiationResponse, error) {
+	log.Printf("Received: %b", in.GetXs())
+	xs := in.GetXs()
 	xks := RandomZ()
 	x_0 = HashZ(xs, xks.Bytes(), big.NewInt(0).Bytes())
 	x_1 = HashZ(xs, xks.Bytes(), big.NewInt(1).Bytes())
 	X_0 = new(Point).ScalarBaseMultInt(x_0)
 	X_1 = new(Point).ScalarBaseMultInt(x_1)
-	return proto.Marshal(&NegotiationResponse{
-		X0: x_0.Bytes(),
-	})
+	return &NegotiationResponse{X0: x_0.Bytes()}, nil
 }
 
 func ThirdPartGeneration(respBytes []byte) ([]byte, error) {
@@ -95,4 +102,17 @@ func ProverOfSuccess(t0 []byte) ([]byte, error) {
 		GX1R: gx1r.Marshal(),
 		X1:   X_1.Marshal(),
 	})
+}
+
+func RunKeyServer(){
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+	RegisterKeyPairGenServer(s, &server{})
+	log.Printf("server listening at %v", lis.Addr())
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }
