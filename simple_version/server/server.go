@@ -3,11 +3,17 @@ package server
 import (
 	"context"
 	"crypto/sha1"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 	"math/big"
+	"path"
+	"runtime"
 	"time"
 
 	. "simple_phe/utils"
@@ -144,8 +150,37 @@ func Verifier(respBytes []byte) bool{
 }
 
 func RunServer(){
+	const datafile = "../credentials/"
+	_, filename, _, _ := runtime.Caller(1)
+	credpath := path.Join(path.Dir(filename), datafile)
+	// TLS Based on CA
+	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+	if err != nil {
+		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+	}
+	certPool := x509.NewCertPool()
+	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+	if err != nil {
+		log.Fatalf("ioutil.ReadFile err: %v", err)
+	}
+
+	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+		log.Fatalf("certPool.AppendCertsFromPEM err")
+	}
+
+	cred := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},
+		ServerName:   "localhost",
+		RootCAs:      certPool,
+	})
+
 	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	opts := []grpc.DialOption{
+		// credentials.
+		grpc.WithTransportCredentials(cred),
+	}
+
+	conn, err := grpc.Dial(address, opts...)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

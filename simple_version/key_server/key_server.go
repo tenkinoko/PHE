@@ -2,9 +2,15 @@ package key_server
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"net"
+	"path"
+	"runtime"
 
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
@@ -105,11 +111,35 @@ func ProverOfSuccess(t0 []byte) ([]byte, error) {
 }
 
 func RunKeyServer(){
+	const datafile = "../credentials/"
+	_, filename, _, _ := runtime.Caller(1)
+	credpath := path.Join(path.Dir(filename), datafile)
+	cert, err := tls.LoadX509KeyPair(credpath + "/server.crt", credpath + "/server.key")
+	if err != nil {
+		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+	}
+
+	certPool := x509.NewCertPool()
+	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+	if err != nil {
+		log.Fatalf("ioutil.ReadFile err: %v", err)
+	}
+
+	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+		log.Fatalf("certPool.AppendCertsFromPEM err")
+	}
+
+	cred := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientCAs:    certPool,
+	})
+
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.Creds(cred))
 	RegisterKeyPairGenServer(s, &server{})
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
