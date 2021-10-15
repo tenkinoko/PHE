@@ -1,9 +1,13 @@
-package phe
+package key_server
 
 import (
 	"math/big"
 
 	"github.com/golang/protobuf/proto"
+
+	. "simple_phe/utils"
+
+	. "simple_phe/phe"
 	//"math/big"
 )
 
@@ -21,9 +25,9 @@ func Negotiation(respBytes []byte) ([]byte, error) {
 		return nil, err
 	}
 	xs := resp.Xs
-	xks := randomZ()
-	x_0 = hashZ(xs, xks.Bytes(), big.NewInt(0).Bytes())
-	x_1 = hashZ(xs, xks.Bytes(), big.NewInt(1).Bytes())
+	xks := RandomZ()
+	x_0 = HashZ(xs, xks.Bytes(), big.NewInt(0).Bytes())
+	x_1 = HashZ(xs, xks.Bytes(), big.NewInt(1).Bytes())
 	X_0 = new(Point).ScalarBaseMultInt(x_0)
 	X_1 = new(Point).ScalarBaseMultInt(x_1)
 	return proto.Marshal(&NegotiationResponse{
@@ -39,7 +43,7 @@ func ThirdPartGeneration(respBytes []byte) ([]byte, error) {
 	Hpwn1_ := resp.E1
 	r := resp.E2
 	k := resp.E3
-	T2e := gf.Add(gf.MulBytes(r, x_1), gf.AddBytes(k, new(big.Int).SetBytes(Hpwn1_)))
+	T2e := Gf.Add(Gf.MulBytes(r, x_1), Gf.AddBytes(k, new(big.Int).SetBytes(Hpwn1_)))
 	T2 := new(Point).ScalarBaseMultInt(T2e)
 	return proto.Marshal(&T2Response{
 		T2: T2.Marshal(),
@@ -65,23 +69,23 @@ func ZKProof(respBytes []byte) ([]byte, error) {
 
 func ProverOfSuccess(t0 []byte) ([]byte, error) {
 	gr, _ := PointUnmarshal(t0)
-	v := randomZ().Bytes()
+	v := RandomZ().Bytes()
 	t1 := new(Point).ScalarBaseMult(v)
 	t2 := gr.ScalarMult(v)
 
 	gx0r := gr.ScalarMultInt(x_0)
 	gx1r := gr.ScalarMultInt(x_1)
 
-	c0 := hashZ(X_0.Marshal(), T0.Marshal(), gx0r.Marshal(), t1.Marshal(), t2.Marshal())
-	c1 := hashZ(X_1.Marshal(), T0.Marshal(), gx1r.Marshal(), t1.Marshal(), t2.Marshal())
+	c0 := HashZ(X_0.Marshal(), gr.Marshal(), gx0r.Marshal(), t1.Marshal(), t2.Marshal())
+	c1 := HashZ(X_1.Marshal(), gr.Marshal(), gx1r.Marshal(), t1.Marshal(), t2.Marshal())
 
-	cx0 := gf.Mul(c0, x_0)
-	cx1 := gf.Mul(c1, x_1)
+	cx0 := Gf.Mul(c0, x_0)
+	cx1 := Gf.Mul(c1, x_1)
 
-	cx0neg := gf.Neg(cx0)
-	cx1neg := gf.Neg(cx1)
+	cx0neg := Gf.Neg(cx0)
+	cx1neg := Gf.Neg(cx1)
 
-	u := gf.AddBytes(v, gf.Add(cx0neg, cx1neg))
+	u := Gf.AddBytes(v, Gf.Add(cx0neg, cx1neg))
 
 	// + gx1r -> server
 	return proto.Marshal(&ProverResponse{

@@ -34,7 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package utils
 
 import (
 	"bytes"
@@ -56,8 +56,8 @@ import (
 var (
 	randReader = rand.Reader
 	curve      = elliptic.P256()
-	curveG     = new(Point).ScalarBaseMultInt(new(big.Int).SetUint64(1)).Marshal()
-	gf         = swu.GF{P: curve.Params().N}
+	curveG = new(Point).ScalarBaseMultInt(new(big.Int).SetUint64(1)).Marshal()
+	Gf     = swu.GF{P: curve.Params().N}
 
 	//domains
 	commonPrefix     = []byte{0x56, 0x52, 0x47, 0x4c, 0x50, 0x48, 0x45} //VRGLPHE
@@ -112,7 +112,7 @@ func initKdf(domain []byte, tuple ...[]byte) io.Reader {
 }
 
 // randomZ generates big random 256 bit integer which must be less than curve's N parameter
-func randomZ() (z *big.Int) {
+func RandomZ() (z *big.Int) {
 	rz := makeZ(randReader)
 	for z == nil {
 		// If the scalar is out of range, sample another random number.
@@ -126,7 +126,7 @@ func randomZ() (z *big.Int) {
 }
 
 // hashZ maps arrays of bytes to an integer less than curve's N parameter
-func hashZ(domain []byte, data ...[]byte) (z *big.Int) {
+func HashZ(domain []byte, data ...[]byte) (z *big.Int) {
 	xof := initKdf(domain, data...)
 	rz := makeZ(xof)
 

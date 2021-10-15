@@ -1,10 +1,14 @@
-package phe
+package server
 
 import (
 	"crypto/sha1"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"math/big"
+
+	. "simple_phe/utils"
+
+	. "simple_phe/phe"
 
 	//"math/big"
 	//"github.com/golang/protobuf"
@@ -16,7 +20,7 @@ var (
 	n  []byte
 	r  []byte
 	k  []byte
-	pw []byte
+	Pw []byte
 
 	T0 *Point
 	T1 *Point
@@ -24,7 +28,7 @@ var (
 )
 
 func GenerateServerKey()([]byte, error){
-	xs := randomZ()
+	xs := RandomZ()
 	return proto.Marshal(&NegotiationBegin{
 		Xs: xs.Bytes(),
 	})
@@ -42,10 +46,10 @@ func SystemInitialization(respBytes []byte){
 
 // TODO: whether a client is neccessary
 func ClientInfo(){
-	n = randomZ().Bytes()
-	r = randomZ().Bytes()
-	k = randomZ().Bytes()
-	pw = randomZ().Bytes()
+	n = RandomZ().Bytes()
+	r = RandomZ().Bytes()
+	k = RandomZ().Bytes()
+	Pw = RandomZ().Bytes()
 }
 
 func EncryptionA()([]byte, error){
@@ -55,11 +59,11 @@ func EncryptionA()([]byte, error){
 	grx0 := X0.ScalarMult(r)
 	Hgrx0 := sha1.Sum(grx0.Marshal())
 	Hgrx0_ := Hgrx0[:]
-	Hpwn0_ := HashPwd(pw, n, 0)
-	T1e := gf.AddBytes(Hgrx0_, new(big.Int).SetBytes(Hpwn0_))
+	Hpwn0_ := HashPwd(Pw, n, 0)
+	T1e := Gf.AddBytes(Hgrx0_, new(big.Int).SetBytes(Hpwn0_))
 	T1 = grx0.Add(new(Point).ScalarBaseMultInt(T1e))
 
-	Hpwn1_ := HashPwd(pw, n, 1)
+	Hpwn1_ := HashPwd(Pw, n, 1)
 	return proto.Marshal(&T2Generation{
 		E1: Hpwn1_,
 		E2: r,
@@ -99,6 +103,9 @@ func Decryption(pw0 []byte)([]byte, error){
 }
 
 func Verifier(respBytes []byte) bool{
+	if respBytes == nil{
+		return false
+	}
 	resp := &ProverResponse{}
 	if err := proto.Unmarshal(respBytes, resp); err != nil {
 		fmt.Println("Response Err at Verifier at server.go")
@@ -110,19 +117,19 @@ func Verifier(respBytes []byte) bool{
 	gx1r, _ := PointUnmarshal(resp.GX1R)
 	gx1,_ := PointUnmarshal(resp.X1)
 
-	cx0 := gf.Mul(c0, x0)
+	cx0 := Gf.Mul(c0, x0)
 	//cx1 := gf.Mul(c1, new(big.Int).SetBytes(x1))
 
 	gx0r := X0.ScalarMult(r)
 
-	t1e := gf.Add(u, cx0)
+	t1e := Gf.Add(u, cx0)
 	//t2e := gf.MulBytes(r, t1e)
 
 	t1_ := gx1.ScalarMultInt(c1).Add(new(Point).ScalarBaseMultInt(t1e))
 	t2_ := t1_.ScalarMult(r)
 
-	c0_ := hashZ(X0.Marshal(), T0.Marshal(), gx0r.Marshal(), t1_.Marshal(), t2_.Marshal())
-	c1_ := hashZ(gx1.Marshal(), T0.Marshal(), gx1r.Marshal(), t1_.Marshal(), t2_.Marshal())
+	c0_ := HashZ(X0.Marshal(), T0.Marshal(), gx0r.Marshal(), t1_.Marshal(), t2_.Marshal())
+	c1_ := HashZ(gx1.Marshal(), T0.Marshal(), gx1r.Marshal(), t1_.Marshal(), t2_.Marshal())
 
 	if c0.Cmp(c0_) != 0 {
 		return false
