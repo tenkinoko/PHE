@@ -5,6 +5,8 @@ package phe;
 
 service KeyPairGen{
   rpc Negotiation (NegotiationBegin) returns (NegotiationResponse){}
+  rpc ThirdPartGeneration (T2Generation) returns (T2Response){}
+  rpc ZKProof (ProofOfX) returns (ProverResponse){}
 }
 
 message NegotiationBegin {

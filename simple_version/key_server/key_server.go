@@ -12,7 +12,6 @@ import (
 	"path"
 	"runtime"
 
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
 
 	. "simple_phe/utils"
@@ -48,28 +47,20 @@ func (s *server) Negotiation(ctx context.Context, in *NegotiationBegin) (*Negoti
 	return &NegotiationResponse{X0: x_0.Bytes()}, nil
 }
 
-func ThirdPartGeneration(respBytes []byte) ([]byte, error) {
-	resp := &T2Generation{}
-	if err := proto.Unmarshal(respBytes, resp); err != nil {
-		return nil, err
-	}
-	Hpwn1_ := resp.E1
-	r := resp.E2
-	k := resp.E3
+func (s *server)ThirdPartGeneration(ctx context.Context, in *T2Generation) (*T2Response, error) {
+	log.Printf("Received: %b", in.GetE1())
+	Hpwn1_ := in.GetE1()
+	r := in.GetE2()
+	k := in.GetE3()
 	T2e := Gf.Add(Gf.MulBytes(r, x_1), Gf.AddBytes(k, new(big.Int).SetBytes(Hpwn1_)))
 	T2 := new(Point).ScalarBaseMultInt(T2e)
-	return proto.Marshal(&T2Response{
-		T2: T2.Marshal(),
-	})
+	return &T2Response{T2: T2.Marshal()}, nil
 }
 
-func ZKProof(respBytes []byte) ([]byte, error) {
-	resp := &ProofOfX{}
-	if err := proto.Unmarshal(respBytes, resp); err != nil {
-		return nil, err
-	}
-	T0 := resp.TT0
-	FlagMsg := resp.Flag
+func (s *server)ZKProof(ctx context.Context, in *ProofOfX) (*ProverResponse, error) {
+	log.Printf("Received: %b", in.GetFlag())
+	T0 := in.GetTT0()
+	FlagMsg := in.GetFlag()
 	Flag := new(big.Int).SetBytes(FlagMsg)
 	if Flag.Cmp(big.NewInt(1)) == 0 {
 		return ProverOfSuccess(T0)
@@ -80,7 +71,7 @@ func ZKProof(respBytes []byte) ([]byte, error) {
 
 }
 
-func ProverOfSuccess(t0 []byte) ([]byte, error) {
+func ProverOfSuccess(t0 []byte) (*ProverResponse, error) {
 	gr, _ := PointUnmarshal(t0)
 	v := RandomZ().Bytes()
 	t1 := new(Point).ScalarBaseMult(v)
@@ -101,13 +92,13 @@ func ProverOfSuccess(t0 []byte) ([]byte, error) {
 	u := Gf.AddBytes(v, Gf.Add(cx0neg, cx1neg))
 
 	// + gx1r -> server
-	return proto.Marshal(&ProverResponse{
+	return &ProverResponse{
 		C0:   c0.Bytes(),
 		C1:   c1.Bytes(),
 		U:    u.Bytes(),
 		GX1R: gx1r.Marshal(),
 		X1:   X_1.Marshal(),
-	})
+	}, nil
 }
 
 func RunKeyServer(){

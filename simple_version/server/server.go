@@ -6,7 +6,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
@@ -44,12 +43,8 @@ func GenerateServerKey()[]byte{
 }
 
 // SystemInitialization Complete
-func SystemInitialization(respBytes []byte){
-	resp := &NegotiationResponse{}
-	if err := proto.Unmarshal(respBytes, resp); err != nil {
-		return
-	}
-	x0 = new(big.Int).SetBytes(resp.X0)
+func SystemInitialization(xx0 []byte){
+	x0 = new(big.Int).SetBytes(xx0)
 	X0 = new(Point).ScalarBaseMultInt(x0)
 }
 
@@ -61,7 +56,7 @@ func ClientInfo(){
 	Pw = RandomZ().Bytes()
 }
 
-func EncryptionA()([]byte, error){
+func EncryptionA()([]byte, []byte, []byte){
 	// T0 = g^r
 	T0 = new(Point).ScalarBaseMult(r)
 	// T1 = g^rx0 * g^H(g^rx0) * g^H(pw, n, 0)
@@ -73,22 +68,14 @@ func EncryptionA()([]byte, error){
 	T1 = grx0.Add(new(Point).ScalarBaseMultInt(T1e))
 
 	Hpwn1_ := HashPwd(Pw, n, 1)
-	return proto.Marshal(&T2Generation{
-		E1: Hpwn1_,
-		E2: r,
-		E3: k,
-	})
+	return Hpwn1_, r, k
 }
 
-func EncryptionB(respBytes []byte){
-	resp := &T2Response{}
-	if err := proto.Unmarshal(respBytes, resp); err != nil {
-		return
-	}
-	T2, _ = PointUnmarshal(resp.T2)
+func EncryptionB(TT2 []byte){
+	T2, _ = PointUnmarshal(TT2)
 }
 
-func Decryption(pw0 []byte)([]byte, error){
+func Decryption(pw0 []byte)([]byte, []byte){
 	// C0 = T1 / g^(H(pw0, n, 0))
 	hpwn0 := HashPwd(pw0, n, 0)
 	denominator := new(Point).ScalarBaseMult(hpwn0).Neg()
@@ -105,26 +92,15 @@ func Decryption(pw0 []byte)([]byte, error){
 	} else {
 		flag = big.NewInt(0)
 	}
-	return proto.Marshal(&ProofOfX{
-		Flag: flag.Bytes(),
-		TT0: T0.Marshal(),
-	})
+	return flag.Bytes(), T0.Marshal()
 }
 
-func Verifier(respBytes []byte) bool{
-	if respBytes == nil{
-		return false
-	}
-	resp := &ProverResponse{}
-	if err := proto.Unmarshal(respBytes, resp); err != nil {
-		fmt.Println("Response Err at Verifier at server.go")
-		return false
-	}
-	c0 := new(big.Int).SetBytes(resp.C0)
-	c1 := new(big.Int).SetBytes(resp.C1)
-	u := new(big.Int).SetBytes(resp.U)
-	gx1r, _ := PointUnmarshal(resp.GX1R)
-	gx1,_ := PointUnmarshal(resp.X1)
+func Verifier(C0, C1, U, GX1R, X1 []byte) bool{
+	c0 := new(big.Int).SetBytes(C0)
+	c1 := new(big.Int).SetBytes(C1)
+	u := new(big.Int).SetBytes(U)
+	gx1r, _ := PointUnmarshal(GX1R)
+	gx1,_ := PointUnmarshal(X1)
 
 	cx0 := Gf.Mul(c0, x0)
 	//cx1 := gf.Mul(c1, new(big.Int).SetBytes(x1))
@@ -187,20 +163,37 @@ func RunServer(){
 	defer conn.Close()
 	c := NewKeyPairGenClient(conn)
 
-	msg1 := GenerateServerKey()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+
+	ClientInfo()
+	msg1 := GenerateServerKey()
 	r, err := c.Negotiation(ctx, &NegotiationBegin{Xs: msg1})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Fatalf("could not generate key pairs: %v", err)
 	}
-	log.Printf("Greeting: %b", r.GetX0())
+	log.Printf("KeyPairGen Finish")
+	SystemInitialization(r.GetX0())
+
+	msg2a, msg2b, msg2c := EncryptionA()
+	r1, err1 := c.ThirdPartGeneration(ctx, &T2Generation{E1: msg2a, E2: msg2b, E3: msg2c})
+	if err1 != nil {
+		log.Fatalf("could not enroll: %v", err1)
+	}
+	log.Printf("Enrollment Finish")
+	EncryptionB(r1.GetT2())
+
+	msg3a, msg3b := Decryption(Pw)
+	r2, err2 := c.ZKProof(ctx, &ProofOfX{Flag: msg3a, TT0:  msg3b})
+	if err2 != nil {
+		log.Fatalf("could not zero knowledge proof: %v", err2)
+	}
+	log.Printf("ZeroKnowledge Finish")
+
+	rep3a, rep3b, rep3c, rep3d, rep3e := r2.GetC0(), r2.GetC1(), r2.GetU(), r2.GetGX1R(), r2.GetX1()
+	fmt.Println(Verifier(rep3a, rep3b, rep3c, rep3d, rep3e))
+
 }
-
-
-
-
-
 
 
 
