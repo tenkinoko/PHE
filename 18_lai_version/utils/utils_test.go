@@ -34,7 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package utils
 
 import (
 	"bytes"
@@ -152,11 +152,11 @@ func TestEncryptVector(t *testing.T) {
 		0xab, 0x08, 0x2c, 0xb1, 0xa7, 0x36, 0x04, 0xf4,
 	}
 
-	randReader = bytes.NewReader(rnd)
+	RandReader = bytes.NewReader(rnd)
 	ct, err := Encrypt(plaintext, key)
 	require.NoError(t, err)
 	require.Equal(t, ciphertext, ct)
-	randReader = rand.Reader
+	RandReader = rand.Reader
 
 }
 
@@ -186,7 +186,7 @@ func TestHashZVector1(t *testing.T) {
 	t3Y := "63043970895569149637126206639504503565389755448934804609068720159153015056302"
 	chlng := "93919747365284119397236447539917482315419780885577135068398876525953972539838"
 
-	z := hashZ(proofOk, pub, curveG, Point2Bytes(c0X, c0Y), Point2Bytes(c1X, c1Y), Point2Bytes(t1X, t1Y), Point2Bytes(t2X, t2Y), Point2Bytes(t3X, t3Y))
+	z := hashZ(ProofOk, pub, CurveG, Point2Bytes(c0X, c0Y), Point2Bytes(c1X, c1Y), Point2Bytes(t1X, t1Y), Point2Bytes(t2X, t2Y), Point2Bytes(t3X, t3Y))
 	require.Equal(t, chlng, z.String())
 }
 
@@ -218,7 +218,7 @@ func TestHashZVector2(t *testing.T) {
 	t4Y := "66983832439067043864623691503721372978034854603698954939248898067109763920732"
 	chlng := "98801234524135497507777343590157351416109876307242902372535142932873423904771"
 
-	z := hashZ(proofError, pub, curveG, Point2Bytes(c0X, c0Y), Point2Bytes(c1X, c1Y), Point2Bytes(t1X, t1Y), Point2Bytes(t2X, t2Y), Point2Bytes(t3X, t3Y), Point2Bytes(t4X, t4Y))
+	z := hashZ(ProofError, pub, CurveG, Point2Bytes(c0X, c0Y), Point2Bytes(c1X, c1Y), Point2Bytes(t1X, t1Y), Point2Bytes(t2X, t2Y), Point2Bytes(t3X, t3Y), Point2Bytes(t4X, t4Y))
 	require.Equal(t, chlng, z.String())
 }
 
@@ -235,7 +235,7 @@ func Point2Bytes(xs, ys string) []byte {
 }
 
 func TestSimpleHashZ(t *testing.T) {
-	require.Equal(t, "69727408650258925666157816894980607074870114162787023360036165814485426747693", hashZ(proofOk, curveG).String())
+	require.Equal(t, "69727408650258925666157816894980607074870114162787023360036165814485426747693", hashZ(ProofOk, CurveG).String())
 }
 
 func TestData2Hash(t *testing.T) {
@@ -265,7 +265,7 @@ func TestHs0(t *testing.T) {
 		0xb2, 0xbf, 0x2d, 0x7b, 0x34, 0x57, 0x8a, 0x24,
 	}
 
-	p := hashToPoint(dhs0, ns1)
+	p := hashToPoint(Dhs0, ns1)
 
 	require.Equal(t, "25300858746488398178355367558777222618482687866522608982770829435057272700048", p.X.String())
 	require.Equal(t, "110446173948945874058011275277660983270153244227256872727234408438424462761061", p.Y.String())
@@ -279,7 +279,7 @@ func TestHs1(t *testing.T) {
 		0x84, 0xf1, 0x22, 0x11, 0xfc, 0x9a, 0x8e, 0xe3,
 	}
 
-	p := hashToPoint(dhs1, ns2)
+	p := hashToPoint(Dhs1, ns2)
 
 	require.Equal(t, "17908376941582875772307252089828253420307082915473361881522058301944387204152", p.X.String())
 	require.Equal(t, "33408333837140987002065754540391028444871058307081963101365044681462597430369", p.Y.String())
@@ -298,7 +298,7 @@ func TestHc0(t *testing.T) {
 		0x52, 0xa2,
 	}
 
-	p := hashToPoint(dhc0, nc1, pwd)
+	p := hashToPoint(Dhc0, nc1, pwd)
 
 	require.Equal(t, "71581924212971445159021410682851786422010928474259399013091051697427945751880", p.X.String())
 	require.Equal(t, "82599985433400511569162075253342037148256984798119669265653399740244502620726", p.Y.String())
@@ -317,7 +317,7 @@ func TestHc1(t *testing.T) {
 		0x5d,
 	}
 
-	p := hashToPoint(dhc1, nc1, pwd)
+	p := hashToPoint(Dhc1, nc1, pwd)
 
 	require.Equal(t, "49501362177553120463897295920682327704465381738906627606535872853621035764254", p.X.String())
 	require.Equal(t, "47270509952559745766619070899406283523267398868407265017727132307696482921539", p.Y.String())

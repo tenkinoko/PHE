@@ -34,13 +34,20 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package test
 
 import (
 	"crypto/elliptic"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	. "18phe/utils"
+
+	. "18phe/server"
+	
+	. "18phe/client"
+	
 )
 
 var (
@@ -50,8 +57,8 @@ var (
 func BenchmarkAddP256(b *testing.B) {
 	b.ResetTimer()
 	p256 := elliptic.P256()
-	_, x, y, _ := elliptic.GenerateKey(p256, randReader)
-	_, x1, y1, _ := elliptic.GenerateKey(p256, randReader)
+	_, x, y, _ := elliptic.GenerateKey(p256, RandReader)
+	_, x1, y1, _ := elliptic.GenerateKey(p256, RandReader)
 
 	b.ReportAllocs()
 	b.StartTimer()
@@ -66,7 +73,7 @@ func Test_PHE(t *testing.T) {
 	require.NoError(t, err)
 	pub, err := GetPublicKey(serverKeypair)
 	require.NoError(t, err)
-	c, err := NewClient(pub, randomZ().Bytes())
+	c, err := NewClient(pub, RandomZ().Bytes())
 	require.NoError(t, err)
 
 	//first, ask server for random values & proof
@@ -101,7 +108,7 @@ func Test_PHE(t *testing.T) {
 	//rotated public key must be the same as on server
 	newPub, err := GetPublicKey(newPrivate)
 	require.NoError(t, err)
-	require.Equal(t, c.serverPublicKeyBytes, newPub)
+	require.Equal(t, c.ServerPublicKeyBytes, newPub)
 	rec1, err := UpdateRecord(rec, token)
 	require.NoError(t, err)
 	//Check password request
@@ -126,7 +133,7 @@ func Test_PHE_InvalidPassword(t *testing.T) {
 	require.NoError(t, err)
 	pub, err := GetPublicKey(serverKeypair)
 	require.NoError(t, err)
-	c, err := NewClient(pub, randomZ().Bytes())
+	c, err := NewClient(pub, RandomZ().Bytes())
 	require.NoError(t, err)
 
 	//first, ask server for random values & proof
@@ -168,7 +175,7 @@ func BenchmarkClient_EnrollAccount(b *testing.B) {
 	require.NoError(b, err)
 	pub, err := GetPublicKey(serverKeypair)
 	require.NoError(b, err)
-	c, err := NewClient(pub, randomZ().Bytes())
+	c, err := NewClient(pub, RandomZ().Bytes())
 	require.NoError(b, err)
 
 	//first, ask server for random values & proof
@@ -190,7 +197,7 @@ func BenchmarkClient_CreateVerifyPasswordRequest(b *testing.B) {
 	require.NoError(b, err)
 	pub, err := GetPublicKey(serverKeypair)
 	require.NoError(b, err)
-	c, err := NewClient(pub, randomZ().Bytes())
+	c, err := NewClient(pub, RandomZ().Bytes())
 	require.NoError(b, err)
 
 	//first, ask server for random values & proof
@@ -216,7 +223,7 @@ func BenchmarkVerifyDecrypt(b *testing.B) {
 	require.NoError(b, err)
 	pub, err := GetPublicKey(serverKeypair)
 	require.NoError(b, err)
-	c, err := NewClient(pub, randomZ().Bytes())
+	c, err := NewClient(pub, RandomZ().Bytes())
 	require.NoError(b, err)
 
 	//first, ask server for random values & proof
@@ -253,7 +260,7 @@ func BenchmarkLoginFlow(b *testing.B) {
 	require.NoError(b, err)
 	pub, err := GetPublicKey(serverKeypair)
 	require.NoError(b, err)
-	c, err := NewClient(pub, randomZ().Bytes())
+	c, err := NewClient(pub, RandomZ().Bytes())
 	require.NoError(b, err)
 
 	//first, ask server for random values & proof

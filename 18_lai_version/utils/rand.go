@@ -34,7 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package utils
 
 import (
 	"bytes"
@@ -86,14 +86,14 @@ func MockRandom() {
 	}
 	fmt.Println()*/
 
-	r, ok := randReader.(*bytes.Reader) //reuse reader if possible
+	r, ok := RandReader.(*bytes.Reader) //reuse reader if possible
 	if ok {
 		r.Seek(0, io.SeekStart)
 	} else {
-		randReader = bytes.NewReader(randBytes)
+		RandReader = bytes.NewReader(randBytes)
 	}
 }
 
 func EndMock() {
-	randReader = rand.Reader
+	RandReader = rand.Reader
 }

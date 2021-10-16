@@ -40,12 +40,14 @@ import (
 	"math/big"
 
 	"github.com/pkg/errors"
+
+	. "18phe/utils"
 )
 
-func (m *EnrollmentRecord) validate() (t0, t1 *Point, err error) {
+func (m *EnrollmentRecord) Validate() (t0, t1 *Point, err error) {
 
 	if m == nil ||
-		len(m.Nc) != pheNonceLen || len(m.Ns) != pheNonceLen {
+		len(m.Nc) != PheNonceLen || len(m.Ns) != PheNonceLen {
 		err = errors.New("invalid record")
 		return
 	}
@@ -58,7 +60,7 @@ func (m *EnrollmentRecord) validate() (t0, t1 *Point, err error) {
 	return
 }
 
-func (m *ProofOfSuccess) validate() (term1, term2, term3 *Point, blindX *big.Int, err error) {
+func (m *ProofOfSuccess) Validate() (term1, term2, term3 *Point, blindX *big.Int, err error) {
 	if m == nil {
 		err = errors.New("invalid proof")
 		return
@@ -76,7 +78,7 @@ func (m *ProofOfSuccess) validate() (term1, term2, term3 *Point, blindX *big.Int
 		return
 	}
 
-	if len(m.BlindX) != zLen {
+	if len(m.BlindX) != ZLen {
 		err = errors.New("invalid proof")
 		return
 	}
@@ -85,7 +87,7 @@ func (m *ProofOfSuccess) validate() (term1, term2, term3 *Point, blindX *big.Int
 	return
 }
 
-func (m *ProofOfFail) validate() (term1, term2, term3, term4 *Point, blindA, blindB *big.Int, err error) {
+func (m *ProofOfFail) Validate() (term1, term2, term3, term4 *Point, blindA, blindB *big.Int, err error) {
 	if m == nil {
 		err = errors.New("invalid proof")
 		return
@@ -107,12 +109,12 @@ func (m *ProofOfFail) validate() (term1, term2, term3, term4 *Point, blindA, bli
 		return
 	}
 
-	if len(m.BlindA) != zLen {
+	if len(m.BlindA) != ZLen {
 		err = errors.New("invalid proof")
 		return
 	}
 
-	if len(m.BlindB) != zLen {
+	if len(m.BlindB) != ZLen {
 		err = errors.New("invalid proof")
 		return
 	}
@@ -123,14 +125,14 @@ func (m *ProofOfFail) validate() (term1, term2, term3, term4 *Point, blindA, bli
 	return
 }
 
-func (m *UpdateToken) validate() (a, b *big.Int, err error) {
+func (m *UpdateToken) Validate() (a, b *big.Int, err error) {
 	if m == nil {
 		return nil, nil, errors.New("invalid token")
 	}
-	if len(m.A) != zLen {
+	if len(m.A) != ZLen {
 		return nil, nil, errors.New("invalid update token")
 	}
-	if len(m.B) != zLen {
+	if len(m.B) != ZLen {
 		return nil, nil, errors.New("invalid update token")
 	}
 

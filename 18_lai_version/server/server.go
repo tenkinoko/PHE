@@ -34,32 +34,36 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package server
 
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
+	
+	. "18phe/utils"
+	
+	. "18phe/phe"
 )
 
 // GenerateServerKeypair creates a new random Nist p-256 keypair
 func GenerateServerKeypair() ([]byte, error) {
-	privateKey := padZ(randomZ().Bytes())
+	privateKey := PadZ(RandomZ().Bytes())
 	publicKey := new(Point).ScalarBaseMult(privateKey)
 
-	return marshalKeypair(publicKey.Marshal(), privateKey)
+	return MarshalKeypair(publicKey.Marshal(), privateKey)
 
 }
 
 // GetEnrollment generates a new random enrollment record and a proof
 func GetEnrollment(serverKeypair []byte) ([]byte, error) {
 
-	kp, err := unmarshalKeypair(serverKeypair)
+	kp, err := UnmarshalKeypair(serverKeypair)
 	if err != nil {
 		return nil, err
 	}
 
-	ns := make([]byte, pheNonceLen)
-	randRead(ns)
+	ns := make([]byte, PheNonceLen)
+	RandRead(ns)
 	hs0, hs1, c0, c1 := eval(kp, ns)
 	proof := proveSuccess(kp, hs0, hs1, c0, c1)
 
@@ -73,7 +77,7 @@ func GetEnrollment(serverKeypair []byte) ([]byte, error) {
 
 // GetPublicKey returns server public key
 func GetPublicKey(serverKeypair []byte) ([]byte, error) {
-	key, err := unmarshalKeypair(serverKeypair)
+	key, err := UnmarshalKeypair(serverKeypair)
 	if err != nil {
 		return nil, err
 	}
@@ -98,12 +102,12 @@ func VerifyPasswordExtended(serverKeypair []byte, reqBytes []byte) (response []b
 		return
 	}
 
-	kp, err := unmarshalKeypair(serverKeypair)
+	kp, err := UnmarshalKeypair(serverKeypair)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if req == nil || len(req.Ns) != pheNonceLen {
+	if req == nil || len(req.Ns) != PheNonceLen {
 		err = errors.New("Invalid password verify request")
 		return
 	}
@@ -115,8 +119,8 @@ func VerifyPasswordExtended(serverKeypair []byte, reqBytes []byte) (response []b
 		return
 	}
 
-	hs0 := hashToPoint(dhs0, ns)
-	hs1 := hashToPoint(dhs1, ns)
+	hs0 := HashToPoint(Dhs0, ns)
+	hs1 := HashToPoint(Dhs1, ns)
 
 	if hs0.ScalarMult(kp.PrivateKey).Equal(c0) {
 		//password is ok
@@ -157,8 +161,8 @@ func VerifyPasswordExtended(serverKeypair []byte, reqBytes []byte) (response []b
 }
 
 func eval(kp *Keypair, ns []byte) (hs0, hs1, c0, c1 *Point) {
-	hs0 = hashToPoint(dhs0, ns)
-	hs1 = hashToPoint(dhs1, ns)
+	hs0 = HashToPoint(Dhs0, ns)
+	hs1 = HashToPoint(Dhs1, ns)
 
 	c0 = hs0.ScalarMult(kp.PrivateKey)
 	c1 = hs1.ScalarMult(kp.PrivateKey)
@@ -166,7 +170,7 @@ func eval(kp *Keypair, ns []byte) (hs0, hs1, c0, c1 *Point) {
 }
 
 func proveSuccess(kp *Keypair, hs0, hs1, c0, c1 *Point) *VerifyPasswordResponse_Success {
-	blindX := randomZ()
+	blindX := RandomZ()
 
 	term1 := hs0.ScalarMult(blindX.Bytes())
 	term2 := hs1.ScalarMult(blindX.Bytes())
@@ -174,31 +178,31 @@ func proveSuccess(kp *Keypair, hs0, hs1, c0, c1 *Point) *VerifyPasswordResponse_
 
 	//challenge = group.hash((self.X, self.G, c0, c1, term1, term2, term3), target_type=ZR)
 
-	challenge := hashZ(proofOk, kp.PublicKey, curveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal())
-	res := gf.Add(blindX, gf.MulBytes(kp.PrivateKey, challenge))
+	challenge := HashZ(ProofOk, kp.PublicKey, CurveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal())
+	res := Gf.Add(blindX, Gf.MulBytes(kp.PrivateKey, challenge))
 
 	return &VerifyPasswordResponse_Success{
 		Success: &ProofOfSuccess{
 			Term1:  term1.Marshal(),
 			Term2:  term2.Marshal(),
 			Term3:  term3.Marshal(),
-			BlindX: padZ(res.Bytes()),
+			BlindX: PadZ(res.Bytes()),
 		},
 	}
 }
 
 func proveFailure(kp *Keypair, c0, hs0 *Point) (c1 *Point, proof *VerifyPasswordResponse_Fail, err error) {
-	r := randomZ()
-	minusR := gf.Neg(r)
-	minusRX := gf.MulBytes(kp.PrivateKey, minusR)
+	r := RandomZ()
+	minusR := Gf.Neg(r)
+	minusRX := Gf.MulBytes(kp.PrivateKey, minusR)
 
 	c1 = c0.ScalarMult(r.Bytes()).Add(hs0.ScalarMult(minusRX.Bytes()))
 
 	a := r
 	b := minusRX
 
-	blindA := randomZ().Bytes()
-	blindB := randomZ().Bytes()
+	blindA := RandomZ().Bytes()
+	blindB := RandomZ().Bytes()
 
 	publicKey, err := PointUnmarshal(kp.PublicKey)
 	if err != nil {
@@ -216,14 +220,14 @@ func proveFailure(kp *Keypair, c0, hs0 *Point) (c1 *Point, proof *VerifyPassword
 	term3 := publicKey.ScalarMult(blindA)
 	term4 := new(Point).ScalarBaseMult(blindB)
 
-	challenge := hashZ(proofError, kp.PublicKey, curveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal(), term4.Marshal())
+	challenge := HashZ(ProofError, kp.PublicKey, CurveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal(), term4.Marshal())
 	pof := &ProofOfFail{
 		Term1:  term1.Marshal(),
 		Term2:  term2.Marshal(),
 		Term3:  term3.Marshal(),
 		Term4:  term4.Marshal(),
-		BlindA: padZ(gf.AddBytes(blindA, gf.Mul(challenge, a)).Bytes()),
-		BlindB: padZ(gf.AddBytes(blindB, gf.Mul(challenge, b)).Bytes()),
+		BlindA: PadZ(Gf.AddBytes(blindA, Gf.Mul(challenge, a)).Bytes()),
+		BlindB: PadZ(Gf.AddBytes(blindB, Gf.Mul(challenge, b)).Bytes()),
 	}
 	return c1, &VerifyPasswordResponse_Fail{
 		Fail: pof,
@@ -233,22 +237,22 @@ func proveFailure(kp *Keypair, c0, hs0 *Point) (c1 *Point, proof *VerifyPassword
 //Rotate updates server's private and public keys and issues an update token for use on client's side
 func Rotate(serverKeypair []byte) (token []byte, newServerKeypair []byte, err error) {
 
-	kp, err := unmarshalKeypair(serverKeypair)
+	kp, err := UnmarshalKeypair(serverKeypair)
 	if err != nil {
 		return
 	}
-	a, b := randomZ(), randomZ()
-	newPrivate := padZ(gf.Add(gf.MulBytes(kp.PrivateKey, a), b).Bytes())
+	a, b := RandomZ(), RandomZ()
+	newPrivate := PadZ(Gf.Add(Gf.MulBytes(kp.PrivateKey, a), b).Bytes())
 	newPublic := new(Point).ScalarBaseMult(newPrivate)
 
-	newServerKeypair, err = marshalKeypair(newPublic.Marshal(), newPrivate)
+	newServerKeypair, err = MarshalKeypair(newPublic.Marshal(), newPrivate)
 	if err != nil {
 		return
 	}
 
 	token, err = proto.Marshal(&UpdateToken{
-		A: padZ(a.Bytes()),
-		B: padZ(b.Bytes()),
+		A: PadZ(a.Bytes()),
+		B: PadZ(b.Bytes()),
 	})
 
 	return

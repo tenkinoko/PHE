@@ -34,13 +34,17 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package utils
 
 import (
 	"encoding/hex"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	. "18phe/server"
+
+	. "18phe/client"
 )
 
 var (
@@ -64,7 +68,7 @@ var (
 )
 
 func getServerKeypair() []byte {
-	res, _ := marshalKeypair(serverPublic, serverPrivate)
+	res, _ := MarshalKeypair(serverPublic, serverPrivate)
 	return res
 }
 
@@ -139,7 +143,7 @@ func TestRotateServerKeys(t *testing.T) {
 	MockRandom()
 	tkn, newKeypair, err := Rotate(getServerKeypair())
 	require.NoError(t, err)
-	kp, err := unmarshalKeypair(newKeypair)
+	kp, err := UnmarshalKeypair(newKeypair)
 	require.NoError(t, err)
 	//fmt.Println(hex.EncodeToString(tkn))
 	//fmt.Println(hex.EncodeToString(kp.PrivateKey))
@@ -157,7 +161,7 @@ func TestRotateClientKey(t *testing.T) {
 	err = cli.Rotate(token)
 	require.NoError(t, err)
 	//fmt.Println(hex.EncodeToString(cli.clientPrivateKeyBytes))
-	require.Equal(t, rotatedClientSk, cli.clientPrivateKeyBytes)
+	require.Equal(t, rotatedClientSk, cli.ClientPrivateKeyBytes)
 }
 
 func TestRotateEnrollmentRecord(t *testing.T) {

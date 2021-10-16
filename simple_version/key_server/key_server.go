@@ -68,7 +68,6 @@ func (s *server)ZKProof(ctx context.Context, in *ProofOfX) (*ProverResponse, err
 	} else {
 		return nil, nil
 	}
-
 }
 
 func ProverOfSuccess(t0 []byte) (*ProverResponse, error) {

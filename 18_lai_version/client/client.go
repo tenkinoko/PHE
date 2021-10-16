@@ -34,7 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package client
 
 import (
 	"crypto/sha512"
@@ -45,21 +45,25 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/hkdf"
+
+	. "18phe/utils"
+
+	. "18phe/phe"
 )
 
 // Client is responsible for protecting & checking passwords at the client (website) side
 type Client struct {
 	clientPrivateKey      *big.Int
-	clientPrivateKeyBytes []byte
-	serverPublicKey       *Point
-	serverPublicKeyBytes  []byte
-	negKey                *big.Int
+	ClientPrivateKeyBytes []byte
+	serverPublicKey      *Point
+	ServerPublicKeyBytes []byte
+	negKey               *big.Int
 	invKey                *big.Int
 }
 
 // GenerateClientKey creates a new random key used on the Client side
 func GenerateClientKey() []byte {
-	return randomZ().Bytes()
+	return RandomZ().Bytes()
 }
 
 //NewClient creates new client instance using client's private key and server's public key used for verification
@@ -79,10 +83,10 @@ func NewClient(serverPublicKey []byte, privateKey []byte) (*Client, error) {
 	return &Client{
 		clientPrivateKey:      sk,
 		serverPublicKey:       pub,
-		clientPrivateKeyBytes: privateKey,
-		serverPublicKeyBytes:  serverPublicKey,
-		negKey:                gf.Neg(sk),
-		invKey:                gf.Inv(sk),
+		ClientPrivateKeyBytes: privateKey,
+		ServerPublicKeyBytes:  serverPublicKey,
+		negKey:                Gf.Neg(sk),
+		invKey:                Gf.Inv(sk),
 	}, nil
 
 }
@@ -115,18 +119,18 @@ func (c *Client) EnrollAccount(password []byte, respBytes []byte) (rec []byte, k
 	}
 
 	// client nonce and 2 points
-	nc := make([]byte, pheNonceLen)
-	randRead(nc)
-	hc0 := hashToPoint(dhc0, nc, password)
-	hc1 := hashToPoint(dhc1, nc, password)
+	nc := make([]byte, PheNonceLen)
+	RandRead(nc)
+	hc0 := HashToPoint(Dhc0, nc, password)
+	hc1 := HashToPoint(Dhc1, nc, password)
 
 	// encryption key in a form of a random point
 	mBuf := make([]byte, swu.PointHashLen)
-	randRead(mBuf)
-	m := hashToPoint(mBuf)
+	RandRead(mBuf)
+	m := HashToPoint(mBuf)
 
-	kdf := hkdf.New(sha512.New, m.Marshal(), nil, kdfInfoClientKey)
-	key = make([]byte, pheClientKeyLen)
+	kdf := hkdf.New(sha512.New, m.Marshal(), nil, KdfInfoClientKey)
+	key = make([]byte, PheClientKeyLen)
 	_, err = kdf.Read(key)
 
 	// calculate two enrollment points
@@ -145,16 +149,16 @@ func (c *Client) EnrollAccount(password []byte, respBytes []byte) (rec []byte, k
 
 func (c *Client) validateProofOfSuccess(proof *ProofOfSuccess, nonce []byte, c0 *Point, c1 *Point, c0b, c1b []byte) bool {
 
-	term1, term2, term3, blindX, err := proof.validate()
+	term1, term2, term3, blindX, err := proof.Validate()
 
 	if err != nil {
 		return false
 	}
 
-	hs0 := hashToPoint(dhs0, nonce)
-	hs1 := hashToPoint(dhs1, nonce)
+	hs0 := HashToPoint(Dhs0, nonce)
+	hs1 := HashToPoint(Dhs1, nonce)
 
-	challenge := hashZ(proofOk, c.serverPublicKeyBytes, curveG, c0b, c1b, proof.Term1, proof.Term2, proof.Term3)
+	challenge := HashZ(ProofOk, c.ServerPublicKeyBytes, CurveG, c0b, c1b, proof.Term1, proof.Term2, proof.Term3)
 
 	//if term1 * (c0 ** challenge) != hs0 ** blind_x:
 	// return False
@@ -202,8 +206,8 @@ func (c *Client) CreateVerifyPasswordRequest(password []byte, recBytes []byte) (
 		return nil, errors.New("invalid client record")
 	}
 
-	hc0 := hashToPoint(dhc0, rec.Nc, password)
-	minusY := gf.Neg(c.clientPrivateKey)
+	hc0 := HashToPoint(Dhc0, rec.Nc, password)
+	minusY := Gf.Neg(c.clientPrivateKey)
 
 	t0, err := PointUnmarshal(rec.T0)
 	if err != nil {
@@ -231,7 +235,7 @@ func (c *Client) CheckResponseAndDecrypt(password []byte, recBytes []byte, respB
 		return
 	}
 
-	t0, t1, err := rec.validate()
+	t0, t1, err := rec.Validate()
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid record")
 	}
@@ -241,8 +245,8 @@ func (c *Client) CheckResponseAndDecrypt(password []byte, recBytes []byte, respB
 		return nil, err
 	}
 
-	hc0 := hashToPoint(dhc0, rec.Nc, password)
-	hc1 := hashToPoint(dhc1, rec.Nc, password)
+	hc0 := HashToPoint(Dhc0, rec.Nc, password)
+	hc1 := HashToPoint(Dhc1, rec.Nc, password)
 
 	//c0 = t0 * (hc0 ** (-self.y))
 
@@ -266,15 +270,15 @@ func (c *Client) CheckResponseAndDecrypt(password []byte, recBytes []byte, respB
 
 		m := (t1.Add(c1.Neg()).Add(hc1.ScalarMultInt(minusY))).ScalarMultInt(c.invKey)
 
-		kdf := hkdf.New(sha512.New, m.Marshal(), nil, kdfInfoClientKey)
-		key = make([]byte, pheClientKeyLen)
+		kdf := hkdf.New(sha512.New, m.Marshal(), nil, KdfInfoClientKey)
+		key = make([]byte, PheClientKeyLen)
 		_, err = kdf.Read(key)
 
 		return
 
 	}
 
-	hs0 := hashToPoint(dhs0, rec.Ns)
+	hs0 := HashToPoint(Dhs0, rec.Ns)
 	err = c.validateProofOfFail(resp, c0, c1, hs0)
 
 	return nil, err
@@ -288,12 +292,12 @@ func (c *Client) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1, hs0 *
 		return errors.New("result is ok but proof is invalid")
 	}
 
-	term1, term2, term3, term4, blindA, blindB, err := proof.validate()
+	term1, term2, term3, term4, blindA, blindB, err := proof.Validate()
 	if err != nil {
 		return errors.New("invalid public key")
 	}
 
-	challenge := hashZ(proofError, c.serverPublicKeyBytes, curveG, c0.Marshal(), resp.C1, proof.Term1, proof.Term2, proof.Term3, proof.Term4)
+	challenge := HashZ(ProofError, c.ServerPublicKeyBytes, CurveG, c0.Marshal(), resp.C1, proof.Term1, proof.Term2, proof.Term3, proof.Term4)
 	//if term1 * term2 * (c1 ** challenge) != (c0 ** blind_a) * (hs0 ** blind_b):
 	//return False
 	//
@@ -319,7 +323,7 @@ func (c *Client) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1, hs0 *
 // Rotate updates client's secret key and server's public key with server's update token
 func (c *Client) Rotate(tokenBytes []byte) error {
 
-	newPriv, newPub, err := RotateClientKeys(c.serverPublicKeyBytes, c.clientPrivateKeyBytes, tokenBytes)
+	newPriv, newPub, err := RotateClientKeys(c.ServerPublicKeyBytes, c.ClientPrivateKeyBytes, tokenBytes)
 	if err != nil {
 		return err
 	}
@@ -329,12 +333,12 @@ func (c *Client) Rotate(tokenBytes []byte) error {
 		return err
 	}
 
-	c.clientPrivateKeyBytes = newPriv
+	c.ClientPrivateKeyBytes = newPriv
 	c.clientPrivateKey = new(big.Int).SetBytes(newPriv)
-	c.serverPublicKeyBytes = newPub
+	c.ServerPublicKeyBytes = newPub
 	c.serverPublicKey = pub
-	c.negKey = gf.Neg(c.clientPrivateKey)
-	c.invKey = gf.Inv(c.clientPrivateKey)
+	c.negKey = Gf.Neg(c.clientPrivateKey)
+	c.invKey = Gf.Inv(c.clientPrivateKey)
 
 	return nil
 }
@@ -352,18 +356,18 @@ func UpdateRecord(recBytes []byte, tokenBytes []byte) (updRec []byte, err error)
 	if err = proto.Unmarshal(tokenBytes, token); err != nil {
 		return
 	}
-	a, b, err := token.validate()
+	a, b, err := token.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	t0, t1, err := rec.validate()
+	t0, t1, err := rec.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	hs0 := hashToPoint(dhs0, rec.Ns)
-	hs1 := hashToPoint(dhs1, rec.Ns)
+	hs0 := HashToPoint(Dhs0, rec.Ns)
+	hs1 := HashToPoint(Dhs1, rec.Ns)
 
 	t00 := t0.ScalarMultInt(a).Add(hs0.ScalarMultInt(b))
 	t11 := t1.ScalarMultInt(a).Add(hs1.ScalarMultInt(b))
@@ -384,7 +388,7 @@ func RotateClientKeys(serverPublic, clientPrivate, tokenBytes []byte) (newClient
 		return
 	}
 
-	a, b, err := token.validate()
+	a, b, err := token.Validate()
 	if err != nil {
 		return
 	}
@@ -400,7 +404,7 @@ func RotateClientKeys(serverPublic, clientPrivate, tokenBytes []byte) (newClient
 		return
 	}
 
-	newClientPrivate = padZ(gf.MulBytes(clientPrivate, a).Bytes())
+	newClientPrivate = PadZ(Gf.MulBytes(clientPrivate, a).Bytes())
 	pub = pub.ScalarMultInt(a).Add(new(Point).ScalarBaseMultInt(b))
 	newServerPublic = pub.Marshal()
 	return

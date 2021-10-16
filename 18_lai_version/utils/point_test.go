@@ -34,41 +34,47 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package utils
 
 import (
-	"encoding/hex"
-	"strings"
 	"testing"
+
+	"github.com/VirgilSecurity/virgil-phe-go/swu"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestHash(t *testing.T) {
-	tuples := [][]byte{
-		{0x00, 0x01, 0x02},
-		{0x10, 0x11, 0x12, 0x13, 0x14, 0x15},
-		{0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28},
-	}
-	S := []byte("My Tuple App")
-	output := hash(S, tuples...)
-	expected := "3696FB515910C43033D7BE0DD1ABFA4F3F8D8354EEC017D41F93A344C9AAB02C006771824DC09C5040BEC8CE9C5FD3833D1301B62750726160098E9A1ED440E4"
-	if got := strings.ToUpper(hex.EncodeToString(output)); got != expected {
-		t.Errorf("TestHash: got %s, want %s", got, expected)
-	}
+func TestPoint_Add_Neg(t *testing.T) {
+
+	p1 := MakePoint()
+	p2 := MakePoint()
+	p3 := MakePoint()
+
+	p12 := p1.Add(p2)
+	p123 := p12.Add(p3)
+
+	p1 = p1.Neg()
+	p2 = p2.Neg()
+
+	p123 = p123.Add(p1)
+	p123 = p123.Add(p2)
+
+	assert.Equal(t, p3, p123)
 }
 
-func TestKDF(t *testing.T) {
-	outputLength := 64
-	tuples := [][]byte{
-		{0x00, 0x01, 0x02},
-		{0x10, 0x11, 0x12, 0x13, 0x14, 0x15},
-		{0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28},
-	}
-	S := []byte("My Tuple App")
-	h := initKdf(S, tuples...)
-	output := make([]byte, outputLength)
-	h.Read(output)
-	expected := "0F097707AAB66A4CD5FCC79CEB96FB4B99DE2E73DF09295ECFF6F6CC7C1DCF169D51B62999BC206487800E8DD451518FA6C50F5C053B8B780208BE7164D3A7F2"
-	if got := strings.ToUpper(hex.EncodeToString(output)); got != expected {
-		t.Errorf("TestKDF: got %s, want %s", got, expected)
-	}
+func MakePoint() *Point {
+	b := make([]byte, swu.PointHashLen)
+	RandRead(b)
+	x, y := swu.HashToPoint(b)
+	return &Point{x, y}
+}
+
+func TestPointUnmarshal(t *testing.T) {
+	p1 := MakePoint()
+
+	data := p1.Marshal()
+
+	p2, err := PointUnmarshal(data)
+	assert.NoError(t, err)
+	assert.True(t, p2.Equal(p1))
 }

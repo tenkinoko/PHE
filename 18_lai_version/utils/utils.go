@@ -34,7 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package phe
+package utils
 
 import (
 	"crypto/aes"
@@ -48,44 +48,42 @@ import (
 	"golang.org/x/crypto/hkdf"
 
 	"github.com/VirgilSecurity/virgil-phe-go/swu"
-	"github.com/golang/protobuf/proto"
-
 	"github.com/pkg/errors"
 )
 
 var (
-	randReader = rand.Reader
-	curve      = elliptic.P256()
-	curveG     = new(Point).ScalarBaseMultInt(new(big.Int).SetUint64(1)).Marshal()
-	gf         = swu.GF{P: curve.Params().N}
+	RandReader = rand.Reader
+	curve  = elliptic.P256()
+	CurveG = new(Point).ScalarBaseMultInt(new(big.Int).SetUint64(1)).Marshal()
+	Gf     = swu.GF{P: curve.Params().N}
 
 	//domains
 	commonPrefix     = []byte{0x56, 0x52, 0x47, 0x4c, 0x50, 0x48, 0x45} //VRGLPHE
-	dhc0             = append(commonPrefix, 0x31)
-	dhc1             = append(commonPrefix, 0x32)
-	dhs0             = append(commonPrefix, 0x33)
-	dhs1             = append(commonPrefix, 0x34)
-	proofOk          = append(commonPrefix, 0x35)
-	proofError       = append(commonPrefix, 0x36)
-	encrypt          = append(commonPrefix, 0x37)
+	Dhc0 = append(commonPrefix, 0x31)
+	Dhc1 = append(commonPrefix, 0x32)
+	Dhs0 = append(commonPrefix, 0x33)
+	Dhs1 = append(commonPrefix, 0x34)
+	ProofOk    = append(commonPrefix, 0x35)
+	ProofError = append(commonPrefix, 0x36)
+	encrypt    = append(commonPrefix, 0x37)
 	kdfInfoZ         = append(commonPrefix, 0x38)
-	kdfInfoClientKey = append(commonPrefix, 0x39)
+	KdfInfoClientKey = append(commonPrefix, 0x39)
 )
 
 const (
-	pheNonceLen     = 32
-	pheClientKeyLen = 32
+	PheNonceLen     = 32
+	PheClientKeyLen = 32
 	symKeyLen       = 32
 	symSaltLen      = 32
 	symNonceLen     = 12
-	symTagLen       = 16
-	zLen            = 32
+	symTagLen = 16
+	ZLen      = 32
 )
 
 // Read is a helper function that calls Reader.Read using io.ReadFull.
 // On return, n == len(b) if and only if err == nil.
-func randRead(b []byte) {
-	_, err := io.ReadFull(randReader, b)
+func RandRead(b []byte) {
+	_, err := io.ReadFull(RandReader, b)
 	if err != nil {
 		panic(err)
 	}
@@ -111,13 +109,13 @@ func initKdf(domain []byte, tuple ...[]byte) io.Reader {
 
 }
 
-// randomZ generates big random 256 bit integer which must be less than curve's N parameter
-func randomZ() (z *big.Int) {
-	rz := makeZ(randReader)
+// RandomZ generates big random 256 bit integer which must be less than curve's N parameter
+func RandomZ() (z *big.Int) {
+	rz := makeZ(RandReader)
 	for z == nil {
 		// If the scalar is out of range, sample another random number.
 		if rz.Cmp(curve.Params().N) >= 0 {
-			rz = makeZ(randReader)
+			rz = makeZ(RandReader)
 		} else {
 			z = rz
 		}
@@ -125,8 +123,8 @@ func randomZ() (z *big.Int) {
 	return
 }
 
-// hashZ maps arrays of bytes to an integer less than curve's N parameter
-func hashZ(domain []byte, data ...[]byte) (z *big.Int) {
+// HashZ maps arrays of bytes to an integer less than curve's N parameter
+func HashZ(domain []byte, data ...[]byte) (z *big.Int) {
 	xof := initKdf(domain, data...)
 	rz := makeZ(xof)
 
@@ -142,51 +140,33 @@ func hashZ(domain []byte, data ...[]byte) (z *big.Int) {
 }
 
 func makeZ(reader io.Reader) *big.Int {
-	buf := make([]byte, zLen)
+	buf := make([]byte, ZLen)
 	n, err := reader.Read(buf)
-	if err != nil || n != zLen {
+	if err != nil || n != ZLen {
 		panic("random read failed")
 	}
 	return new(big.Int).SetBytes(buf)
 }
 
-//padZ makes all bytes equal size adding zeroes to the beginning if necessary
-func padZ(z []byte) []byte {
-	if len(z) == zLen {
+//PadZ makes all bytes equal size adding zeroes to the beginning if necessary
+func PadZ(z []byte) []byte {
+	if len(z) == ZLen {
 		return z
 	}
 
-	newZ := make([]byte, zLen)
-	copy(newZ[zLen-len(z):], z)
+	newZ := make([]byte, ZLen)
+	copy(newZ[ZLen-len(z):], z)
 	return newZ
 }
 
-// hashToPoint maps arrays of bytes to a valid curve point
-func hashToPoint(domain []byte, data ...[]byte) *Point {
+// HashToPoint maps arrays of bytes to a valid curve point
+func HashToPoint(domain []byte, data ...[]byte) *Point {
 	hash := hash(domain, data...)
 	x, y := swu.HashToPoint(hash[:swu.PointHashLen])
 	return &Point{x, y}
 }
 
-func marshalKeypair(publicKey, privateKey []byte) ([]byte, error) {
-	kp := &Keypair{
-		PublicKey:  publicKey,
-		PrivateKey: privateKey,
-	}
 
-	return proto.Marshal(kp)
-}
-
-func unmarshalKeypair(serverKeypair []byte) (kp *Keypair, err error) {
-
-	kp = &Keypair{}
-	err = proto.Unmarshal(serverKeypair, kp)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid keypair")
-	}
-
-	return
-}
 
 // Encrypt generates 32 byte salt, uses master key & salt to generate per-data key & nonce with the help of HKDF
 // Salt is concatenated to the ciphertext
@@ -197,7 +177,7 @@ func Encrypt(data, key []byte) ([]byte, error) {
 	}
 
 	salt := make([]byte, symSaltLen)
-	randRead(salt)
+	RandRead(salt)
 
 	kdf := hkdf.New(sha512.New, key, salt, encrypt)
 
