@@ -34,60 +34,36 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package client
+package phe
 
 import (
-	"context"
 	"crypto/sha512"
-	"crypto/tls"
-	"crypto/x509"
-	"io/ioutil"
-	"log"
 	"math/big"
-	"path"
-	"runtime"
-	"time"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 
 	"github.com/VirgilSecurity/virgil-phe-go/swu"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/hkdf"
-
-	. "18phe/utils"
-
-	. "18phe/phe"
 )
 
-// ShadowClient is responsible for protecting & checking passwords at the client (website) side
-type ShadowClient struct {
+// Client is responsible for protecting & checking passwords at the client (website) side
+type Client struct {
 	clientPrivateKey      *big.Int
-	ClientPrivateKeyBytes []byte
-	serverPublicKey      *Point
-	ServerPublicKeyBytes []byte
-	negKey               *big.Int
+	clientPrivateKeyBytes []byte
+	serverPublicKey       *Point
+	serverPublicKeyBytes  []byte
+	negKey                *big.Int
 	invKey                *big.Int
 }
 
-var (
-	pwd = []byte("Password")
-)
-
-
-const (
-	address 	= "localhost:50051"
-)
-
-// GenerateClientKey creates a new random key used on the ShadowClient side
+// GenerateClientKey creates a new random key used on the Client side
 func GenerateClientKey() []byte {
-	return RandomZ().Bytes()
+	return randomZ().Bytes()
 }
 
 //NewClient creates new client instance using client's private key and server's public key used for verification
-func NewClient(serverPublicKey []byte, privateKey []byte) (*ShadowClient, error) {
+func NewClient(serverPublicKey []byte, privateKey []byte) (*Client, error) {
 	if len(privateKey) == 0 {
 		return nil, errors.New("invalid private key")
 	}
@@ -100,13 +76,13 @@ func NewClient(serverPublicKey []byte, privateKey []byte) (*ShadowClient, error)
 
 	sk := new(big.Int).SetBytes(privateKey)
 
-	return &ShadowClient{
+	return &Client{
 		clientPrivateKey:      sk,
 		serverPublicKey:       pub,
-		ClientPrivateKeyBytes: privateKey,
-		ServerPublicKeyBytes:  serverPublicKey,
-		negKey:                Gf.Neg(sk),
-		invKey:                Gf.Inv(sk),
+		clientPrivateKeyBytes: privateKey,
+		serverPublicKeyBytes:  serverPublicKey,
+		negKey:                gf.Neg(sk),
+		invKey:                gf.Inv(sk),
 	}, nil
 
 }
@@ -114,7 +90,7 @@ func NewClient(serverPublicKey []byte, privateKey []byte) (*ShadowClient, error)
 // EnrollAccount uses fresh Enrollment Response and user's password (or its hash) to create a new Enrollment Record which
 // is then supposed to be stored in a database
 // it also generates a random encryption key which can be used to protect user's data
-func (sc *ShadowClient) EnrollAccount(password []byte, respBytes []byte) (rec []byte, key []byte, err error) {
+func (c *Client) EnrollAccount(password []byte, respBytes []byte) (rec []byte, key []byte, err error) {
 
 	resp := &EnrollmentResponse{}
 
@@ -132,30 +108,30 @@ func (sc *ShadowClient) EnrollAccount(password []byte, respBytes []byte) (rec []
 		return
 	}
 
-	proofValid := sc.validateProofOfSuccess(resp.Proof, resp.Ns, c0, c1, resp.C0, resp.C1)
+	proofValid := c.validateProofOfSuccess(resp.Proof, resp.Ns, c0, c1, resp.C0, resp.C1)
 	if !proofValid {
 		err = errors.New("invalid proof")
 		return
 	}
 
 	// client nonce and 2 points
-	nc := make([]byte, PheNonceLen)
-	RandRead(nc)
-	hc0 := HashToPoint(Dhc0, nc, password)
-	hc1 := HashToPoint(Dhc1, nc, password)
+	nc := make([]byte, pheNonceLen)
+	randRead(nc)
+	hc0 := hashToPoint(dhc0, nc, password)
+	hc1 := hashToPoint(dhc1, nc, password)
 
 	// encryption key in a form of a random point
 	mBuf := make([]byte, swu.PointHashLen)
-	RandRead(mBuf)
-	m := HashToPoint(mBuf)
+	randRead(mBuf)
+	m := hashToPoint(mBuf)
 
-	kdf := hkdf.New(sha512.New, m.Marshal(), nil, KdfInfoClientKey)
-	key = make([]byte, PheClientKeyLen)
+	kdf := hkdf.New(sha512.New, m.Marshal(), nil, kdfInfoClientKey)
+	key = make([]byte, pheClientKeyLen)
 	_, err = kdf.Read(key)
 
 	// calculate two enrollment points
-	t0 := c0.Add(hc0.ScalarMultInt(sc.clientPrivateKey))
-	t1 := c1.Add(hc1.ScalarMultInt(sc.clientPrivateKey)).Add(m.ScalarMultInt(sc.clientPrivateKey))
+	t0 := c0.Add(hc0.ScalarMultInt(c.clientPrivateKey))
+	t1 := c1.Add(hc1.ScalarMultInt(c.clientPrivateKey)).Add(m.ScalarMultInt(c.clientPrivateKey))
 
 	rec, err = proto.Marshal(&EnrollmentRecord{
 		Ns: resp.Ns,
@@ -167,18 +143,18 @@ func (sc *ShadowClient) EnrollAccount(password []byte, respBytes []byte) (rec []
 	return
 }
 
-func (sc *ShadowClient) validateProofOfSuccess(proof *ProofOfSuccess, nonce []byte, c0 *Point, c1 *Point, c0b, c1b []byte) bool {
+func (c *Client) validateProofOfSuccess(proof *ProofOfSuccess, nonce []byte, c0 *Point, c1 *Point, c0b, c1b []byte) bool {
 
-	term1, term2, term3, blindX, err := proof.Validate()
+	term1, term2, term3, blindX, err := proof.validate()
 
 	if err != nil {
 		return false
 	}
 
-	hs0 := HashToPoint(Dhs0, nonce)
-	hs1 := HashToPoint(Dhs1, nonce)
+	hs0 := hashToPoint(dhs0, nonce)
+	hs1 := hashToPoint(dhs1, nonce)
 
-	challenge := HashZ(ProofOk, sc.ServerPublicKeyBytes, CurveG, c0b, c1b, proof.Term1, proof.Term2, proof.Term3)
+	challenge := hashZ(proofOk, c.serverPublicKeyBytes, curveG, c0b, c1b, proof.Term1, proof.Term2, proof.Term3)
 
 	//if term1 * (c0 ** challenge) != hs0 ** blind_x:
 	// return False
@@ -203,7 +179,7 @@ func (sc *ShadowClient) validateProofOfSuccess(proof *ProofOfSuccess, nonce []by
 	//if term3 * (self.X ** challenge) != self.G ** blind_x:
 	// return False
 
-	t1 = term3.Add(sc.serverPublicKey.ScalarMultInt(challenge))
+	t1 = term3.Add(c.serverPublicKey.ScalarMultInt(challenge))
 	t2 = new(Point).ScalarBaseMultInt(blindX)
 
 	if !t1.Equal(t2) {
@@ -214,32 +190,35 @@ func (sc *ShadowClient) validateProofOfSuccess(proof *ProofOfSuccess, nonce []by
 }
 
 //CreateVerifyPasswordRequest creates a request in a form of elliptic curve point which is then need to be validated at the server side
-func (sc *ShadowClient) CreateVerifyPasswordRequest(password []byte, recBytes []byte) ([]byte, []byte, error) {
+func (c *Client) CreateVerifyPasswordRequest(password []byte, recBytes []byte) (req []byte, err error) {
 
 	rec := &EnrollmentRecord{}
 
-	if err := proto.Unmarshal(recBytes, rec); err != nil {
-		return nil, nil, nil
+	if err = proto.Unmarshal(recBytes, rec); err != nil {
+		return
 	}
 
 	if rec == nil || len(rec.Nc) == 0 || len(rec.Ns) == 0 || len(rec.T0) == 0 {
-		return nil, nil, errors.New("invalid client record")
+		return nil, errors.New("invalid client record")
 	}
 
-	hc0 := HashToPoint(Dhc0, rec.Nc, password)
-	minusY := Gf.Neg(sc.clientPrivateKey)
+	hc0 := hashToPoint(dhc0, rec.Nc, password)
+	minusY := gf.Neg(c.clientPrivateKey)
 
 	t0, err := PointUnmarshal(rec.T0)
 	if err != nil {
-		return nil, nil, errors.New("invalid proof")
+		return nil, errors.New("invalid proof")
 	}
 
 	c0 := t0.Add(hc0.ScalarMultInt(minusY))
-	return c0.Marshal(), rec.Ns, nil
+	return proto.Marshal(&VerifyPasswordRequest{
+		C0: c0.Marshal(),
+		Ns: rec.Ns,
+	})
 }
 
 // CheckResponseAndDecrypt verifies server's answer and extracts data encryption key on success
-func (sc *ShadowClient) CheckResponseAndDecrypt(password []byte, recBytes []byte, respBytes []byte) (key []byte, err error) {
+func (c *Client) CheckResponseAndDecrypt(password []byte, recBytes []byte, respBytes []byte) (key []byte, err error) {
 
 	rec := &EnrollmentRecord{}
 
@@ -252,7 +231,7 @@ func (sc *ShadowClient) CheckResponseAndDecrypt(password []byte, recBytes []byte
 		return
 	}
 
-	t0, t1, err := rec.Validate()
+	t0, t1, err := rec.validate()
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid record")
 	}
@@ -262,12 +241,12 @@ func (sc *ShadowClient) CheckResponseAndDecrypt(password []byte, recBytes []byte
 		return nil, err
 	}
 
-	hc0 := HashToPoint(Dhc0, rec.Nc, password)
-	hc1 := HashToPoint(Dhc1, rec.Nc, password)
+	hc0 := hashToPoint(dhc0, rec.Nc, password)
+	hc1 := hashToPoint(dhc1, rec.Nc, password)
 
 	//c0 = t0 * (hc0 ** (-self.y))
 
-	minusY := sc.negKey
+	minusY := c.negKey
 
 	c0 := t0.Add(hc0.ScalarMultInt(minusY))
 
@@ -279,29 +258,29 @@ func (sc *ShadowClient) CheckResponseAndDecrypt(password []byte, recBytes []byte
 			return nil, errors.New("result is ok but proof is empty")
 		}
 
-		if !sc.validateProofOfSuccess(proof, rec.Ns, c0, c1, c0.Marshal(), resp.C1) {
+		if !c.validateProofOfSuccess(proof, rec.Ns, c0, c1, c0.Marshal(), resp.C1) {
 			return nil, errors.New("result is ok but proof is invalid")
 		}
 
 		//return ((t1 * (c1 ** (-1))) * (hc1 ** (-self.y))) ** (self.y ** (-1))
 
-		m := (t1.Add(c1.Neg()).Add(hc1.ScalarMultInt(minusY))).ScalarMultInt(sc.invKey)
+		m := (t1.Add(c1.Neg()).Add(hc1.ScalarMultInt(minusY))).ScalarMultInt(c.invKey)
 
-		kdf := hkdf.New(sha512.New, m.Marshal(), nil, KdfInfoClientKey)
-		key = make([]byte, PheClientKeyLen)
+		kdf := hkdf.New(sha512.New, m.Marshal(), nil, kdfInfoClientKey)
+		key = make([]byte, pheClientKeyLen)
 		_, err = kdf.Read(key)
 
 		return
 
 	}
 
-	hs0 := HashToPoint(Dhs0, rec.Ns)
-	err = sc.validateProofOfFail(resp, c0, c1, hs0)
+	hs0 := hashToPoint(dhs0, rec.Ns)
+	err = c.validateProofOfFail(resp, c0, c1, hs0)
 
 	return nil, err
 }
 
-func (sc *ShadowClient) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1, hs0 *Point) error {
+func (c *Client) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1, hs0 *Point) error {
 
 	proof := resp.GetFail()
 
@@ -309,12 +288,12 @@ func (sc *ShadowClient) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1
 		return errors.New("result is ok but proof is invalid")
 	}
 
-	term1, term2, term3, term4, blindA, blindB, err := proof.Validate()
+	term1, term2, term3, term4, blindA, blindB, err := proof.validate()
 	if err != nil {
 		return errors.New("invalid public key")
 	}
 
-	challenge := HashZ(ProofError, sc.ServerPublicKeyBytes, CurveG, c0.Marshal(), resp.C1, proof.Term1, proof.Term2, proof.Term3, proof.Term4)
+	challenge := hashZ(proofError, c.serverPublicKeyBytes, curveG, c0.Marshal(), resp.C1, proof.Term1, proof.Term2, proof.Term3, proof.Term4)
 	//if term1 * term2 * (c1 ** challenge) != (c0 ** blind_a) * (hs0 ** blind_b):
 	//return False
 	//
@@ -329,7 +308,7 @@ func (sc *ShadowClient) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1
 	}
 
 	t1 = term3.Add(term4)
-	t2 = sc.serverPublicKey.ScalarMultInt(blindA).Add(new(Point).ScalarBaseMultInt(blindB))
+	t2 = c.serverPublicKey.ScalarMultInt(blindA).Add(new(Point).ScalarBaseMultInt(blindB))
 
 	if !t1.Equal(t2) {
 		return errors.New("verification failed")
@@ -338,9 +317,9 @@ func (sc *ShadowClient) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1
 }
 
 // Rotate updates client's secret key and server's public key with server's update token
-func (sc *ShadowClient) Rotate(tokenBytes []byte) error {
+func (c *Client) Rotate(tokenBytes []byte) error {
 
-	newPriv, newPub, err := RotateClientKeys(sc.ServerPublicKeyBytes, sc.ClientPrivateKeyBytes, tokenBytes)
+	newPriv, newPub, err := RotateClientKeys(c.serverPublicKeyBytes, c.clientPrivateKeyBytes, tokenBytes)
 	if err != nil {
 		return err
 	}
@@ -350,12 +329,12 @@ func (sc *ShadowClient) Rotate(tokenBytes []byte) error {
 		return err
 	}
 
-	sc.ClientPrivateKeyBytes = newPriv
-	sc.clientPrivateKey = new(big.Int).SetBytes(newPriv)
-	sc.ServerPublicKeyBytes = newPub
-	sc.serverPublicKey = pub
-	sc.negKey = Gf.Neg(sc.clientPrivateKey)
-	sc.invKey = Gf.Inv(sc.clientPrivateKey)
+	c.clientPrivateKeyBytes = newPriv
+	c.clientPrivateKey = new(big.Int).SetBytes(newPriv)
+	c.serverPublicKeyBytes = newPub
+	c.serverPublicKey = pub
+	c.negKey = gf.Neg(c.clientPrivateKey)
+	c.invKey = gf.Inv(c.clientPrivateKey)
 
 	return nil
 }
@@ -373,18 +352,18 @@ func UpdateRecord(recBytes []byte, tokenBytes []byte) (updRec []byte, err error)
 	if err = proto.Unmarshal(tokenBytes, token); err != nil {
 		return
 	}
-	a, b, err := token.Validate()
+	a, b, err := token.validate()
 	if err != nil {
 		return nil, err
 	}
 
-	t0, t1, err := rec.Validate()
+	t0, t1, err := rec.validate()
 	if err != nil {
 		return nil, err
 	}
 
-	hs0 := HashToPoint(Dhs0, rec.Ns)
-	hs1 := HashToPoint(Dhs1, rec.Ns)
+	hs0 := hashToPoint(dhs0, rec.Ns)
+	hs1 := hashToPoint(dhs1, rec.Ns)
 
 	t00 := t0.ScalarMultInt(a).Add(hs0.ScalarMultInt(b))
 	t11 := t1.ScalarMultInt(a).Add(hs1.ScalarMultInt(b))
@@ -405,7 +384,7 @@ func RotateClientKeys(serverPublic, clientPrivate, tokenBytes []byte) (newClient
 		return
 	}
 
-	a, b, err := token.Validate()
+	a, b, err := token.validate()
 	if err != nil {
 		return
 	}
@@ -421,91 +400,8 @@ func RotateClientKeys(serverPublic, clientPrivate, tokenBytes []byte) (newClient
 		return
 	}
 
-	newClientPrivate = PadZ(Gf.MulBytes(clientPrivate, a).Bytes())
+	newClientPrivate = padZ(gf.MulBytes(clientPrivate, a).Bytes())
 	pub = pub.ScalarMultInt(a).Add(new(Point).ScalarBaseMultInt(b))
 	newServerPublic = pub.Marshal()
 	return
-}
-
-func RunClient()([]byte, []byte){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(1)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
-
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
-
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
-	}
-
-	conn, err := grpc.Dial(address, opts...)
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c := NewPheWorkflowClient(conn)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	msg1 := "requestPublicKey"
-	r, err := c.ReceivePubkey(ctx, &PubkeyRecord{Flag: msg1})
-	if err != nil {
-		log.Fatalf("could not request public key: %v", err)
-	}
-	log.Printf("ReceivePubkey Finish")
-	nc, _ := NewClient(r.GetPublicKey(), RandomZ().Bytes())
-
-	msg2 := "requestGenEnrollment"
-	r1, err1 := c.GetEnrollment(ctx, &GetEnrollRecord{Flag: msg2})
-	if err1 != nil {
-		log.Fatalf("could not request get enrollment: %v", err)
-	}
-	log.Printf("GetEnrollment Finish")
-	enrollment, _ := proto.Marshal(&EnrollmentResponse{
-		Ns:    r1.GetNs(),
-		C0:    r1.GetC0(),
-		C1:    r1.GetC1(),
-		Proof: r1.GetProof(),
-	})
-	rec, key, err := nc.EnrollAccount(pwd, enrollment)
-
-	msg3a, msg3b, _ := nc.CreateVerifyPasswordRequest(pwd, rec)
-	r2, err2 := c.VerifyPassword(ctx, &VerifyPasswordRequest{
-		Ns: msg3b,
-		C0: msg3a,
-	})
-	if err2 != nil {
-		log.Fatalf("could not request verify password: %v", err)
-	}
-	log.Printf("VerifyPassword Finish")
-	res, _ := proto.Marshal(&VerifyPasswordResponse{
-		Res:   r2.GetRes(),
-		C1:    r2.GetC1(),
-		Proof: r2.GetProof(),
-	})
-
-	keyDec, _ := nc.CheckResponseAndDecrypt(pwd, rec, res)
-	return key, keyDec
-
 }

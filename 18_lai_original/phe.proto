@@ -1,25 +1,5 @@
 syntax = "proto3";
 package phe;
-option go_package="../phe";
-
-service phe_workflow{
-    rpc ReceivePubkey (PubkeyRecord) returns (PubkeyResponse) {}
-    rpc GetEnrollment (GetEnrollRecord) returns (EnrollmentResponse) {}
-    rpc EnrollAccount (EnrollmentRecord) returns (EnrollmentResponse){}
-    rpc VerifyPassword (VerifyPasswordRequest) returns (VerifyPasswordResponse) {}
-}
-
-message PubkeyRecord {
-    string flag = 1;
-}
-
-message PubkeyResponse {
-    bytes public_key = 1;
-}
-
-message GetEnrollRecord {
-    string flag = 1;
-}
 
 message Keypair {
     bytes public_key = 1;

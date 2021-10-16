@@ -34,84 +34,46 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package server
+package phe
 
 import (
-	"context"
-	"crypto/tls"
-	"crypto/x509"
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"io/ioutil"
-	"log"
-	"net"
-	"path"
-	"runtime"
-
-	. "18phe/utils"
-	
-	. "18phe/phe"
 )
-
-var (
-	serverKeypair []byte
-)
-
-const (
-	port = ":50051"
-)
-
-type server struct {
-	UnimplementedPheWorkflowServer
-}
-
-func (s *server) ReceivePubkey(ctx context.Context, in *PubkeyRecord) (*PubkeyResponse, error) {
-	if in.Flag == "requestPublicKey" {
-		serverKeypair1, _ := GenerateServerKeypair()
-		serverKeypair = serverKeypair1
-		pub, _ := GetPublicKey(serverKeypair)
-		return &PubkeyResponse{PublicKey: pub}, nil
-	} else {
-		log.Printf("Wrong Flag At ReceivePubkey")
-		return nil, nil
-	}
-}
 
 // GenerateServerKeypair creates a new random Nist p-256 keypair
 func GenerateServerKeypair() ([]byte, error) {
-	privateKey := PadZ(RandomZ().Bytes())
+	privateKey := padZ(randomZ().Bytes())
 	publicKey := new(Point).ScalarBaseMult(privateKey)
 
-	return MarshalKeypair(publicKey.Marshal(), privateKey)
+	return marshalKeypair(publicKey.Marshal(), privateKey)
 
 }
 
 // GetEnrollment generates a new random enrollment record and a proof
-func (s *server) GetEnrollment(ctx context.Context, in *GetEnrollRecord) (*EnrollmentResponse, error) {
+func GetEnrollment(serverKeypair []byte) ([]byte, error) {
 
-	kp, err := UnmarshalKeypair(serverKeypair)
+	kp, err := unmarshalKeypair(serverKeypair)
 	if err != nil {
 		return nil, err
 	}
 
-	ns := make([]byte, PheNonceLen)
-	RandRead(ns)
+	ns := make([]byte, pheNonceLen)
+	randRead(ns)
 	hs0, hs1, c0, c1 := eval(kp, ns)
 	proof := proveSuccess(kp, hs0, hs1, c0, c1)
 
-	return &EnrollmentResponse{
+	return proto.Marshal(&EnrollmentResponse{
 		Ns:    ns,
 		C0:    c0.Marshal(),
 		C1:    c1.Marshal(),
 		Proof: proof.Success,
-	}, nil
+	})
 }
 
 // GetPublicKey returns server public key
 func GetPublicKey(serverKeypair []byte) ([]byte, error) {
-	key, err := UnmarshalKeypair(serverKeypair)
+	key, err := unmarshalKeypair(serverKeypair)
 	if err != nil {
 		return nil, err
 	}
@@ -121,76 +83,82 @@ func GetPublicKey(serverKeypair []byte) ([]byte, error) {
 
 // VerifyPassword compares password attempt to the one server would calculate itself using its private key
 // and returns a zero knowledge proof of ether success or failure
-func (s *server)VerifyPassword(ctx context.Context, in *VerifyPasswordRequest) (*VerifyPasswordResponse, error) {
+func VerifyPassword(serverKeypair []byte, reqBytes []byte) (response []byte, err error) {
 
-	response, _, err := VerifyPasswordExtended(ctx, in)
-	return response, err
+	response, _, err = VerifyPasswordExtended(serverKeypair, reqBytes)
+	return
 }
 
 // VerifyPasswordExtended compares password attempt to the one server would calculate itself using its private key
 // and returns a zero knowledge proof of ether success or failure
 // and an object containing verify result & salt used for verification
-func VerifyPasswordExtended(ctx context.Context, in *VerifyPasswordRequest) (*VerifyPasswordResponse, *VerifyPasswordResult, error) {
-	req := in
-	//if err = proto.Unmarshal(reqBytes, req); err != nil {
-	//	return
-	//}
+func VerifyPasswordExtended(serverKeypair []byte, reqBytes []byte) (response []byte, state *VerifyPasswordResult, err error) {
+	req := &VerifyPasswordRequest{}
+	if err = proto.Unmarshal(reqBytes, req); err != nil {
+		return
+	}
 
-	kp, err := UnmarshalKeypair(serverKeypair)
+	kp, err := unmarshalKeypair(serverKeypair)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if req == nil || len(req.Ns) != PheNonceLen {
+	if req == nil || len(req.Ns) != pheNonceLen {
 		err = errors.New("Invalid password verify request")
-		return nil, nil, nil
+		return
 	}
 
 	ns := req.Ns
 
 	c0, err := PointUnmarshal(req.C0)
 	if err != nil {
-		return nil, nil, nil
+		return
 	}
 
-	hs0 := HashToPoint(Dhs0, ns)
-	hs1 := HashToPoint(Dhs1, ns)
+	hs0 := hashToPoint(dhs0, ns)
+	hs1 := hashToPoint(dhs1, ns)
 
 	if hs0.ScalarMult(kp.PrivateKey).Equal(c0) {
 		//password is ok
 
 		c1 := hs1.ScalarMult(kp.PrivateKey)
-		state := &VerifyPasswordResult{
-			Res:  true,
-			Salt: req.Ns,
-		}
-		return &VerifyPasswordResponse{
+
+		resp := &VerifyPasswordResponse{
 			Res:   true,
 			C1:    c1.Marshal(),
 			Proof: proveSuccess(kp, hs0, hs1, c0, c1),
-		}, state, nil
+		}
+
+		response, err = proto.Marshal(resp)
+		state = &VerifyPasswordResult{
+			Res:  true,
+			Salt: req.Ns,
+		}
+		return
 	}
 
 	//password is invalid
 
 	c1, proof, err := proveFailure(kp, c0, hs0)
 	if err != nil {
-		return nil, nil, nil
+		return
 	}
-	state := &VerifyPasswordResult{
-		Res:  false,
-		Salt: req.Ns,
-	}
-	return &VerifyPasswordResponse{
+
+	response, err = proto.Marshal(&VerifyPasswordResponse{
 		Res:   false,
 		C1:    c1.Marshal(),
 		Proof: proof,
-	}, state, nil
+	})
+	state = &VerifyPasswordResult{
+		Res:  false,
+		Salt: req.Ns,
+	}
+	return
 }
 
 func eval(kp *Keypair, ns []byte) (hs0, hs1, c0, c1 *Point) {
-	hs0 = HashToPoint(Dhs0, ns)
-	hs1 = HashToPoint(Dhs1, ns)
+	hs0 = hashToPoint(dhs0, ns)
+	hs1 = hashToPoint(dhs1, ns)
 
 	c0 = hs0.ScalarMult(kp.PrivateKey)
 	c1 = hs1.ScalarMult(kp.PrivateKey)
@@ -198,7 +166,7 @@ func eval(kp *Keypair, ns []byte) (hs0, hs1, c0, c1 *Point) {
 }
 
 func proveSuccess(kp *Keypair, hs0, hs1, c0, c1 *Point) *VerifyPasswordResponse_Success {
-	blindX := RandomZ()
+	blindX := randomZ()
 
 	term1 := hs0.ScalarMult(blindX.Bytes())
 	term2 := hs1.ScalarMult(blindX.Bytes())
@@ -206,31 +174,31 @@ func proveSuccess(kp *Keypair, hs0, hs1, c0, c1 *Point) *VerifyPasswordResponse_
 
 	//challenge = group.hash((self.X, self.G, c0, c1, term1, term2, term3), target_type=ZR)
 
-	challenge := HashZ(ProofOk, kp.PublicKey, CurveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal())
-	res := Gf.Add(blindX, Gf.MulBytes(kp.PrivateKey, challenge))
+	challenge := hashZ(proofOk, kp.PublicKey, curveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal())
+	res := gf.Add(blindX, gf.MulBytes(kp.PrivateKey, challenge))
 
 	return &VerifyPasswordResponse_Success{
 		Success: &ProofOfSuccess{
 			Term1:  term1.Marshal(),
 			Term2:  term2.Marshal(),
 			Term3:  term3.Marshal(),
-			BlindX: PadZ(res.Bytes()),
+			BlindX: padZ(res.Bytes()),
 		},
 	}
 }
 
 func proveFailure(kp *Keypair, c0, hs0 *Point) (c1 *Point, proof *VerifyPasswordResponse_Fail, err error) {
-	r := RandomZ()
-	minusR := Gf.Neg(r)
-	minusRX := Gf.MulBytes(kp.PrivateKey, minusR)
+	r := randomZ()
+	minusR := gf.Neg(r)
+	minusRX := gf.MulBytes(kp.PrivateKey, minusR)
 
 	c1 = c0.ScalarMult(r.Bytes()).Add(hs0.ScalarMult(minusRX.Bytes()))
 
 	a := r
 	b := minusRX
 
-	blindA := RandomZ().Bytes()
-	blindB := RandomZ().Bytes()
+	blindA := randomZ().Bytes()
+	blindB := randomZ().Bytes()
 
 	publicKey, err := PointUnmarshal(kp.PublicKey)
 	if err != nil {
@@ -248,14 +216,14 @@ func proveFailure(kp *Keypair, c0, hs0 *Point) (c1 *Point, proof *VerifyPassword
 	term3 := publicKey.ScalarMult(blindA)
 	term4 := new(Point).ScalarBaseMult(blindB)
 
-	challenge := HashZ(ProofError, kp.PublicKey, CurveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal(), term4.Marshal())
+	challenge := hashZ(proofError, kp.PublicKey, curveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal(), term4.Marshal())
 	pof := &ProofOfFail{
 		Term1:  term1.Marshal(),
 		Term2:  term2.Marshal(),
 		Term3:  term3.Marshal(),
 		Term4:  term4.Marshal(),
-		BlindA: PadZ(Gf.AddBytes(blindA, Gf.Mul(challenge, a)).Bytes()),
-		BlindB: PadZ(Gf.AddBytes(blindB, Gf.Mul(challenge, b)).Bytes()),
+		BlindA: padZ(gf.AddBytes(blindA, gf.Mul(challenge, a)).Bytes()),
+		BlindB: padZ(gf.AddBytes(blindB, gf.Mul(challenge, b)).Bytes()),
 	}
 	return c1, &VerifyPasswordResponse_Fail{
 		Fail: pof,
@@ -265,61 +233,23 @@ func proveFailure(kp *Keypair, c0, hs0 *Point) (c1 *Point, proof *VerifyPassword
 //Rotate updates server's private and public keys and issues an update token for use on client's side
 func Rotate(serverKeypair []byte) (token []byte, newServerKeypair []byte, err error) {
 
-	kp, err := UnmarshalKeypair(serverKeypair)
+	kp, err := unmarshalKeypair(serverKeypair)
 	if err != nil {
 		return
 	}
-	a, b := RandomZ(), RandomZ()
-	newPrivate := PadZ(Gf.Add(Gf.MulBytes(kp.PrivateKey, a), b).Bytes())
+	a, b := randomZ(), randomZ()
+	newPrivate := padZ(gf.Add(gf.MulBytes(kp.PrivateKey, a), b).Bytes())
 	newPublic := new(Point).ScalarBaseMult(newPrivate)
 
-	newServerKeypair, err = MarshalKeypair(newPublic.Marshal(), newPrivate)
+	newServerKeypair, err = marshalKeypair(newPublic.Marshal(), newPrivate)
 	if err != nil {
 		return
 	}
 
 	token, err = proto.Marshal(&UpdateToken{
-		A: PadZ(a.Bytes()),
-		B: PadZ(b.Bytes()),
+		A: padZ(a.Bytes()),
+		B: padZ(b.Bytes()),
 	})
 
 	return
-}
-
-func RunServer(){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(1)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/server.crt", credpath + "/server.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
-
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
-
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer(grpc.Creds(cred))
-
-	RegisterPheWorkflowServer(s, &server{})
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
 }
