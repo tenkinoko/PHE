@@ -1,0 +1,30 @@
+## 18年零知识证明在加解密中的占比
+
+Percentage = ( Verify + CheckAndDecrypt ) / ( EnrollAccount + Verify + CheckAndDecrypt ) = 1.1543 / 2. 2233 = 51.92%
+
+## 两个更新的速度，随着记录数量增加的变化
+
+### 18PHE：
+
+| 记录数量 | 更新时间 （ms） |
+| -------- | :-------------- |
+| 1        | 0.6896          |
+| 10       | 3.1208          |
+| 50       | 14.8308         |
+| 100      | 26.6088         |
+| 500      | 143.9145        |
+| 1000     | 306.9793        |
+
+## 18的具体的时间数据
+
+**Workflow-全流程**：3.260ms/op
+
+**RequestPubkey-获取服务器公钥**：0.6630ms/op
+
+**EnrollAccount-注册/加密**：1.069ms/op
+
+**Verify-Prover**：0.5023ms/op
+
+**CheckAndDecrypt-Verifier+解密**：0.6520ms/op
+
+**Update-更新记录**：0.6397ms/op

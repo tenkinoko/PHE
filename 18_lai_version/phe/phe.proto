@@ -7,6 +7,7 @@ service phe_workflow{
     rpc GetEnrollment (GetEnrollRecord) returns (EnrollmentResponse) {}
     rpc EnrollAccount (EnrollmentRecord) returns (EnrollmentResponse){}
     rpc VerifyPassword (VerifyPasswordRequest) returns (VerifyPasswordResponse) {}
+    rpc Rotate (UpdateRequest) returns (UpdateToken) {}
 }
 
 message PubkeyRecord {
@@ -47,6 +48,10 @@ message ProofOfFail {
     bytes term4 = 4;
     bytes blind_a = 5;
     bytes blind_b = 6;
+}
+
+message UpdateRequest{
+    string flag = 1;
 }
 
 message UpdateToken {

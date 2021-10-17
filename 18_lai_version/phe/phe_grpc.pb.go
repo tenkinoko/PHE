@@ -22,6 +22,7 @@ type PheWorkflowClient interface {
 	GetEnrollment(ctx context.Context, in *GetEnrollRecord, opts ...grpc.CallOption) (*EnrollmentResponse, error)
 	EnrollAccount(ctx context.Context, in *EnrollmentRecord, opts ...grpc.CallOption) (*EnrollmentResponse, error)
 	VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*VerifyPasswordResponse, error)
+	Rotate(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateToken, error)
 }
 
 type pheWorkflowClient struct {
@@ -68,6 +69,15 @@ func (c *pheWorkflowClient) VerifyPassword(ctx context.Context, in *VerifyPasswo
 	return out, nil
 }
 
+func (c *pheWorkflowClient) Rotate(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateToken, error) {
+	out := new(UpdateToken)
+	err := c.cc.Invoke(ctx, "/phe.phe_workflow/Rotate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PheWorkflowServer is the server API for PheWorkflow service.
 // All implementations must embed UnimplementedPheWorkflowServer
 // for forward compatibility
@@ -76,6 +86,7 @@ type PheWorkflowServer interface {
 	GetEnrollment(context.Context, *GetEnrollRecord) (*EnrollmentResponse, error)
 	EnrollAccount(context.Context, *EnrollmentRecord) (*EnrollmentResponse, error)
 	VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordResponse, error)
+	Rotate(context.Context, *UpdateRequest) (*UpdateToken, error)
 	mustEmbedUnimplementedPheWorkflowServer()
 }
 
@@ -94,6 +105,9 @@ func (UnimplementedPheWorkflowServer) EnrollAccount(context.Context, *Enrollment
 }
 func (UnimplementedPheWorkflowServer) VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyPassword not implemented")
+}
+func (UnimplementedPheWorkflowServer) Rotate(context.Context, *UpdateRequest) (*UpdateToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Rotate not implemented")
 }
 func (UnimplementedPheWorkflowServer) mustEmbedUnimplementedPheWorkflowServer() {}
 
@@ -180,6 +194,24 @@ func _PheWorkflow_VerifyPassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PheWorkflow_Rotate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PheWorkflowServer).Rotate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phe.phe_workflow/Rotate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PheWorkflowServer).Rotate(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PheWorkflow_ServiceDesc is the grpc.ServiceDesc for PheWorkflow service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,6 +234,10 @@ var PheWorkflow_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyPassword",
 			Handler:    _PheWorkflow_VerifyPassword_Handler,
+		},
+		{
+			MethodName: "Rotate",
+			Handler:    _PheWorkflow_Rotate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

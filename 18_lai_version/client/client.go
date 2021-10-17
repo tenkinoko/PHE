@@ -37,21 +37,9 @@
 package client
 
 import (
-	"context"
 	"crypto/sha512"
-	"crypto/tls"
-	"crypto/x509"
-	"io/ioutil"
-	"log"
-	"math/big"
-	"path"
-	"runtime"
-	"time"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-
 	"github.com/VirgilSecurity/virgil-phe-go/swu"
+	"math/big"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
@@ -71,15 +59,6 @@ type ShadowClient struct {
 	negKey               *big.Int
 	invKey                *big.Int
 }
-
-var (
-	pwd = []byte("Password")
-)
-
-
-const (
-	address 	= "localhost:50051"
-)
 
 // GenerateClientKey creates a new random key used on the ShadowClient side
 func GenerateClientKey() []byte {
@@ -427,85 +406,85 @@ func RotateClientKeys(serverPublic, clientPrivate, tokenBytes []byte) (newClient
 	return
 }
 
-func RunClient()([]byte, []byte){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(1)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
-
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
-
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
-	}
-
-	conn, err := grpc.Dial(address, opts...)
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c := NewPheWorkflowClient(conn)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	msg1 := "requestPublicKey"
-	r, err := c.ReceivePubkey(ctx, &PubkeyRecord{Flag: msg1})
-	if err != nil {
-		log.Fatalf("could not request public key: %v", err)
-	}
-	log.Printf("ReceivePubkey Finish")
-	nc, _ := NewClient(r.GetPublicKey(), RandomZ().Bytes())
-
-	msg2 := "requestGenEnrollment"
-	r1, err1 := c.GetEnrollment(ctx, &GetEnrollRecord{Flag: msg2})
-	if err1 != nil {
-		log.Fatalf("could not request get enrollment: %v", err)
-	}
-	log.Printf("GetEnrollment Finish")
-	enrollment, _ := proto.Marshal(&EnrollmentResponse{
-		Ns:    r1.GetNs(),
-		C0:    r1.GetC0(),
-		C1:    r1.GetC1(),
-		Proof: r1.GetProof(),
-	})
-	rec, key, err := nc.EnrollAccount(pwd, enrollment)
-
-	msg3a, msg3b, _ := nc.CreateVerifyPasswordRequest(pwd, rec)
-	r2, err2 := c.VerifyPassword(ctx, &VerifyPasswordRequest{
-		Ns: msg3b,
-		C0: msg3a,
-	})
-	if err2 != nil {
-		log.Fatalf("could not request verify password: %v", err)
-	}
-	log.Printf("VerifyPassword Finish")
-	res, _ := proto.Marshal(&VerifyPasswordResponse{
-		Res:   r2.GetRes(),
-		C1:    r2.GetC1(),
-		Proof: r2.GetProof(),
-	})
-
-	keyDec, _ := nc.CheckResponseAndDecrypt(pwd, rec, res)
-	return key, keyDec
-
-}
+//func RunClient()([]byte, []byte){
+//	const datafile = "../credentials/"
+//	_, filename, _, _ := runtime.Caller(1)
+//	credpath := path.Join(path.Dir(filename), datafile)
+//	// TLS Based on CA
+//	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+//	if err != nil {
+//		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+//	}
+//	certPool := x509.NewCertPool()
+//	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+//	if err != nil {
+//		log.Fatalf("ioutil.ReadFile err: %v", err)
+//	}
+//
+//	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+//		log.Fatalf("certPool.AppendCertsFromPEM err")
+//	}
+//
+//	cred := credentials.NewTLS(&tls.Config{
+//		Certificates: []tls.Certificate{cert},
+//		ServerName:   "localhost",
+//		RootCAs:      certPool,
+//	})
+//
+//	// Set up a connection to the server.
+//	opts := []grpc.DialOption{
+//		// credentials.
+//		grpc.WithTransportCredentials(cred),
+//	}
+//
+//	conn, err := grpc.Dial(address, opts...)
+//	if err != nil {
+//		log.Fatalf("did not connect: %v", err)
+//	}
+//	defer conn.Close()
+//	c := NewPheWorkflowClient(conn)
+//
+//	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+//	defer cancel()
+//
+//	msg1 := "requestPublicKey"
+//	r, err := c.ReceivePubkey(ctx, &PubkeyRecord{Flag: msg1})
+//	if err != nil {
+//		log.Fatalf("could not request public key: %v", err)
+//	}
+//	log.Printf("ReceivePubkey Finish")
+//	nc, _ := NewClient(r.GetPublicKey(), RandomZ().Bytes())
+//
+//	msg2 := "requestGenEnrollment"
+//	r1, err1 := c.GetEnrollment(ctx, &GetEnrollRecord{Flag: msg2})
+//	if err1 != nil {
+//		log.Fatalf("could not request get enrollment: %v", err)
+//	}
+//	log.Printf("GetEnrollment Finish")
+//	enrollment, _ := proto.Marshal(&EnrollmentResponse{
+//		Ns:    r1.GetNs(),
+//		C0:    r1.GetC0(),
+//		C1:    r1.GetC1(),
+//		Proof: r1.GetProof(),
+//	})
+//	rec, key, err := nc.EnrollAccount(pwd, enrollment)
+//
+//	msg3a, msg3b, _ := nc.CreateVerifyPasswordRequest(pwd, rec)
+//	r2, err2 := c.VerifyPassword(ctx, &VerifyPasswordRequest{
+//		Ns: msg3b,
+//		C0: msg3a,
+//	})
+//	if err2 != nil {
+//		log.Fatalf("could not request verify password: %v", err)
+//	}
+//	log.Printf("VerifyPassword Finish")
+//	res, _ := proto.Marshal(&VerifyPasswordResponse{
+//		Res:   r2.GetRes(),
+//		C1:    r2.GetC1(),
+//		Proof: r2.GetProof(),
+//	})
+//
+//	keyDec, _ := nc.CheckResponseAndDecrypt(pwd, rec, res)
+//	return key, keyDec
+//
+//}

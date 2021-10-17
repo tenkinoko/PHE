@@ -16,4 +16,5 @@ PHE is a new, more secure mechanism that protects user passwords and lessens the
 
 Go implementation by **Alexey Ermishkin** [VirgilSecurity, Inc.](https://virgilsecurity.com).
 
-
+**update proto**:
+protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative phe/phe.proto

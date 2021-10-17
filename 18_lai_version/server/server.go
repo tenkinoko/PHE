@@ -37,21 +37,11 @@
 package server
 
 import (
-	"context"
-	"crypto/tls"
-	"crypto/x509"
-	"github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"io/ioutil"
-	"log"
-	"net"
-	"path"
-	"runtime"
-
 	. "18phe/utils"
-	
+	"context"
+	"github.com/pkg/errors"
+	"log"
+
 	. "18phe/phe"
 )
 
@@ -59,15 +49,11 @@ var (
 	serverKeypair []byte
 )
 
-const (
-	port = ":50051"
-)
-
-type server struct {
+type Server struct {
 	UnimplementedPheWorkflowServer
 }
 
-func (s *server) ReceivePubkey(ctx context.Context, in *PubkeyRecord) (*PubkeyResponse, error) {
+func (s *Server) ReceivePubkey(ctx context.Context, in *PubkeyRecord) (*PubkeyResponse, error) {
 	if in.Flag == "requestPublicKey" {
 		serverKeypair1, _ := GenerateServerKeypair()
 		serverKeypair = serverKeypair1
@@ -89,7 +75,7 @@ func GenerateServerKeypair() ([]byte, error) {
 }
 
 // GetEnrollment generates a new random enrollment record and a proof
-func (s *server) GetEnrollment(ctx context.Context, in *GetEnrollRecord) (*EnrollmentResponse, error) {
+func (s *Server) GetEnrollment(ctx context.Context, in *GetEnrollRecord) (*EnrollmentResponse, error) {
 
 	kp, err := UnmarshalKeypair(serverKeypair)
 	if err != nil {
@@ -121,7 +107,7 @@ func GetPublicKey(serverKeypair []byte) ([]byte, error) {
 
 // VerifyPassword compares password attempt to the one server would calculate itself using its private key
 // and returns a zero knowledge proof of ether success or failure
-func (s *server)VerifyPassword(ctx context.Context, in *VerifyPasswordRequest) (*VerifyPasswordResponse, error) {
+func (s *Server)VerifyPassword(ctx context.Context, in *VerifyPasswordRequest) (*VerifyPasswordResponse, error) {
 
 	response, _, err := VerifyPasswordExtended(ctx, in)
 	return response, err
@@ -208,7 +194,7 @@ func proveSuccess(kp *Keypair, hs0, hs1, c0, c1 *Point) *VerifyPasswordResponse_
 
 	challenge := HashZ(ProofOk, kp.PublicKey, CurveG, c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal())
 	res := Gf.Add(blindX, Gf.MulBytes(kp.PrivateKey, challenge))
-
+	//log.Printf("Success")
 	return &VerifyPasswordResponse_Success{
 		Success: &ProofOfSuccess{
 			Term1:  term1.Marshal(),
@@ -263,63 +249,61 @@ func proveFailure(kp *Keypair, c0, hs0 *Point) (c1 *Point, proof *VerifyPassword
 }
 
 //Rotate updates server's private and public keys and issues an update token for use on client's side
-func Rotate(serverKeypair []byte) (token []byte, newServerKeypair []byte, err error) {
+func(s *Server) Rotate(ctx context.Context, in *UpdateRequest) (*UpdateToken, error) {
 
 	kp, err := UnmarshalKeypair(serverKeypair)
 	if err != nil {
-		return
+		return nil, nil
 	}
 	a, b := RandomZ(), RandomZ()
 	newPrivate := PadZ(Gf.Add(Gf.MulBytes(kp.PrivateKey, a), b).Bytes())
 	newPublic := new(Point).ScalarBaseMult(newPrivate)
 
-	newServerKeypair, err = MarshalKeypair(newPublic.Marshal(), newPrivate)
+	_, err = MarshalKeypair(newPublic.Marshal(), newPrivate)
 	if err != nil {
-		return
+		return nil, nil
 	}
 
-	token, err = proto.Marshal(&UpdateToken{
+	return &UpdateToken{
 		A: PadZ(a.Bytes()),
 		B: PadZ(b.Bytes()),
-	})
-
-	return
+	}, nil
 }
 
-func RunServer(){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(1)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/server.crt", credpath + "/server.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
-
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
-
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer(grpc.Creds(cred))
-
-	RegisterPheWorkflowServer(s, &server{})
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-}
+//func RunServer(){
+//	const datafile = "../credentials/"
+//	_, filename, _, _ := runtime.Caller(1)
+//	credpath := path.Join(path.Dir(filename), datafile)
+//	// TLS Based on CA
+//	cert, err := tls.LoadX509KeyPair(credpath + "/server.crt", credpath + "/server.key")
+//	if err != nil {
+//		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+//	}
+//	certPool := x509.NewCertPool()
+//	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+//	if err != nil {
+//		log.Fatalf("ioutil.ReadFile err: %v", err)
+//	}
+//
+//	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+//		log.Fatalf("certPool.AppendCertsFromPEM err")
+//	}
+//
+//	cred := credentials.NewTLS(&tls.Config{
+//		Certificates: []tls.Certificate{cert},
+//		ServerName:   "localhost",
+//		RootCAs:      certPool,
+//	})
+//
+//	lis, err := net.Listen("tcp", port)
+//	if err != nil {
+//		log.Fatalf("failed to listen: %v", err)
+//	}
+//	s := grpc.NewServer(grpc.Creds(cred))
+//
+//	RegisterPheWorkflowServer(s, &server{})
+//	log.Printf("server listening at %v", lis.Addr())
+//	if err := s.Serve(lis); err != nil {
+//		log.Fatalf("failed to serve: %v", err)
+//	}
+//}
