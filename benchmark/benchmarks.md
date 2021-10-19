@@ -1,3 +1,5 @@
+## 18phe
+
 goos: windows
 goarch: amd64
 pkg: 18phe/test
@@ -15,3 +17,23 @@ Benchmark_CheckAndDecrypt-24     	    1815	    651988 ns/op	   71280 B/op	     9
 Benchmark_Update
 Benchmark_Update-24              	    1881	    639683 ns/op	   41137 B/op	     622 allocs/op
 PASS
+
+## ours
+
+goos: windows
+goarch: amd64
+pkg: simple_phe/test
+cpu: AMD Ryzen 9 5900X 12-Core Processor            
+Benchmark_Workflow
+Benchmark_Workflow-24       	     855	   1347672 ns/op	   77154 B/op	    1124 allocs/op
+Benchmark_Negotiation
+Benchmark_Negotiation-24    	    4806	    284102 ns/op	    7488 B/op	     148 allocs/op
+Benchmark_Encryption
+Benchmark_Encryption-24     	    2881	    509384 ns/op	   19729 B/op	     267 allocs/op
+Benchmark_Decryption
+Benchmark_Decryption-24     	    2179	    537891 ns/op	   33511 B/op	     455 allocs/op
+Benchmark_Update
+Benchmark_Update-24         	    2996	    447183 ns/op	   16084 B/op	     251 allocs/op
+PASS
+
+Process finished with the exit code 0
