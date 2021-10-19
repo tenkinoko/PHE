@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
 	"log"
@@ -37,7 +38,7 @@ type server struct {
 
 // Negotiation between Server and Key Server At the very beginning
 func (s *server) Negotiation(ctx context.Context, in *NegotiationBegin) (*NegotiationResponse, error) {
-	log.Printf("Received: %b", in.GetXs())
+	//log.Printf("Received: %b", in.GetXs())
 	xs := in.GetXs()
 	xks := RandomZ()
 	x_0 = HashZ(xs, xks.Bytes(), big.NewInt(0).Bytes())
@@ -48,7 +49,7 @@ func (s *server) Negotiation(ctx context.Context, in *NegotiationBegin) (*Negoti
 }
 
 func (s *server)ThirdPartGeneration(ctx context.Context, in *T2Generation) (*T2Response, error) {
-	log.Printf("Received: %b", in.GetE1())
+	//log.Printf("Received: %b", in.GetE1())
 	Hpwn1_ := in.GetE1()
 	r := in.GetE2()
 	k := in.GetE3()
@@ -58,7 +59,7 @@ func (s *server)ThirdPartGeneration(ctx context.Context, in *T2Generation) (*T2R
 }
 
 func (s *server)ZKProof(ctx context.Context, in *ProofOfX) (*ProverResponse, error) {
-	log.Printf("Received: %b", in.GetFlag())
+	//log.Printf("Received: %b", in.GetFlag())
 	T0 := in.GetTT0()
 	FlagMsg := in.GetFlag()
 	Flag := new(big.Int).SetBytes(FlagMsg)
@@ -98,6 +99,31 @@ func ProverOfSuccess(t0 []byte) (*ProverResponse, error) {
 		GX1R: gx1r.Marshal(),
 		X1:   X_1.Marshal(),
 	}, nil
+}
+
+func (s *server) Rotate(ctx context.Context, in* UpdateRequest) (*UpdateToken, error){
+	gr_ := in.GetGr()
+	gr, err := PointUnmarshal(gr_)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid gr")
+	}
+	a, b := RandomZ(), RandomZ()
+	grx0 := gr.ScalarMultInt(x_0)
+	grx1 := gr.ScalarMultInt(x_1)
+	delta0Down := grx0.Add(new(Point).ScalarBaseMultInt(HashZ(grx0.Marshal()))).Neg()
+	x_0 = new(big.Int).SetBytes(PadZ(Gf.Add(Gf.Mul(x_0, a), b).Bytes()))
+	x_1 = new(big.Int).SetBytes(PadZ(Gf.Add(Gf.Mul(x_0, a), b).Bytes()))
+	X_0 = new(Point).ScalarBaseMultInt(x_0)
+	X_1 = new(Point).ScalarBaseMultInt(x_1)
+	grx0_ := gr.ScalarMultInt(x_0)
+	delta0 := grx0_.Add(new(Point).ScalarBaseMultInt(HashZ(grx0_.Marshal()))).Add(delta0Down)
+	delta1 := gr.ScalarMultInt(x_1).Add(grx1.Neg())
+
+	return &UpdateToken{
+		Delta0: delta0.Marshal(),
+		Delta1: delta1.Marshal(),
+	}, nil
+
 }
 
 func RunKeyServer(){

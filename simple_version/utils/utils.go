@@ -37,12 +37,10 @@
 package utils
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/elliptic"
 	"crypto/rand"
-	"crypto/sha1"
 	"crypto/sha512"
 	"io"
 	"math/big"
@@ -258,17 +256,28 @@ func Decrypt(ciphertext, key []byte) ([]byte, error) {
 
 }
 
-func HashPwd(pw1 []byte, n1 []byte, num1 int) []byte{
-	var str0 string
-	if num1 == 0 {
-		str0 = "0"
-	} else {
-		str0 = "1"
+//func HashPwd(pw1 []byte, n1 []byte, num1 int) []byte{
+//	var str0 string
+//	if num1 == 0 {
+//		str0 = "0"
+//	} else {
+//		str0 = "1"
+//	}
+//	byte0 := []byte(str0)
+//	pwn0 := [][]byte{pw1, n1, byte0}
+//	pwn0Bytes := bytes.Join(pwn0, []byte{})
+//	Hpwn0 := sha1.Sum(pwn0Bytes)
+//	Hpwn0_ := Hpwn0[:]
+//	return Hpwn0_
+//}
+
+//PadZ makes all bytes equal size adding zeroes to the beginning if necessary
+func PadZ(z []byte) []byte {
+	if len(z) == zLen {
+		return z
 	}
-	byte0 := []byte(str0)
-	pwn0 := [][]byte{pw1, n1, byte0}
-	pwn0Bytes := bytes.Join(pwn0, []byte{})
-	Hpwn0 := sha1.Sum(pwn0Bytes)
-	Hpwn0_ := Hpwn0[:]
-	return Hpwn0_
+
+	newZ := make([]byte, zLen)
+	copy(newZ[zLen-len(z):], z)
+	return newZ
 }

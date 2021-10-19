@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"crypto/sha1"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -27,6 +26,8 @@ var (
 	r  []byte
 	k  []byte
 	Pw []byte
+	numZero []byte
+	numOne []byte
 
 	T0 *Point
 	T1 *Point
@@ -54,6 +55,8 @@ func ClientInfo(){
 	r = RandomZ().Bytes()
 	k = RandomZ().Bytes()
 	Pw = RandomZ().Bytes()
+	numZero = big.NewInt(0).Bytes()
+	numOne = big.NewInt(1).Bytes()
 }
 
 func EncryptionA()([]byte, []byte, []byte){
@@ -61,13 +64,14 @@ func EncryptionA()([]byte, []byte, []byte){
 	T0 = new(Point).ScalarBaseMult(r)
 	// T1 = g^rx0 * g^H(g^rx0) * g^H(pw, n, 0)
 	grx0 := X0.ScalarMult(r)
-	Hgrx0 := sha1.Sum(grx0.Marshal())
-	Hgrx0_ := Hgrx0[:]
-	Hpwn0_ := HashPwd(Pw, n, 0)
-	T1e := Gf.AddBytes(Hgrx0_, new(big.Int).SetBytes(Hpwn0_))
+	//Hgrx0 := sha1.Sum(grx0.Marshal())
+	//Hgrx0_ := Hgrx0[:]
+	Hgrx0_ := HashZ(grx0.Marshal())
+	Hpwn0_ := HashZ(Pw, n, numZero)
+	T1e := Gf.Add(Hgrx0_, new(big.Int).Set(Hpwn0_))
 	T1 = grx0.Add(new(Point).ScalarBaseMultInt(T1e))
 
-	Hpwn1_ := HashPwd(Pw, n, 1)
+	Hpwn1_ := HashZ(Pw, n, numOne).Bytes()
 	return Hpwn1_, r, k
 }
 
@@ -77,15 +81,16 @@ func EncryptionB(TT2 []byte){
 
 func Decryption(pw0 []byte)([]byte, []byte){
 	// C0 = T1 / g^(H(pw0, n, 0))
-	hpwn0 := HashPwd(pw0, n, 0)
-	denominator := new(Point).ScalarBaseMult(hpwn0).Neg()
+	hpwn0 := HashZ(pw0, n, numZero)
+	denominator := new(Point).ScalarBaseMultInt(hpwn0).Neg()
 	C0 := T1.Add(denominator)
 	T0x0 := T0.ScalarMultInt(x0)
-	hT0x0 := sha1.Sum(T0x0.Marshal())
-	hT0x0_ := hT0x0[:]
+	//hT0x0 := sha1.Sum(T0x0.Marshal())
+	//hT0x0_ := hT0x0[:]
+	hT0x0_ := HashZ(T0x0.Marshal())
 
 	// leftVal = T0^x0 * H(T0^x0)
-	leftVal := T0x0.Add(new(Point).ScalarBaseMult(hT0x0_))
+	leftVal := T0x0.Add(new(Point).ScalarBaseMultInt(hT0x0_))
 	var flag *big.Int
 	if leftVal.Equal(C0) {
 		flag = big.NewInt(1)
@@ -124,6 +129,7 @@ func Verifier(C0, C1, U, GX1R, X1 []byte) bool{
 	}
 	return true
 }
+
 
 func RunServer(){
 	const datafile = "../credentials/"
@@ -193,6 +199,25 @@ func RunServer(){
 	rep3a, rep3b, rep3c, rep3d, rep3e := r2.GetC0(), r2.GetC1(), r2.GetU(), r2.GetGX1R(), r2.GetX1()
 	fmt.Println(Verifier(rep3a, rep3b, rep3c, rep3d, rep3e))
 
+	msg4 := T0.Marshal()
+	r3, err3 := c.Rotate(ctx, &UpdateRequest{Gr: msg4})
+	if err3 != nil {
+		log.Fatalf("could not Rotate: %v", err2)
+	}
+	log.Printf("Rotate Finish")
+	delta0, err4a := PointUnmarshal(r3.GetDelta0())
+	delta1, err4b := PointUnmarshal(r3.GetDelta1())
+
+	if err4a != nil {
+		log.Fatalf("invalid deltas: %v", err4a)
+	}
+
+	if err4b != nil {
+		log.Fatalf("invalid deltas: %v", err4b)
+	}
+
+	T0 = T0.Add(delta0)
+	T1 = T1.Add(delta1)
 }
 
 

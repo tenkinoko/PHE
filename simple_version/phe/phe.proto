@@ -7,6 +7,7 @@ service KeyPairGen{
   rpc Negotiation (NegotiationBegin) returns (NegotiationResponse){}
   rpc ThirdPartGeneration (T2Generation) returns (T2Response){}
   rpc ZKProof (ProofOfX) returns (ProverResponse){}
+  rpc Rotate (UpdateRequest) returns (UpdateToken){}
 }
 
 message NegotiationBegin {
@@ -38,4 +39,13 @@ message ProverResponse{
   bytes U = 3;
   bytes GX1R = 4;
   bytes X1 = 5;
+}
+
+message UpdateRequest{
+  bytes Gr = 1;
+}
+
+message UpdateToken{
+  bytes Delta0 = 1;
+  bytes Delta1 = 2;
 }

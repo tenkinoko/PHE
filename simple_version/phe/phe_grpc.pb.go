@@ -21,6 +21,7 @@ type KeyPairGenClient interface {
 	Negotiation(ctx context.Context, in *NegotiationBegin, opts ...grpc.CallOption) (*NegotiationResponse, error)
 	ThirdPartGeneration(ctx context.Context, in *T2Generation, opts ...grpc.CallOption) (*T2Response, error)
 	ZKProof(ctx context.Context, in *ProofOfX, opts ...grpc.CallOption) (*ProverResponse, error)
+	Rotate(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateToken, error)
 }
 
 type keyPairGenClient struct {
@@ -58,6 +59,15 @@ func (c *keyPairGenClient) ZKProof(ctx context.Context, in *ProofOfX, opts ...gr
 	return out, nil
 }
 
+func (c *keyPairGenClient) Rotate(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateToken, error) {
+	out := new(UpdateToken)
+	err := c.cc.Invoke(ctx, "/phe.KeyPairGen/Rotate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // KeyPairGenServer is the server API for KeyPairGen service.
 // All implementations must embed UnimplementedKeyPairGenServer
 // for forward compatibility
@@ -65,6 +75,7 @@ type KeyPairGenServer interface {
 	Negotiation(context.Context, *NegotiationBegin) (*NegotiationResponse, error)
 	ThirdPartGeneration(context.Context, *T2Generation) (*T2Response, error)
 	ZKProof(context.Context, *ProofOfX) (*ProverResponse, error)
+	Rotate(context.Context, *UpdateRequest) (*UpdateToken, error)
 	mustEmbedUnimplementedKeyPairGenServer()
 }
 
@@ -80,6 +91,9 @@ func (UnimplementedKeyPairGenServer) ThirdPartGeneration(context.Context, *T2Gen
 }
 func (UnimplementedKeyPairGenServer) ZKProof(context.Context, *ProofOfX) (*ProverResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ZKProof not implemented")
+}
+func (UnimplementedKeyPairGenServer) Rotate(context.Context, *UpdateRequest) (*UpdateToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Rotate not implemented")
 }
 func (UnimplementedKeyPairGenServer) mustEmbedUnimplementedKeyPairGenServer() {}
 
@@ -148,6 +162,24 @@ func _KeyPairGen_ZKProof_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KeyPairGen_Rotate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KeyPairGenServer).Rotate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phe.KeyPairGen/Rotate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KeyPairGenServer).Rotate(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // KeyPairGen_ServiceDesc is the grpc.ServiceDesc for KeyPairGen service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -166,6 +198,10 @@ var KeyPairGen_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ZKProof",
 			Handler:    _KeyPairGen_ZKProof_Handler,
+		},
+		{
+			MethodName: "Rotate",
+			Handler:    _KeyPairGen_Rotate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
