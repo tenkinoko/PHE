@@ -570,25 +570,16 @@ func Benchmark_Update(b *testing.B){
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 1000; j++ {
-			MockRandom()
-			msg4 := T0.Marshal()
-			r3, err3 := c.Rotate(ctx, &UpdateRequest{Gr: msg4})
-			if err3 != nil {
-				log.Fatalf("could not Rotate: %v", err3)
-			}
-			//log.Printf("Rotate Finish")
-			delta0, err4a := PointUnmarshal(r3.GetDelta0())
-			delta1, err4b := PointUnmarshal(r3.GetDelta1())
-
-			if err4a != nil {
-				log.Fatalf("invalid deltas: %v", err4a)
-			}
-
-			if err4b != nil {
-				log.Fatalf("invalid deltas: %v", err4b)
-			}
-
+		MockRandom()
+		msg4 := T0.Marshal()
+		r3, err3 := c.Rotate(ctx, &UpdateRequest{Gr: msg4})
+		if err3 != nil {
+			log.Fatalf("could not Rotate: %v", err3)
+		}
+		//log.Printf("Rotate Finish")
+		for j := 0; j < 1; j++ {
+			delta0, _ := PointUnmarshal(r3.GetDelta0())
+			delta1, _ := PointUnmarshal(r3.GetDelta1())
 			T1 = T1.Add(delta0)
 			T2 = T2.Add(delta1)
 		}
