@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0d4ad3bf-0c5f-4093-a831-a5116ecfbb68" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sgx_version.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sgx/sgx.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sgx/sgx_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/build.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/clean.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/.config_SIM_DEBUG_x64" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/README.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/app" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/build/app" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/build/isv_enclave.signed.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/build/isv_enclave.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/build/libsample_libcrypto.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/build/libservice_provider.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_app/isv_app.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_app/isv_app.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_app/isv_enclave_u.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_app/isv_enclave_u.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_app/isv_enclave_u.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_app/sample_messages.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave.signed.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave.config.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave.edl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave.lds" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave_private.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave_t.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave_t.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/isv_enclave/isv_enclave_t.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/libservice_provider.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/sample_libcrypto/libsample_libcrypto.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/sample_libcrypto/sample_libcrypto.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/ecp.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/ecp.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/ecp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/ias_ra.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/ias_ra.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/ias_ra.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/network_ra.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/network_ra.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/network_ra.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/remote_attestation_result.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/service_provider.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/service_provider.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/client/service_provider/service_provider.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/env.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/a.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/a1.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/d105171-196-185.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/d159.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/d201.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/d224.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/d277699-175-167.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/d278027-190-181.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/e.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/f.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/g149.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/param/i.param" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/.config_SIM_DEBUG_x64" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/README.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/app" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/build/app" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/build/isv_enclave.signed.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/build/isv_enclave.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/build/libsample_libcrypto.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/build/libservice_provider.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_app/isv_app.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_app/isv_app.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_app/isv_enclave_u.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_app/isv_enclave_u.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_app/isv_enclave_u.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_app/sample_messages.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave.signed.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave.config.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave.edl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave.lds" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave_private.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave_t.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave_t.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/isv_enclave/isv_enclave_t.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/libservice_provider.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/sample_libcrypto/libsample_libcrypto.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/sample_libcrypto/sample_libcrypto.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/ecp.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/ecp.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/ecp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/ias_ra.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/ias_ra.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/ias_ra.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/network_ra.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/network_ra.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/network_ra.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/remote_attestation_result.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/service_provider.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/service_provider.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../aborted_sgx_version/server/service_provider/service_provider.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version.config.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version.edl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version.sln" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version.vcxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version.vcxproj.filters" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version.vcxproj.user" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version_private.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version_t.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx_version_t.h" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://C:/Program Files/Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="207AwXpdDHiCtfQbkntXal0LJtv" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.formatter.settings.were.checked" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
+  </component>
+  <component name="RunManager" selected="Go Build.go build main.go (1)">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build main.go (1)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/client/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/server/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build main.go (1)" />
+        <item itemvalue="Go Build.go build main.go" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+</project>
