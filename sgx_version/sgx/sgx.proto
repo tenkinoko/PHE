@@ -22,6 +22,7 @@ package sgx;
 service PHE {
   // Sends a greeting
   rpc Negotiation (NegoRequest) returns (NegoReply) {}
+  rpc Decryption (DecryptRequest) returns (DecryptReply) {}
 }
 
 // The request message containing the user's name.
@@ -34,4 +35,17 @@ message NegoRequest {
 message NegoReply {
   bytes Hr0 = 1;
   bytes Hr1 = 2;
+  bytes X = 3;
+}
+
+message DecryptRequest {
+  bytes C0 = 1;
+  bytes N = 2;
+  bytes Tm = 3;
+}
+
+message DecryptReply {
+  string Flag = 1;
+  bytes Hr1_ = 2;
+  bytes Tm = 3;
 }

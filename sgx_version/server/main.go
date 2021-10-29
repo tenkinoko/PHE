@@ -39,6 +39,8 @@ var (
 	one = new(big.Int).SetInt64(1)
 	x *big.Int
 	x_ *big.Int
+	hr0 []byte
+	hr1 []byte
 )
 const (
 	port = ":50051"
@@ -53,14 +55,34 @@ func (s *server) Negotiation(ctx context.Context, in *pb.NegoRequest) (*pb.NegoR
 	n := in.GetN()
 	x = new(big.Int).SetBytes(hashZ(xs, xks1.Bytes(), zero.Bytes()))
 	x_ = new(big.Int).SetBytes(hashZ(xs, xks2.Bytes(), zero.Bytes()))
-	hr0 := hashZ(x.Bytes(), n, zero.Bytes())
-	hr1 := hashZ(x.Bytes(), n, one.Bytes())
+	hr0 = hashZ(x.Bytes(), n, zero.Bytes())
+	hr1 = hashZ(x.Bytes(), n, one.Bytes())
 	return &pb.NegoReply{
 		Hr0: hr0,
 		Hr1: hr1,
+		X: x.Bytes(),
 	}, nil
 
 }
+
+func (s *server) Decryption(ctx context.Context, in *pb.DecryptRequest) (*pb.DecryptReply, error) {
+	c0_ := new(big.Int).SetBytes(in.GetC0())
+	n_ := new(big.Int).SetBytes(in.GetN())
+	tm := in.GetTm()
+	rt := new(big.Int).SetBytes(hashZ(tm, x.Bytes()))
+	c0 := new(big.Int).Div(c0_, rt)
+	n := new(big.Int).Div(n_, rt)
+	hxn0 := new(big.Int).SetBytes(hashZ(x.Bytes(), n.Bytes(), zero.Bytes()))
+	if c0.Cmp(hxn0) == 0 {
+		hr1_ := new(big.Int).Mul(new(big.Int).SetBytes(hr1), rt)
+		return &pb.DecryptReply{Flag: "Success", Hr1_: hr1_.Bytes(), Tm: tm}, nil
+	} else {
+		hr1_ := []byte("000000")
+		return &pb.DecryptReply{Flag: "Fail", Hr1_: hr1_, Tm: tm}, nil
+	}
+
+}
+
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
 	hash := sha1.New()

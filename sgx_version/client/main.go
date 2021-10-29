@@ -26,13 +26,13 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha1"
+	"fmt"
+	"google.golang.org/grpc"
 	"io"
 	"log"
 	"math/big"
-	"time"
-
-	"google.golang.org/grpc"
 	pb "sgx/sgx"
+	"time"
 )
 
 var (
@@ -41,13 +41,16 @@ var (
 	one = new(big.Int).SetInt64(1)
 	pw = []byte(pw_)
 	ku = randomZ()
-	ks = randomZ()
+	ks []byte
 	H0 = hashZ(pw, n.Bytes(), zero.Bytes())
 	H1 = hashZ(pw, n.Bytes(), one.Bytes())
 	xs = randomZ()
 
 	t0 []byte
 	t1 []byte
+
+
+	x *big.Int
 
 )
 const (
@@ -122,17 +125,42 @@ func decryptAES(src []byte, key []byte) ([]byte, error) {
 func Encryption(resp *pb.NegoReply){
 	hr0 := new(big.Int).SetBytes(resp.GetHr0())
 	hr1 := new(big.Int).SetBytes(resp.GetHr1())
+	x = new(big.Int).SetBytes(resp.GetX())
 	h0 := new(big.Int).SetBytes(H0)
 	h1 := new(big.Int).SetBytes(H1)
 	h1ku := new(big.Int).Mul(h1, ku)
 	t0_ := new(big.Int).Mul(h0, hr0)
 	t1_ := new(big.Int).Mul(h1ku, hr1)
-	t0, _ = encryptAES(t0_.Bytes(), ks.Bytes())
-	t1, _ = encryptAES(t1_.Bytes(), ks.Bytes())
+	ctxt := make([]byte, aes.BlockSize+len(t0_.Bytes()))
+	ks = ctxt[:aes.BlockSize]
+	t0, _ = encryptAES(t0_.Bytes(), ks)
+	t1, _ = encryptAES(t1_.Bytes(), ks)
 }
 
-func Decryption(){
-	
+func Validation(pw0 []byte)([]byte, []byte, []byte, []byte, []byte){
+	h0_ := new(big.Int).SetBytes(hashZ(pw0, n.Bytes(), zero.Bytes()))
+	t0_, _ := decryptAES(t0, ks)
+	t1_, _ := decryptAES(t1, ks)
+	c0 := new(big.Int).Div(new(big.Int).SetBytes(t0_), h0_)
+	tm_ := time.Now().Format("2006-01-02 15:04:05")
+	tm := []byte(tm_)
+	rt := new(big.Int).SetBytes(hashZ(tm, x.Bytes()))
+	c0_ := new(big.Int).Mul(c0, rt)
+	n_ := new(big.Int).Mul(n, rt)
+	return t0_, t1_, c0_.Bytes(), n_.Bytes(), tm
+}
+
+func Decryption(resp *pb.DecryptReply, t1_ []byte){
+	hr1_ := resp.GetHr1_()
+	tm := resp.GetTm()
+	rt := new(big.Int).SetBytes(hashZ(tm, x.Bytes()))
+	hr1 := new(big.Int).Div(new(big.Int).SetBytes(hr1_), rt)
+	c1 := new(big.Int).Div(new(big.Int).SetBytes(t1_), hr1)
+	ku_ := new(big.Int).Div(c1, new(big.Int).SetBytes(H1))
+	if ku.Cmp(ku_) == 0{
+		fmt.Println("Ye")
+	}
+
 }
 
 func main() {
@@ -150,7 +178,21 @@ func main() {
 	if err0 != nil {
 		log.Fatalf("could not Negotiate: %v", err)
 	}
-
 	Encryption(r0)
+
+	_, t1_, c0_, n_, tm := Validation(pw)
+	r1, err1 := c.Decryption(ctx, &pb.DecryptRequest{
+		C0: c0_,
+		N:  n_,
+		Tm: tm,
+	})
+	if err1 != nil {
+		log.Fatalf("could not Decrypt: %v", err1)
+	}
+	if r1.GetFlag() == "Success" {
+		Decryption(r1, t1_)
+	} else {
+		fmt.Println("Fail!!")
+	}
 
 }
