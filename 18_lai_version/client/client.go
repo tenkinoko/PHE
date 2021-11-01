@@ -146,6 +146,32 @@ func (sc *ShadowClient) EnrollAccount(password []byte, respBytes []byte) (rec []
 	return
 }
 
+func (sc *ShadowClient) EnrollAccountOnlyZK(password []byte, respBytes []byte) {
+
+	resp := &EnrollmentResponse{}
+
+	if err := proto.Unmarshal(respBytes, resp); err != nil {
+		return
+	}
+
+	c0, err := PointUnmarshal(resp.C0)
+	if err != nil {
+		return
+	}
+
+	c1, err := PointUnmarshal(resp.C1)
+	if err != nil {
+		return
+	}
+
+	proofValid := sc.validateProofOfSuccess(resp.Proof, resp.Ns, c0, c1, resp.C0, resp.C1)
+	if !proofValid {
+		err = errors.New("invalid proof")
+		return
+	}
+
+}
+
 func (sc *ShadowClient) validateProofOfSuccess(proof *ProofOfSuccess, nonce []byte, c0 *Point, c1 *Point, c0b, c1b []byte) bool {
 
 	term1, term2, term3, blindX, err := proof.Validate()

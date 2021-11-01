@@ -23,12 +23,11 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha1"
+	"google.golang.org/grpc"
 	"io"
 	"log"
 	"math/big"
 	"net"
-
-	"google.golang.org/grpc"
 	pb "sgx/sgx"
 )
 
@@ -37,8 +36,8 @@ var (
 	xks2 = randomZ()
 	zero = new(big.Int).SetInt64(0)
 	one = new(big.Int).SetInt64(1)
-	x *big.Int
-	x_ *big.Int
+	xk *big.Int
+	xv *big.Int
 	hr0 []byte
 	hr1 []byte
 )
@@ -53,14 +52,14 @@ type server struct {
 func (s *server) Negotiation(ctx context.Context, in *pb.NegoRequest) (*pb.NegoReply, error) {
 	xs := in.GetXs()
 	n := in.GetN()
-	x = new(big.Int).SetBytes(hashZ(xs, xks1.Bytes(), zero.Bytes()))
-	x_ = new(big.Int).SetBytes(hashZ(xs, xks2.Bytes(), zero.Bytes()))
-	hr0 = hashZ(x.Bytes(), n, zero.Bytes())
-	hr1 = hashZ(x.Bytes(), n, one.Bytes())
+	xk = new(big.Int).SetBytes(hashZ(xs, xks1.Bytes(), zero.Bytes()))
+	xv = new(big.Int).SetBytes(hashZ(xs, xks2.Bytes(), zero.Bytes()))
+	hr0 = hashZ(xk.Bytes(), n, zero.Bytes())
+	hr1 = hashZ(xk.Bytes(), n, one.Bytes())
 	return &pb.NegoReply{
 		Hr0: hr0,
 		Hr1: hr1,
-		X: x.Bytes(),
+		X: xk.Bytes(),
 	}, nil
 
 }
@@ -69,10 +68,10 @@ func (s *server) Decryption(ctx context.Context, in *pb.DecryptRequest) (*pb.Dec
 	c0_ := new(big.Int).SetBytes(in.GetC0())
 	n_ := new(big.Int).SetBytes(in.GetN())
 	tm := in.GetTm()
-	rt := new(big.Int).SetBytes(hashZ(tm, x.Bytes()))
+	rt := new(big.Int).SetBytes(hashZ(tm, xk.Bytes()))
 	c0 := new(big.Int).Div(c0_, rt)
 	n := new(big.Int).Div(n_, rt)
-	hxn0 := new(big.Int).SetBytes(hashZ(x.Bytes(), n.Bytes(), zero.Bytes()))
+	hxn0 := new(big.Int).SetBytes(hashZ(xk.Bytes(), n.Bytes(), zero.Bytes()))
 	if c0.Cmp(hxn0) == 0 {
 		hr1_ := new(big.Int).Mul(new(big.Int).SetBytes(hr1), rt)
 		return &pb.DecryptReply{Flag: "Success", Hr1_: hr1_.Bytes(), Tm: tm}, nil
@@ -80,8 +79,28 @@ func (s *server) Decryption(ctx context.Context, in *pb.DecryptRequest) (*pb.Dec
 		hr1_ := []byte("000000")
 		return &pb.DecryptReply{Flag: "Fail", Hr1_: hr1_, Tm: tm}, nil
 	}
-
 }
+
+func (s *server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateReply, error){
+	n := in.GetN()
+	xs := in.GetXs()
+	xks1 = randomZ()
+	xks2 = randomZ()
+	xk_ := new(big.Int).SetBytes(hashZ(xs, xks1.Bytes(), zero.Bytes()))
+	xv_ := new(big.Int).SetBytes(hashZ(xs, xks2.Bytes(), zero.Bytes()))
+	xv = xv_
+	hxkn0 := hashZ(xk.Bytes(), n, zero.Bytes())
+	hxkn1 := hashZ(xk.Bytes(), n, one.Bytes())
+	hxkn0_ := hashZ(xk_.Bytes(), n, zero.Bytes())
+	hxkn1_ := hashZ(xk_.Bytes(), n, one.Bytes())
+	delta0 := new(big.Int).Mul(new(big.Int).SetBytes(hxkn0_), new(big.Int).SetBytes(hxkn0))
+	delta1 := new(big.Int).Mul(new(big.Int).SetBytes(hxkn1_), new(big.Int).SetBytes(hxkn1))
+	return &pb.UpdateReply{
+		Delta0: delta0.Bytes(),
+		Delta1: delta1.Bytes(),
+	}, nil
+}
+
 
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {

@@ -21,6 +21,7 @@ type PHEClient interface {
 	// Sends a greeting
 	Negotiation(ctx context.Context, in *NegoRequest, opts ...grpc.CallOption) (*NegoReply, error)
 	Decryption(ctx context.Context, in *DecryptRequest, opts ...grpc.CallOption) (*DecryptReply, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateReply, error)
 }
 
 type pHEClient struct {
@@ -49,6 +50,15 @@ func (c *pHEClient) Decryption(ctx context.Context, in *DecryptRequest, opts ...
 	return out, nil
 }
 
+func (c *pHEClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateReply, error) {
+	out := new(UpdateReply)
+	err := c.cc.Invoke(ctx, "/sgx.PHE/Update", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PHEServer is the server API for PHE service.
 // All implementations must embed UnimplementedPHEServer
 // for forward compatibility
@@ -56,6 +66,7 @@ type PHEServer interface {
 	// Sends a greeting
 	Negotiation(context.Context, *NegoRequest) (*NegoReply, error)
 	Decryption(context.Context, *DecryptRequest) (*DecryptReply, error)
+	Update(context.Context, *UpdateRequest) (*UpdateReply, error)
 	mustEmbedUnimplementedPHEServer()
 }
 
@@ -68,6 +79,9 @@ func (UnimplementedPHEServer) Negotiation(context.Context, *NegoRequest) (*NegoR
 }
 func (UnimplementedPHEServer) Decryption(context.Context, *DecryptRequest) (*DecryptReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decryption not implemented")
+}
+func (UnimplementedPHEServer) Update(context.Context, *UpdateRequest) (*UpdateReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedPHEServer) mustEmbedUnimplementedPHEServer() {}
 
@@ -118,6 +132,24 @@ func _PHE_Decryption_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PHE_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PHEServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sgx.PHE/Update",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PHEServer).Update(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PHE_ServiceDesc is the grpc.ServiceDesc for PHE service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -132,6 +164,10 @@ var PHE_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Decryption",
 			Handler:    _PHE_Decryption_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _PHE_Update_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

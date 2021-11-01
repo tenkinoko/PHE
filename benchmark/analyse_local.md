@@ -15,7 +15,7 @@ Percentage = ( Verify + CheckAndDecrypt ) / ( EnrollAccount + Verify + CheckAndD
 | 500      | 143.9145        |
 | 1000     | 306.9793        |
 
-### ours
+### ours-withoutsgx
 
 | 记录数量 | 更新时间（ms） |
 | -------- | -------------- |
@@ -31,7 +31,7 @@ Percentage = ( Verify + CheckAndDecrypt ) / ( EnrollAccount + Verify + CheckAndD
 | 5000     | 66.6197        |
 | 10000    | 132.0617       |
 
-
+### 
 
 ## 18的具体的时间数据
 

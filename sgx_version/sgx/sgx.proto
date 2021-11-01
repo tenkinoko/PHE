@@ -23,6 +23,7 @@ service PHE {
   // Sends a greeting
   rpc Negotiation (NegoRequest) returns (NegoReply) {}
   rpc Decryption (DecryptRequest) returns (DecryptReply) {}
+  rpc Update (UpdateRequest) returns (UpdateReply) {}
 }
 
 // The request message containing the user's name.
@@ -48,4 +49,14 @@ message DecryptReply {
   string Flag = 1;
   bytes Hr1_ = 2;
   bytes Tm = 3;
+}
+
+message UpdateRequest{
+  bytes N = 1;
+  bytes Xs = 2;
+}
+
+message UpdateReply {
+  bytes Delta0 = 1;
+  bytes Delta1 = 2;
 }

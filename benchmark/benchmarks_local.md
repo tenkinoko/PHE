@@ -36,4 +36,3 @@ Benchmark_Update
 Benchmark_Update-24         	    2996	    447183 ns/op	   16084 B/op	     251 allocs/op
 PASS
 
-Process finished with the exit code 0
