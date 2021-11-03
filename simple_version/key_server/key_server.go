@@ -53,6 +53,9 @@ func (s *server)ThirdPartGeneration(ctx context.Context, in *T2Generation) (*T2R
 	Hpwn1_ := in.GetE1()
 	r := in.GetE2()
 	k := in.GetE3()
+	if x_1 == nil{
+		x_1 = RandomZ()
+	}
 	T2e := Gf.Add(Gf.MulBytes(r, x_1), Gf.AddBytes(k, new(big.Int).SetBytes(Hpwn1_)))
 	T2 := new(Point).ScalarBaseMultInt(T2e)
 	return &T2Response{T2: T2.Marshal()}, nil
@@ -67,7 +70,13 @@ func (s *server)ZKProof(ctx context.Context, in *ProofOfX) (*ProverResponse, err
 		return ProverOfSuccess(T0)
 
 	} else {
-		return nil, nil
+		return &ProverResponse{
+			C0:   RandomZ().Bytes(),
+			C1:   RandomZ().Bytes(),
+			U:    RandomZ().Bytes(),
+			GX1R: RandomZ().Bytes(),
+			X1:   RandomZ().Bytes(),
+		}, nil
 	}
 }
 
