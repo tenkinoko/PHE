@@ -134,7 +134,10 @@ func (sc *ShadowClient) EnrollAccount(password []byte, respBytes []byte) (rec []
 
 	// calculate two enrollment points
 	t0 := c0.Add(hc0.ScalarMultInt(sc.clientPrivateKey))
-	t1 := c1.Add(hc1.ScalarMultInt(sc.clientPrivateKey)).Add(m.ScalarMultInt(sc.clientPrivateKey))
+	// hc1^sc * m ^ sc
+	t1e1 := hc1.Add(m)
+	t1 := c1.Add(t1e1.ScalarMultInt(sc.clientPrivateKey))
+
 
 	rec, err = proto.Marshal(&EnrollmentRecord{
 		Ns: resp.Ns,
@@ -198,20 +201,20 @@ func (sc *ShadowClient) validateProofOfSuccess(proof *ProofOfSuccess, nonce []by
 	// if term2 * (c1 ** challenge) != hs1 ** blind_x:
 	// return False
 
-	t1 = term2.Add(c1.ScalarMultInt(challenge))
-	t2 = hs1.ScalarMultInt(blindX)
+	t12 := term2.Add(c1.ScalarMultInt(challenge))
+	t22 := hs1.ScalarMultInt(blindX)
 
-	if !t1.Equal(t2) {
+	if !t12.Equal(t22) {
 		return false
 	}
 
 	//if term3 * (self.X ** challenge) != self.G ** blind_x:
 	// return False
 
-	t1 = term3.Add(sc.serverPublicKey.ScalarMultInt(challenge))
-	t2 = new(Point).ScalarBaseMultInt(blindX)
+	t13 := term3.Add(sc.serverPublicKey.ScalarMultInt(challenge))
+	t23 := new(Point).ScalarBaseMultInt(blindX)
 
-	if !t1.Equal(t2) {
+	if !t13.Equal(t23) {
 		return false
 	}
 
@@ -333,10 +336,10 @@ func (sc *ShadowClient) validateProofOfFail(resp *VerifyPasswordResponse, c0, c1
 		return errors.New("proof verification failed")
 	}
 
-	t1 = term3.Add(term4)
-	t2 = sc.serverPublicKey.ScalarMultInt(blindA).Add(new(Point).ScalarBaseMultInt(blindB))
+	t12 := term3.Add(term4)
+	t22 := sc.serverPublicKey.ScalarMultInt(blindA).Add(new(Point).ScalarBaseMultInt(blindB))
 
-	if !t1.Equal(t2) {
+	if !t12.Equal(t22) {
 		return errors.New("verification failed")
 	}
 	return nil

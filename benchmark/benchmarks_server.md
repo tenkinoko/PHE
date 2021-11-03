@@ -1,4 +1,4 @@
-## ours-sgx
+## sgxPHE
 
 server：2 core 4GiB
 
@@ -22,6 +22,8 @@ Decrypt-Success = Validation + Decryption + Retrieval = 387.207us
 
 Decrypt-Wrong = Validation + Decryption = 380.807us
 
+## SGX 更新随记录数量变化的性能
+
 | 记录数量 | 时间     |
 | -------- | -------- |
 | 1        | 357.206  |
@@ -32,6 +34,29 @@ Decrypt-Wrong = Validation + Decryption = 380.807us
 | 200      | 1523.629 |
 | 500      | 2958.857 |
 | 1000     | 5177.299 |
+
+## 吞吐量
+
+应该解密快一些
+
+decrry 3718.59 req/s
+
+decryption 3798.22 req/s
+
+
+
+## asymPHE
+
+goos: linux
+goarch: amd64
+cpu: Intel(R) Xeon(R) Platinum 8369B CPU @ 2.70GHz
+Benchmark_Workflow-2      	     614	   1875984 ns/op	   76235 B/op	    1107 allocs/op
+Benchmark_Negotiation-2   	    4941	    213325 ns/op	    7329 B/op	     144 allocs/op
+Benchmark_Encryption-2    	    3936	    314126 ns/op	   19385 B/op	     261 allocs/op
+Benchmark_Decryption-2    	    1540	    788199 ns/op	   33517 B/op	     454 allocs/op
+Benchmark_Update-2        	    2157	    565333 ns/op	   15963 B/op	     249 allocs/op
+
+协商不需要算，从用户开始输入密钥开始计算加密
 
 
 
@@ -55,14 +80,5 @@ Benchmark_Update-2             	    1920	    663746 ns/op	   40737 B/op	     616
 
 解密过程中零知识占比：（754890+834770） / 2975135 = 53.43%
 
-## ours
 
-goos: linux
-goarch: amd64
-cpu: Intel(R) Xeon(R) Platinum 8369B CPU @ 2.70GHz
-Benchmark_Workflow-2      	     614	   1875984 ns/op	   76235 B/op	    1107 allocs/op
-Benchmark_Negotiation-2   	    4941	    213325 ns/op	    7329 B/op	     144 allocs/op
-Benchmark_Encryption-2    	    3936	    314126 ns/op	   19385 B/op	     261 allocs/op
-Benchmark_Decryption-2    	    1540	    788199 ns/op	   33517 B/op	     454 allocs/op
-Benchmark_Update-2        	    2157	    565333 ns/op	   15963 B/op	     249 allocs/op
 

@@ -47,7 +47,6 @@ func SystemInitialization(xx0 []byte){
 	X0 = new(Point).ScalarBaseMultInt(x0)
 }
 
-// TODO: whether a client is neccessary
 func ClientInfo(){
 	n = RandomZ().Bytes()
 	r = RandomZ().Bytes()

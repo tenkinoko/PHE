@@ -11,7 +11,7 @@ import (
 	"github.com/bojand/ghz/printer"
 	"github.com/bojand/ghz/runner"
 	"github.com/golang/protobuf/proto"
-	pb "sgx/sgx"
+	pb "simple_phe/phe"
 )
 
 
@@ -43,10 +43,7 @@ func makeZ(reader io.Reader) *big.Int {
 
 func main() {
 	// 组装BinaryData
-	item := pb.UpdateRequest{
-		N:  randomZ().Bytes(),
-		Xs: randomZ().Bytes(),
-	}
+	item := pb.NegotiationBegin{Xs: randomZ().Bytes()}
 	buf := proto.Buffer{}
 	err := buf.EncodeMessage(&item)
 	if err != nil {
@@ -57,7 +54,7 @@ func main() {
 		// 基本配置 call host proto文件 data
 		"sgx.PHE.Update", //  'package.Service/method' or 'package.Service.Method'
 		"localhost:50051",
-		runner.WithProtoFile("../sgx/sgx.proto", []string{}),
+		runner.WithProtoFile("../phe/phe.proto", []string{}),
 		runner.WithBinaryData(buf.Bytes()),
 		runner.WithInsecure(true),
 		runner.WithTotalRequests(10000),

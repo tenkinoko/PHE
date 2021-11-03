@@ -43,8 +43,8 @@ var (
 	pw = []byte(pw_)
 	ku = randomZ()
 	ks []byte
-	H0 = hashZ(pw, n.Bytes(), zero.Bytes())
-	H1 = hashZ(pw, n.Bytes(), one.Bytes())
+	H0 []byte
+	H1 []byte
 	xs = randomZ()
 
 	t0 []byte
@@ -124,6 +124,8 @@ func decryptAES(src []byte, key []byte) ([]byte, error) {
 }
 
 func Encryption(resp *pb.NegoReply){
+	H0 = hashZ(pw, n.Bytes(), zero.Bytes())
+	H1 = hashZ(pw, n.Bytes(), one.Bytes())
 	hr0 := new(big.Int).SetBytes(resp.GetHr0())
 	hr1 := new(big.Int).SetBytes(resp.GetHr1())
 	x = new(big.Int).SetBytes(resp.GetX())
@@ -222,16 +224,16 @@ func main() {
 		}
 		t8 := time.Now()
 
-		t0Ex, _ := encryptAES(t0_, ks)
-		t1Ex, _ := encryptAES(t1_, ks)
+
 
 		x_ := randomZ()
 		r2, err2 := c.Update(ctx, &pb.UpdateRequest{N: n.Bytes(), Xs: x_.Bytes()})
 		if err2 != nil {
 			log.Fatalf("could not Update: %v", err)
 		}
-		for j := 0; j < 100; j++{
-
+		for j := 0; j < 1; j++{
+			t0Ex, _ := encryptAES(t0_, ks)
+			t1Ex, _ := encryptAES(t1_, ks)
 			UpdateRecord(r2, x_)
 			t0 = t0Ex
 			t1 = t1Ex
@@ -247,7 +249,4 @@ func main() {
 	}
 	totalTime := timeNeg + timeEnc + timeVal + timeDec + timeClientDec
 	fmt.Println(timeNeg/10000, timeEnc/10000, timeVal/10000, timeDec/10000, timeClientDec/10000, timeUpdate/10000, totalTime/10000)
-
-
-
 }

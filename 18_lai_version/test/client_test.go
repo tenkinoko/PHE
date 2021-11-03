@@ -676,6 +676,106 @@ func Benchmark_Verify(b *testing.B) {
 	_, _ = UpdateRecord(rec, token)
 }
 
+func Benchmark_DecryptWrong(b *testing.B) {
+	const datafile = "../credentials/"
+	_, filename, _, _ := runtime.Caller(0)
+	credpath := path.Join(path.Dir(filename), datafile)
+	// TLS Based on CA
+	cert, err := tls.LoadX509KeyPair(credpath+"/client.crt", credpath+"/client.key")
+	if err != nil {
+		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+	}
+	certPool := x509.NewCertPool()
+	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+	if err != nil {
+		log.Fatalf("ioutil.ReadFile err: %v", err)
+	}
+
+	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+		log.Fatalf("certPool.AppendCertsFromPEM err")
+	}
+
+	cred := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},
+		ServerName:   "localhost",
+		RootCAs:      certPool,
+	})
+
+	// Set up a connection to the server.
+	opts := []grpc.DialOption{
+		// credentials.
+		grpc.WithTransportCredentials(cred),
+	}
+
+	conn, err := grpc.Dial(address, opts...)
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := NewPheWorkflowClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	defer cancel()
+
+	msg1 := "requestPublicKey"
+	r, err := c.ReceivePubkey(ctx, &PubkeyRecord{Flag: msg1})
+	if err != nil {
+		log.Fatalf("could not request public key: %v", err)
+	}
+	//log.Printf("ReceivePubkey Finish")
+	nc, _ := NewClient(r.GetPublicKey(), RandomZ().Bytes())
+
+	msg2 := "requestGenEnrollment"
+	r1, err1 := c.GetEnrollment(ctx, &GetEnrollRecord{Flag: msg2})
+	if err1 != nil {
+		b.Fatalf("could not request get enrollment: %v", err)
+	}
+	//log.Printf("GetEnrollment Finish")
+	enrollment, _ := proto.Marshal(&EnrollmentResponse{
+		Ns:    r1.GetNs(),
+		C0:    r1.GetC0(),
+		C1:    r1.GetC1(),
+		Proof: r1.GetProof(),
+	})
+	rec, key, err := nc.EnrollAccount(pwd, enrollment)
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	//log.Printf("VerifyPassword Finish")
+	for i := 0; i < b.N; i++ {
+		MockRandom()
+		pwd_ := []byte("Wrong Password")
+		msg3a, msg3b, _ := nc.CreateVerifyPasswordRequest(pwd_, rec)
+		r2, err2 := c.VerifyPassword(ctx, &VerifyPasswordRequest{
+			Ns: msg3b,
+			C0: msg3a,
+		})
+		if err2 != nil {
+			b.Fatalf("could not request verify password: %v", err)
+		}
+
+
+
+		res, _ := proto.Marshal(&VerifyPasswordResponse{
+			Res:   r2.GetRes(),
+			C1:    r2.GetC1(),
+			Proof: r2.GetProof(),
+		})
+
+		keyDec, _ := nc.CheckResponseAndDecrypt(pwd, rec, res)
+		bytes.Equal(key, keyDec)
+	}
+
+	msg4 := "requestUpdate"
+	r4, err4 := c.Rotate(ctx, &UpdateRequest{Flag: msg4})
+	if err4 != nil {
+		b.Fatalf("could not request update: %v", err)
+	}
+	token, _ := proto.Marshal(r4)
+	nc.Rotate(token)
+	_, _ = UpdateRecord(rec, token)
+}
+
 func Benchmark_CheckAndDecrypt(b *testing.B) {
 	const datafile = "../credentials/"
 	_, filename, _, _ := runtime.Caller(0)

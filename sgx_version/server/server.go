@@ -68,6 +68,9 @@ func (s *server) Decryption(ctx context.Context, in *pb.DecryptRequest) (*pb.Dec
 	c0_ := new(big.Int).SetBytes(in.GetC0())
 	n_ := new(big.Int).SetBytes(in.GetN())
 	tm := in.GetTm()
+	if xk == nil {
+		xk = randomZ()
+	}
 	rt := new(big.Int).SetBytes(hashZ(tm, xk.Bytes()))
 	c0 := new(big.Int).Div(c0_, rt)
 	n := new(big.Int).Div(n_, rt)

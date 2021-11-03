@@ -5,22 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d4ad3bf-0c5f-4093-a831-a5116ecfbb68" name="Changes" comment="Changes">
-      <change afterPath="$PROJECT_DIR$/ghz/ghz.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../18_lai_version/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18_lai_version/client/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../18_lai_version/test/client_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18_lai_version/test/client_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../benchmark/18Lai vs NoSGX.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../benchmark/analyse.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../benchmark/benchmarks.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../setup.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sgx_build.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../benchmark/benchmarks_server.md" beforeDir="false" afterPath="$PROJECT_DIR$/../benchmark/benchmarks_server.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sgx/sgx.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/sgx/sgx.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sgx/sgx.proto" beforeDir="false" afterPath="$PROJECT_DIR$/sgx/sgx.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sgx/sgx_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/sgx/sgx_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ghz/ghz.go" beforeDir="false" afterPath="$PROJECT_DIR$/ghz/ghz.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simple_version/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../simple_version/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simple_version/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../simple_version/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simple_version/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../simple_version/server/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,20 +77,20 @@
       <filePath value="$PROJECT_DIR$/client/client.go" />
       <method v="2" />
     </configuration>
+    <configuration name="go build ghz.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/ghz/ghz.go" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build server.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="sgx_version" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="FILE" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$/server/server.go" />
-      <method v="2" />
-    </configuration>
-    <configuration name="go build sgx/server" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="sgx_version" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="sgx/server" />
-      <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
     <configuration name="Benchmark_Workflow in sgx/client (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -136,6 +129,7 @@
       <list>
         <item itemvalue="Go Build.go build client.go" />
         <item itemvalue="Go Build.go build server.go" />
+        <item itemvalue="Go Build.go build ghz.go" />
       </list>
     </recent_temporary>
   </component>
