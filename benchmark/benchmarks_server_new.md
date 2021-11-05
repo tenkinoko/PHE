@@ -90,17 +90,17 @@ Decryption(Wrong) = DecryptWrong
 
 ## sgxPHE
 
-+ 1 record: 397.607µs + 2.428s
-+ 1000 records：5423.304µs + 2.428s
-+ 10000 records: 49.360ms + 2.428s
-+ 100000 records: 487.689384ms + 2.428s
++ 1 record: 380.807µs + 2.35s
++ 1000 records：5.272101ms + 2.343s
++ 10000 records: 48.180ms + 2.361s
++ 100000 records: 4780.892ms + 2.346s
 
 ## asymPHE
 
 + 1 record: 579.552µs
 + 1000 records: 18.935880ms
 + 10000 records:  181.675820ms
-+ 100000 records: 1.802376772ms
++ 100000 records: 1.802376772s
 
 ## 18phe
 

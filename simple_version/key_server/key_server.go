@@ -51,24 +51,25 @@ func (s *server) Negotiation(ctx context.Context, in *NegotiationBegin) (*Negoti
 func (s *server)ThirdPartGeneration(ctx context.Context, in *T2Generation) (*T2Response, error) {
 	//log.Printf("Received: %b", in.GetE1())
 	Hpwn1_ := in.GetE1()
-	r := in.GetE2()
+	gr, _ := PointUnmarshal(in.GetE2())
 	k := in.GetE3()
 	if x_1 == nil{
 		x_1 = RandomZ()
 	}
-	T2e := Gf.Add(Gf.MulBytes(r, x_1), Gf.AddBytes(k, new(big.Int).SetBytes(Hpwn1_)))
-	T2 := new(Point).ScalarBaseMultInt(T2e)
+	T2e := Gf.AddBytes(k, new(big.Int).SetBytes(Hpwn1_))
+	T2 := new(Point).ScalarBaseMultInt(T2e).Add(gr.ScalarMultInt(x_1))
 	return &T2Response{T2: T2.Marshal()}, nil
 }
 
 func (s *server)ZKProof(ctx context.Context, in *ProofOfX) (*ProverResponse, error) {
 	//log.Printf("Received: %b", in.GetFlag())
-	T0 := in.GetTT0()
-	FlagMsg := in.GetFlag()
-	Flag := new(big.Int).SetBytes(FlagMsg)
-	if Flag.Cmp(big.NewInt(1)) == 0 {
-		return ProverOfSuccess(T0)
-
+	T0, _ := PointUnmarshal(in.GetTT0())
+	C0, _ := PointUnmarshal(in.GetFlag())
+	T0x0 := T0.ScalarMultInt(x_0)
+	hT0x0_ := HashZ(T0x0.Marshal())
+	leftVal := T0x0.Add(new(Point).ScalarBaseMultInt(hT0x0_))
+	if leftVal.Equal(C0) {
+		return ProverOfSuccess(T0.Marshal())
 	} else {
 		return &ProverResponse{
 			C0:   RandomZ().Bytes(),
@@ -132,7 +133,6 @@ func (s *server) Rotate(ctx context.Context, in* UpdateRequest) (*UpdateToken, e
 		Delta0: delta0.Marshal(),
 		Delta1: delta1.Marshal(),
 	}, nil
-
 }
 
 func RunKeyServer(){

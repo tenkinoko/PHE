@@ -34,8 +34,6 @@ var (
 	T2 *Point
 )
 
-
-
 func GenerateServerKey()[]byte{
 	xs := RandomZ()
 	return xs.Bytes()
@@ -57,6 +55,7 @@ func ClientInfo(){
 }
 
 func EncryptionA()([]byte, []byte, []byte){
+	//TODO: r -> g^r
 	// T0 = g^r
 	T0 = new(Point).ScalarBaseMult(r)
 	// T1 = g^rx0 * g^H(g^rx0) * g^H(pw, n, 0)
@@ -69,7 +68,7 @@ func EncryptionA()([]byte, []byte, []byte){
 	T1 = grx0.Add(new(Point).ScalarBaseMultInt(T1e))
 
 	Hpwn1_ := HashZ(Pw, n, numOne).Bytes()
-	return Hpwn1_, r, k
+	return Hpwn1_, T0.Marshal(), k
 }
 
 func EncryptionB(TT2 []byte){
@@ -77,24 +76,21 @@ func EncryptionB(TT2 []byte){
 }
 
 func Decryption(pw0 []byte)([]byte, []byte){
-	// C0 = T1 / g^(H(pw0, n, 0))
+
 	hpwn0 := HashZ(pw0, n, numZero)
 	denominator := new(Point).ScalarBaseMultInt(hpwn0).Neg()
 	C0 := T1.Add(denominator)
-	T0x0 := T0.ScalarMultInt(x0)
-	//hT0x0 := sha1.Sum(T0x0.Marshal())
-	//hT0x0_ := hT0x0[:]
-	hT0x0_ := HashZ(T0x0.Marshal())
 
-	// leftVal = T0^x0 * H(T0^x0)
-	leftVal := T0x0.Add(new(Point).ScalarBaseMultInt(hT0x0_))
-	var flag *big.Int
-	if leftVal.Equal(C0) {
-		flag = big.NewInt(1)
-	} else {
-		flag = big.NewInt(0)
-	}
-	return flag.Bytes(), T0.Marshal()
+	//T0x0 := T0.ScalarMultInt(x0)
+	//hT0x0_ := HashZ(T0x0.Marshal())
+	//leftVal := T0x0.Add(new(Point).ScalarBaseMultInt(hT0x0_))
+	//var flag *big.Int
+	//if leftVal.Equal(C0) {
+	//	flag = big.NewInt(1)
+	//} else {
+	//	flag = big.NewInt(0)
+	//}
+	return C0.Marshal(), T0.Marshal()
 }
 
 func Verifier(C0, C1, U, GX1R, X1 []byte) bool{

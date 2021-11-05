@@ -5,14 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d4ad3bf-0c5f-4093-a831-a5116ecfbb68" name="Changes" comment="Changes">
-      <change beforePath="$PROJECT_DIR$/../18_lai_version/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18_lai_version/client/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../benchmark/benchmarks_server.md" beforeDir="false" afterPath="$PROJECT_DIR$/../benchmark/benchmarks_server.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../benchmark/benchmarks_server_new.md" beforeDir="false" afterPath="$PROJECT_DIR$/../benchmark/benchmarks_server_new.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ghz/ghz.go" beforeDir="false" afterPath="$PROJECT_DIR$/ghz/ghz.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../simple_version/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../simple_version/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../simple_version/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../simple_version/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simple_version/key_server/key_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../simple_version/key_server/key_server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../simple_version/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../simple_version/server/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
