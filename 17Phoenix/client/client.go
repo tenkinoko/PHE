@@ -23,14 +23,11 @@ var (
 
 	// client-generated variations at validation phase
 	u []byte
-
-	// from server
-	//h *Point
-	//z *Point
 )
 
 func SetupClient() {
 	un = RandomZ().Bytes()
+	nc = RandomZ().Bytes()
 	r = RandomZ().Bytes()
 	kc = RandomZ().Bytes()
 	pw = RandomZ().Bytes()
@@ -39,7 +36,7 @@ func SetupClient() {
 
 func EnrollmentClient(z_ []byte) []byte {
 	z, _ := PointUnmarshal(z_)
-	hc = new(Point).ScalarBaseMultInt(HashZ(un, pw, nc)).ScalarBaseMult(kc)
+	hc = new(Point).ScalarBaseMultInt(HashZ(un, pw, nc)).ScalarMult(kc)
 	zr = z.ScalarMult(r)
 	gr = new(Point).ScalarBaseMult(r)
 	return un
