@@ -20,16 +20,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type PubkeyRecord struct {
+type SetupC struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Flag string `protobuf:"bytes,1,opt,name=flag,proto3" json:"flag,omitempty"`
+	Flag []byte `protobuf:"bytes,1,opt,name=flag,proto3" json:"flag,omitempty"`
 }
 
-func (x *PubkeyRecord) Reset() {
-	*x = PubkeyRecord{}
+func (x *SetupC) Reset() {
+	*x = SetupC{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_phe_phe_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -37,13 +37,13 @@ func (x *PubkeyRecord) Reset() {
 	}
 }
 
-func (x *PubkeyRecord) String() string {
+func (x *SetupC) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PubkeyRecord) ProtoMessage() {}
+func (*SetupC) ProtoMessage() {}
 
-func (x *PubkeyRecord) ProtoReflect() protoreflect.Message {
+func (x *SetupC) ProtoReflect() protoreflect.Message {
 	mi := &file_phe_phe_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,28 +55,29 @@ func (x *PubkeyRecord) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PubkeyRecord.ProtoReflect.Descriptor instead.
-func (*PubkeyRecord) Descriptor() ([]byte, []int) {
+// Deprecated: Use SetupC.ProtoReflect.Descriptor instead.
+func (*SetupC) Descriptor() ([]byte, []int) {
 	return file_phe_phe_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PubkeyRecord) GetFlag() string {
+func (x *SetupC) GetFlag() []byte {
 	if x != nil {
 		return x.Flag
 	}
-	return ""
+	return nil
 }
 
-type PubkeyResponse struct {
+type SetupS struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PublicKey []byte `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	H []byte `protobuf:"bytes,1,opt,name=h,proto3" json:"h,omitempty"`
+	Z []byte `protobuf:"bytes,2,opt,name=z,proto3" json:"z,omitempty"`
 }
 
-func (x *PubkeyResponse) Reset() {
-	*x = PubkeyResponse{}
+func (x *SetupS) Reset() {
+	*x = SetupS{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_phe_phe_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -84,13 +85,13 @@ func (x *PubkeyResponse) Reset() {
 	}
 }
 
-func (x *PubkeyResponse) String() string {
+func (x *SetupS) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PubkeyResponse) ProtoMessage() {}
+func (*SetupS) ProtoMessage() {}
 
-func (x *PubkeyResponse) ProtoReflect() protoreflect.Message {
+func (x *SetupS) ProtoReflect() protoreflect.Message {
 	mi := &file_phe_phe_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -102,28 +103,35 @@ func (x *PubkeyResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PubkeyResponse.ProtoReflect.Descriptor instead.
-func (*PubkeyResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use SetupS.ProtoReflect.Descriptor instead.
+func (*SetupS) Descriptor() ([]byte, []int) {
 	return file_phe_phe_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PubkeyResponse) GetPublicKey() []byte {
+func (x *SetupS) GetH() []byte {
 	if x != nil {
-		return x.PublicKey
+		return x.H
 	}
 	return nil
 }
 
-type GetEnrollRecord struct {
+func (x *SetupS) GetZ() []byte {
+	if x != nil {
+		return x.Z
+	}
+	return nil
+}
+
+type EnrollmentC struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Flag string `protobuf:"bytes,1,opt,name=flag,proto3" json:"flag,omitempty"`
+	Un []byte `protobuf:"bytes,1,opt,name=un,proto3" json:"un,omitempty"`
 }
 
-func (x *GetEnrollRecord) Reset() {
-	*x = GetEnrollRecord{}
+func (x *EnrollmentC) Reset() {
+	*x = EnrollmentC{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_phe_phe_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -131,13 +139,13 @@ func (x *GetEnrollRecord) Reset() {
 	}
 }
 
-func (x *GetEnrollRecord) String() string {
+func (x *EnrollmentC) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetEnrollRecord) ProtoMessage() {}
+func (*EnrollmentC) ProtoMessage() {}
 
-func (x *GetEnrollRecord) ProtoReflect() protoreflect.Message {
+func (x *EnrollmentC) ProtoReflect() protoreflect.Message {
 	mi := &file_phe_phe_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -149,29 +157,29 @@ func (x *GetEnrollRecord) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetEnrollRecord.ProtoReflect.Descriptor instead.
-func (*GetEnrollRecord) Descriptor() ([]byte, []int) {
+// Deprecated: Use EnrollmentC.ProtoReflect.Descriptor instead.
+func (*EnrollmentC) Descriptor() ([]byte, []int) {
 	return file_phe_phe_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetEnrollRecord) GetFlag() string {
+func (x *EnrollmentC) GetUn() []byte {
 	if x != nil {
-		return x.Flag
+		return x.Un
 	}
-	return ""
+	return nil
 }
 
-type Keypair struct {
+type EnrollmentS struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PublicKey  []byte `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	PrivateKey []byte `protobuf:"bytes,2,opt,name=private_key,json=privateKey,proto3" json:"private_key,omitempty"`
+	Hs []byte `protobuf:"bytes,1,opt,name=hs,proto3" json:"hs,omitempty"`
+	Ns []byte `protobuf:"bytes,2,opt,name=ns,proto3" json:"ns,omitempty"`
 }
 
-func (x *Keypair) Reset() {
-	*x = Keypair{}
+func (x *EnrollmentS) Reset() {
+	*x = EnrollmentS{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_phe_phe_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -179,13 +187,13 @@ func (x *Keypair) Reset() {
 	}
 }
 
-func (x *Keypair) String() string {
+func (x *EnrollmentS) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Keypair) ProtoMessage() {}
+func (*EnrollmentS) ProtoMessage() {}
 
-func (x *Keypair) ProtoReflect() protoreflect.Message {
+func (x *EnrollmentS) ProtoReflect() protoreflect.Message {
 	mi := &file_phe_phe_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -197,38 +205,37 @@ func (x *Keypair) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Keypair.ProtoReflect.Descriptor instead.
-func (*Keypair) Descriptor() ([]byte, []int) {
+// Deprecated: Use EnrollmentS.ProtoReflect.Descriptor instead.
+func (*EnrollmentS) Descriptor() ([]byte, []int) {
 	return file_phe_phe_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *Keypair) GetPublicKey() []byte {
+func (x *EnrollmentS) GetHs() []byte {
 	if x != nil {
-		return x.PublicKey
+		return x.Hs
 	}
 	return nil
 }
 
-func (x *Keypair) GetPrivateKey() []byte {
+func (x *EnrollmentS) GetNs() []byte {
 	if x != nil {
-		return x.PrivateKey
+		return x.Ns
 	}
 	return nil
 }
 
-type EnrollmentRecord struct {
+type ValidationC struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Ns []byte `protobuf:"bytes,1,opt,name=ns,proto3" json:"ns,omitempty"`
-	Nc []byte `protobuf:"bytes,2,opt,name=nc,proto3" json:"nc,omitempty"`
-	T0 []byte `protobuf:"bytes,3,opt,name=t0,proto3" json:"t0,omitempty"`
-	T1 []byte `protobuf:"bytes,4,opt,name=t1,proto3" json:"t1,omitempty"`
+	C1 []byte `protobuf:"bytes,1,opt,name=c1,proto3" json:"c1,omitempty"`
+	C2 []byte `protobuf:"bytes,2,opt,name=c2,proto3" json:"c2,omitempty"`
+	C3 []byte `protobuf:"bytes,3,opt,name=c3,proto3" json:"c3,omitempty"`
 }
 
-func (x *EnrollmentRecord) Reset() {
-	*x = EnrollmentRecord{}
+func (x *ValidationC) Reset() {
+	*x = ValidationC{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_phe_phe_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -236,13 +243,13 @@ func (x *EnrollmentRecord) Reset() {
 	}
 }
 
-func (x *EnrollmentRecord) String() string {
+func (x *ValidationC) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EnrollmentRecord) ProtoMessage() {}
+func (*ValidationC) ProtoMessage() {}
 
-func (x *EnrollmentRecord) ProtoReflect() protoreflect.Message {
+func (x *ValidationC) ProtoReflect() protoreflect.Message {
 	mi := &file_phe_phe_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -254,52 +261,42 @@ func (x *EnrollmentRecord) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EnrollmentRecord.ProtoReflect.Descriptor instead.
-func (*EnrollmentRecord) Descriptor() ([]byte, []int) {
+// Deprecated: Use ValidationC.ProtoReflect.Descriptor instead.
+func (*ValidationC) Descriptor() ([]byte, []int) {
 	return file_phe_phe_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *EnrollmentRecord) GetNs() []byte {
+func (x *ValidationC) GetC1() []byte {
 	if x != nil {
-		return x.Ns
+		return x.C1
 	}
 	return nil
 }
 
-func (x *EnrollmentRecord) GetNc() []byte {
+func (x *ValidationC) GetC2() []byte {
 	if x != nil {
-		return x.Nc
+		return x.C2
 	}
 	return nil
 }
 
-func (x *EnrollmentRecord) GetT0() []byte {
+func (x *ValidationC) GetC3() []byte {
 	if x != nil {
-		return x.T0
+		return x.C3
 	}
 	return nil
 }
 
-func (x *EnrollmentRecord) GetT1() []byte {
-	if x != nil {
-		return x.T1
-	}
-	return nil
-}
-
-type ProofOfSuccess struct {
+type ValidationS struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Term1  []byte `protobuf:"bytes,1,opt,name=term1,proto3" json:"term1,omitempty"`
-	Term2  []byte `protobuf:"bytes,2,opt,name=term2,proto3" json:"term2,omitempty"`
-	Term3  []byte `protobuf:"bytes,3,opt,name=term3,proto3" json:"term3,omitempty"`
-	BlindX []byte `protobuf:"bytes,4,opt,name=blind_x,json=blindX,proto3" json:"blind_x,omitempty"`
+	Flag bool `protobuf:"varint,1,opt,name=flag,proto3" json:"flag,omitempty"`
 }
 
-func (x *ProofOfSuccess) Reset() {
-	*x = ProofOfSuccess{}
+func (x *ValidationS) Reset() {
+	*x = ValidationS{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_phe_phe_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -307,13 +304,13 @@ func (x *ProofOfSuccess) Reset() {
 	}
 }
 
-func (x *ProofOfSuccess) String() string {
+func (x *ValidationS) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ProofOfSuccess) ProtoMessage() {}
+func (*ValidationS) ProtoMessage() {}
 
-func (x *ProofOfSuccess) ProtoReflect() protoreflect.Message {
+func (x *ValidationS) ProtoReflect() protoreflect.Message {
 	mi := &file_phe_phe_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -325,537 +322,49 @@ func (x *ProofOfSuccess) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ProofOfSuccess.ProtoReflect.Descriptor instead.
-func (*ProofOfSuccess) Descriptor() ([]byte, []int) {
+// Deprecated: Use ValidationS.ProtoReflect.Descriptor instead.
+func (*ValidationS) Descriptor() ([]byte, []int) {
 	return file_phe_phe_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *ProofOfSuccess) GetTerm1() []byte {
-	if x != nil {
-		return x.Term1
-	}
-	return nil
-}
-
-func (x *ProofOfSuccess) GetTerm2() []byte {
-	if x != nil {
-		return x.Term2
-	}
-	return nil
-}
-
-func (x *ProofOfSuccess) GetTerm3() []byte {
-	if x != nil {
-		return x.Term3
-	}
-	return nil
-}
-
-func (x *ProofOfSuccess) GetBlindX() []byte {
-	if x != nil {
-		return x.BlindX
-	}
-	return nil
-}
-
-type ProofOfFail struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Term1  []byte `protobuf:"bytes,1,opt,name=term1,proto3" json:"term1,omitempty"`
-	Term2  []byte `protobuf:"bytes,2,opt,name=term2,proto3" json:"term2,omitempty"`
-	Term3  []byte `protobuf:"bytes,3,opt,name=term3,proto3" json:"term3,omitempty"`
-	Term4  []byte `protobuf:"bytes,4,opt,name=term4,proto3" json:"term4,omitempty"`
-	BlindA []byte `protobuf:"bytes,5,opt,name=blind_a,json=blindA,proto3" json:"blind_a,omitempty"`
-	BlindB []byte `protobuf:"bytes,6,opt,name=blind_b,json=blindB,proto3" json:"blind_b,omitempty"`
-}
-
-func (x *ProofOfFail) Reset() {
-	*x = ProofOfFail{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_phe_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ProofOfFail) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProofOfFail) ProtoMessage() {}
-
-func (x *ProofOfFail) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_phe_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ProofOfFail.ProtoReflect.Descriptor instead.
-func (*ProofOfFail) Descriptor() ([]byte, []int) {
-	return file_phe_phe_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *ProofOfFail) GetTerm1() []byte {
-	if x != nil {
-		return x.Term1
-	}
-	return nil
-}
-
-func (x *ProofOfFail) GetTerm2() []byte {
-	if x != nil {
-		return x.Term2
-	}
-	return nil
-}
-
-func (x *ProofOfFail) GetTerm3() []byte {
-	if x != nil {
-		return x.Term3
-	}
-	return nil
-}
-
-func (x *ProofOfFail) GetTerm4() []byte {
-	if x != nil {
-		return x.Term4
-	}
-	return nil
-}
-
-func (x *ProofOfFail) GetBlindA() []byte {
-	if x != nil {
-		return x.BlindA
-	}
-	return nil
-}
-
-func (x *ProofOfFail) GetBlindB() []byte {
-	if x != nil {
-		return x.BlindB
-	}
-	return nil
-}
-
-type UpdateRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Flag string `protobuf:"bytes,1,opt,name=flag,proto3" json:"flag,omitempty"`
-}
-
-func (x *UpdateRequest) Reset() {
-	*x = UpdateRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_phe_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *UpdateRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateRequest) ProtoMessage() {}
-
-func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_phe_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateRequest.ProtoReflect.Descriptor instead.
-func (*UpdateRequest) Descriptor() ([]byte, []int) {
-	return file_phe_phe_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *UpdateRequest) GetFlag() string {
+func (x *ValidationS) GetFlag() bool {
 	if x != nil {
 		return x.Flag
 	}
-	return ""
-}
-
-type UpdateToken struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	A []byte `protobuf:"bytes,1,opt,name=a,proto3" json:"a,omitempty"`
-	B []byte `protobuf:"bytes,2,opt,name=b,proto3" json:"b,omitempty"`
-}
-
-func (x *UpdateToken) Reset() {
-	*x = UpdateToken{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_phe_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *UpdateToken) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateToken) ProtoMessage() {}
-
-func (x *UpdateToken) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_phe_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateToken.ProtoReflect.Descriptor instead.
-func (*UpdateToken) Descriptor() ([]byte, []int) {
-	return file_phe_phe_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *UpdateToken) GetA() []byte {
-	if x != nil {
-		return x.A
-	}
-	return nil
-}
-
-func (x *UpdateToken) GetB() []byte {
-	if x != nil {
-		return x.B
-	}
-	return nil
-}
-
-type EnrollmentResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Ns    []byte          `protobuf:"bytes,1,opt,name=ns,proto3" json:"ns,omitempty"`
-	C0    []byte          `protobuf:"bytes,2,opt,name=c0,proto3" json:"c0,omitempty"`
-	C1    []byte          `protobuf:"bytes,3,opt,name=c1,proto3" json:"c1,omitempty"`
-	Proof *ProofOfSuccess `protobuf:"bytes,4,opt,name=proof,proto3" json:"proof,omitempty"`
-}
-
-func (x *EnrollmentResponse) Reset() {
-	*x = EnrollmentResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_phe_proto_msgTypes[9]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *EnrollmentResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EnrollmentResponse) ProtoMessage() {}
-
-func (x *EnrollmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_phe_proto_msgTypes[9]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EnrollmentResponse.ProtoReflect.Descriptor instead.
-func (*EnrollmentResponse) Descriptor() ([]byte, []int) {
-	return file_phe_phe_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *EnrollmentResponse) GetNs() []byte {
-	if x != nil {
-		return x.Ns
-	}
-	return nil
-}
-
-func (x *EnrollmentResponse) GetC0() []byte {
-	if x != nil {
-		return x.C0
-	}
-	return nil
-}
-
-func (x *EnrollmentResponse) GetC1() []byte {
-	if x != nil {
-		return x.C1
-	}
-	return nil
-}
-
-func (x *EnrollmentResponse) GetProof() *ProofOfSuccess {
-	if x != nil {
-		return x.Proof
-	}
-	return nil
-}
-
-type VerifyPasswordRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Ns []byte `protobuf:"bytes,1,opt,name=ns,proto3" json:"ns,omitempty"`
-	C0 []byte `protobuf:"bytes,2,opt,name=c0,proto3" json:"c0,omitempty"`
-}
-
-func (x *VerifyPasswordRequest) Reset() {
-	*x = VerifyPasswordRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_phe_proto_msgTypes[10]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *VerifyPasswordRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*VerifyPasswordRequest) ProtoMessage() {}
-
-func (x *VerifyPasswordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_phe_proto_msgTypes[10]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use VerifyPasswordRequest.ProtoReflect.Descriptor instead.
-func (*VerifyPasswordRequest) Descriptor() ([]byte, []int) {
-	return file_phe_phe_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *VerifyPasswordRequest) GetNs() []byte {
-	if x != nil {
-		return x.Ns
-	}
-	return nil
-}
-
-func (x *VerifyPasswordRequest) GetC0() []byte {
-	if x != nil {
-		return x.C0
-	}
-	return nil
-}
-
-type VerifyPasswordResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Res bool   `protobuf:"varint,1,opt,name=res,proto3" json:"res,omitempty"`
-	C1  []byte `protobuf:"bytes,2,opt,name=c1,proto3" json:"c1,omitempty"`
-	// Types that are assignable to Proof:
-	//	*VerifyPasswordResponse_Success
-	//	*VerifyPasswordResponse_Fail
-	Proof isVerifyPasswordResponse_Proof `protobuf_oneof:"proof"`
-}
-
-func (x *VerifyPasswordResponse) Reset() {
-	*x = VerifyPasswordResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_phe_phe_proto_msgTypes[11]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *VerifyPasswordResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*VerifyPasswordResponse) ProtoMessage() {}
-
-func (x *VerifyPasswordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_phe_phe_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use VerifyPasswordResponse.ProtoReflect.Descriptor instead.
-func (*VerifyPasswordResponse) Descriptor() ([]byte, []int) {
-	return file_phe_phe_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *VerifyPasswordResponse) GetRes() bool {
-	if x != nil {
-		return x.Res
-	}
 	return false
 }
-
-func (x *VerifyPasswordResponse) GetC1() []byte {
-	if x != nil {
-		return x.C1
-	}
-	return nil
-}
-
-func (m *VerifyPasswordResponse) GetProof() isVerifyPasswordResponse_Proof {
-	if m != nil {
-		return m.Proof
-	}
-	return nil
-}
-
-func (x *VerifyPasswordResponse) GetSuccess() *ProofOfSuccess {
-	if x, ok := x.GetProof().(*VerifyPasswordResponse_Success); ok {
-		return x.Success
-	}
-	return nil
-}
-
-func (x *VerifyPasswordResponse) GetFail() *ProofOfFail {
-	if x, ok := x.GetProof().(*VerifyPasswordResponse_Fail); ok {
-		return x.Fail
-	}
-	return nil
-}
-
-type isVerifyPasswordResponse_Proof interface {
-	isVerifyPasswordResponse_Proof()
-}
-
-type VerifyPasswordResponse_Success struct {
-	Success *ProofOfSuccess `protobuf:"bytes,3,opt,name=success,proto3,oneof"`
-}
-
-type VerifyPasswordResponse_Fail struct {
-	Fail *ProofOfFail `protobuf:"bytes,4,opt,name=fail,proto3,oneof"`
-}
-
-func (*VerifyPasswordResponse_Success) isVerifyPasswordResponse_Proof() {}
-
-func (*VerifyPasswordResponse_Fail) isVerifyPasswordResponse_Proof() {}
 
 var File_phe_phe_proto protoreflect.FileDescriptor
 
 var file_phe_phe_proto_rawDesc = []byte{
 	0x0a, 0x0d, 0x70, 0x68, 0x65, 0x2f, 0x70, 0x68, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
-	0x03, 0x70, 0x68, 0x65, 0x22, 0x22, 0x0a, 0x0c, 0x50, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x52, 0x65,
-	0x63, 0x6f, 0x72, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x66, 0x6c, 0x61, 0x67, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x04, 0x66, 0x6c, 0x61, 0x67, 0x22, 0x2f, 0x0a, 0x0e, 0x50, 0x75, 0x62, 0x6b,
-	0x65, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x75,
-	0x62, 0x6c, 0x69, 0x63, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x09,
-	0x70, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x4b, 0x65, 0x79, 0x22, 0x25, 0x0a, 0x0f, 0x47, 0x65, 0x74,
-	0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x12, 0x0a, 0x04,
-	0x66, 0x6c, 0x61, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x66, 0x6c, 0x61, 0x67,
-	0x22, 0x49, 0x0a, 0x07, 0x4b, 0x65, 0x79, 0x70, 0x61, 0x69, 0x72, 0x12, 0x1d, 0x0a, 0x0a, 0x70,
-	0x75, 0x62, 0x6c, 0x69, 0x63, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52,
-	0x09, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x4b, 0x65, 0x79, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x72,
-	0x69, 0x76, 0x61, 0x74, 0x65, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52,
-	0x0a, 0x70, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x22, 0x52, 0x0a, 0x10, 0x45,
-	0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12,
-	0x0e, 0x0a, 0x02, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x6e, 0x73, 0x12,
-	0x0e, 0x0a, 0x02, 0x6e, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x6e, 0x63, 0x12,
-	0x0e, 0x0a, 0x02, 0x74, 0x30, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x74, 0x30, 0x12,
-	0x0e, 0x0a, 0x02, 0x74, 0x31, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x74, 0x31, 0x22,
-	0x6b, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x6f, 0x66, 0x4f, 0x66, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73,
-	0x73, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x31, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c,
-	0x52, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x31, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x32,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x32, 0x12, 0x14, 0x0a,
-	0x05, 0x74, 0x65, 0x72, 0x6d, 0x33, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x74, 0x65,
-	0x72, 0x6d, 0x33, 0x12, 0x17, 0x0a, 0x07, 0x62, 0x6c, 0x69, 0x6e, 0x64, 0x5f, 0x78, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x62, 0x6c, 0x69, 0x6e, 0x64, 0x58, 0x22, 0x97, 0x01, 0x0a,
-	0x0b, 0x50, 0x72, 0x6f, 0x6f, 0x66, 0x4f, 0x66, 0x46, 0x61, 0x69, 0x6c, 0x12, 0x14, 0x0a, 0x05,
-	0x74, 0x65, 0x72, 0x6d, 0x31, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x74, 0x65, 0x72,
-	0x6d, 0x31, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x32, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0c, 0x52, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x32, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x65, 0x72, 0x6d,
-	0x33, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x33, 0x12, 0x14,
-	0x0a, 0x05, 0x74, 0x65, 0x72, 0x6d, 0x34, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x74,
-	0x65, 0x72, 0x6d, 0x34, 0x12, 0x17, 0x0a, 0x07, 0x62, 0x6c, 0x69, 0x6e, 0x64, 0x5f, 0x61, 0x18,
-	0x05, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x62, 0x6c, 0x69, 0x6e, 0x64, 0x41, 0x12, 0x17, 0x0a,
-	0x07, 0x62, 0x6c, 0x69, 0x6e, 0x64, 0x5f, 0x62, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06,
-	0x62, 0x6c, 0x69, 0x6e, 0x64, 0x42, 0x22, 0x23, 0x0a, 0x0d, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x66, 0x6c, 0x61, 0x67, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x66, 0x6c, 0x61, 0x67, 0x22, 0x29, 0x0a, 0x0b, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x0c, 0x0a, 0x01, 0x61, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x01, 0x61, 0x12, 0x0c, 0x0a, 0x01, 0x62, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x0c, 0x52, 0x01, 0x62, 0x22, 0x6f, 0x0a, 0x12, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c,
-	0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02,
-	0x6e, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x6e, 0x73, 0x12, 0x0e, 0x0a, 0x02,
-	0x63, 0x30, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x63, 0x30, 0x12, 0x0e, 0x0a, 0x02,
-	0x63, 0x31, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x63, 0x31, 0x12, 0x29, 0x0a, 0x05,
-	0x70, 0x72, 0x6f, 0x6f, 0x66, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x70, 0x68,
-	0x65, 0x2e, 0x50, 0x72, 0x6f, 0x6f, 0x66, 0x4f, 0x66, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73,
-	0x52, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x22, 0x37, 0x0a, 0x15, 0x56, 0x65, 0x72, 0x69, 0x66,
-	0x79, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x0e, 0x0a, 0x02, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x6e, 0x73,
-	0x12, 0x0e, 0x0a, 0x02, 0x63, 0x30, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x63, 0x30,
-	0x22, 0x9c, 0x01, 0x0a, 0x16, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x50, 0x61, 0x73, 0x73, 0x77,
-	0x6f, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x72,
-	0x65, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x03, 0x72, 0x65, 0x73, 0x12, 0x0e, 0x0a,
-	0x02, 0x63, 0x31, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x63, 0x31, 0x12, 0x2f, 0x0a,
-	0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13,
-	0x2e, 0x70, 0x68, 0x65, 0x2e, 0x50, 0x72, 0x6f, 0x6f, 0x66, 0x4f, 0x66, 0x53, 0x75, 0x63, 0x63,
-	0x65, 0x73, 0x73, 0x48, 0x00, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x26,
-	0x0a, 0x04, 0x66, 0x61, 0x69, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x70,
-	0x68, 0x65, 0x2e, 0x50, 0x72, 0x6f, 0x6f, 0x66, 0x4f, 0x66, 0x46, 0x61, 0x69, 0x6c, 0x48, 0x00,
-	0x52, 0x04, 0x66, 0x61, 0x69, 0x6c, 0x42, 0x07, 0x0a, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x32,
-	0xcd, 0x02, 0x0a, 0x0c, 0x70, 0x68, 0x65, 0x5f, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77,
-	0x12, 0x39, 0x0a, 0x0d, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x50, 0x75, 0x62, 0x6b, 0x65,
-	0x79, 0x12, 0x11, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x50, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x52, 0x65,
-	0x63, 0x6f, 0x72, 0x64, 0x1a, 0x13, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x50, 0x75, 0x62, 0x6b, 0x65,
-	0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x40, 0x0a, 0x0d, 0x47,
-	0x65, 0x74, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x14, 0x2e, 0x70,
-	0x68, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x52, 0x65, 0x63, 0x6f,
-	0x72, 0x64, 0x1a, 0x17, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d,
-	0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x41, 0x0a,
-	0x0d, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x15,
-	0x2e, 0x70, 0x68, 0x65, 0x2e, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x52,
-	0x65, 0x63, 0x6f, 0x72, 0x64, 0x1a, 0x17, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x45, 0x6e, 0x72, 0x6f,
-	0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
-	0x12, 0x4b, 0x0a, 0x0e, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f,
-	0x72, 0x64, 0x12, 0x1a, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x50,
-	0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b,
-	0x2e, 0x70, 0x68, 0x65, 0x2e, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x50, 0x61, 0x73, 0x73, 0x77,
-	0x6f, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x30, 0x0a,
-	0x06, 0x52, 0x6f, 0x74, 0x61, 0x74, 0x65, 0x12, 0x12, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x10, 0x2e, 0x70, 0x68,
-	0x65, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x00, 0x42,
-	0x08, 0x5a, 0x06, 0x2e, 0x2e, 0x2f, 0x70, 0x68, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x03, 0x70, 0x68, 0x65, 0x22, 0x1c, 0x0a, 0x06, 0x53, 0x65, 0x74, 0x75, 0x70, 0x43, 0x12, 0x12,
+	0x0a, 0x04, 0x66, 0x6c, 0x61, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x66, 0x6c,
+	0x61, 0x67, 0x22, 0x24, 0x0a, 0x06, 0x53, 0x65, 0x74, 0x75, 0x70, 0x53, 0x12, 0x0c, 0x0a, 0x01,
+	0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x01, 0x68, 0x12, 0x0c, 0x0a, 0x01, 0x7a, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x01, 0x7a, 0x22, 0x1d, 0x0a, 0x0b, 0x45, 0x6e, 0x72, 0x6f,
+	0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x43, 0x12, 0x0e, 0x0a, 0x02, 0x75, 0x6e, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0c, 0x52, 0x02, 0x75, 0x6e, 0x22, 0x2d, 0x0a, 0x0b, 0x45, 0x6e, 0x72, 0x6f, 0x6c,
+	0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x53, 0x12, 0x0e, 0x0a, 0x02, 0x68, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0c, 0x52, 0x02, 0x68, 0x73, 0x12, 0x0e, 0x0a, 0x02, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0c, 0x52, 0x02, 0x6e, 0x73, 0x22, 0x3d, 0x0a, 0x0b, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x12, 0x0e, 0x0a, 0x02, 0x63, 0x31, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0c, 0x52, 0x02, 0x63, 0x31, 0x12, 0x0e, 0x0a, 0x02, 0x63, 0x32, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0c, 0x52, 0x02, 0x63, 0x32, 0x12, 0x0e, 0x0a, 0x02, 0x63, 0x33, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0c, 0x52, 0x02, 0x63, 0x33, 0x22, 0x21, 0x0a, 0x0b, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x53, 0x12, 0x12, 0x0a, 0x04, 0x66, 0x6c, 0x61, 0x67, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x04, 0x66, 0x6c, 0x61, 0x67, 0x32, 0x9b, 0x01, 0x0a, 0x0c, 0x70, 0x68, 0x65,
+	0x5f, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x12, 0x23, 0x0a, 0x05, 0x53, 0x65, 0x74,
+	0x75, 0x70, 0x12, 0x0b, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x53, 0x65, 0x74, 0x75, 0x70, 0x43, 0x1a,
+	0x0b, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x53, 0x65, 0x74, 0x75, 0x70, 0x53, 0x22, 0x00, 0x12, 0x32,
+	0x0a, 0x0a, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x10, 0x2e, 0x70,
+	0x68, 0x65, 0x2e, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x43, 0x1a, 0x10,
+	0x2e, 0x70, 0x68, 0x65, 0x2e, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x53,
+	0x22, 0x00, 0x12, 0x32, 0x0a, 0x0a, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x10, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x43, 0x1a, 0x10, 0x2e, 0x70, 0x68, 0x65, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x53, 0x22, 0x00, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2e, 0x2f, 0x70, 0x68, 0x65,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -870,40 +379,27 @@ func file_phe_phe_proto_rawDescGZIP() []byte {
 	return file_phe_phe_proto_rawDescData
 }
 
-var file_phe_phe_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_phe_phe_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_phe_phe_proto_goTypes = []interface{}{
-	(*PubkeyRecord)(nil),           // 0: phe.PubkeyRecord
-	(*PubkeyResponse)(nil),         // 1: phe.PubkeyResponse
-	(*GetEnrollRecord)(nil),        // 2: phe.GetEnrollRecord
-	(*Keypair)(nil),                // 3: phe.Keypair
-	(*EnrollmentRecord)(nil),       // 4: phe.EnrollmentRecord
-	(*ProofOfSuccess)(nil),         // 5: phe.ProofOfSuccess
-	(*ProofOfFail)(nil),            // 6: phe.ProofOfFail
-	(*UpdateRequest)(nil),          // 7: phe.UpdateRequest
-	(*UpdateToken)(nil),            // 8: phe.UpdateToken
-	(*EnrollmentResponse)(nil),     // 9: phe.EnrollmentResponse
-	(*VerifyPasswordRequest)(nil),  // 10: phe.VerifyPasswordRequest
-	(*VerifyPasswordResponse)(nil), // 11: phe.VerifyPasswordResponse
+	(*SetupC)(nil),      // 0: phe.SetupC
+	(*SetupS)(nil),      // 1: phe.SetupS
+	(*EnrollmentC)(nil), // 2: phe.EnrollmentC
+	(*EnrollmentS)(nil), // 3: phe.EnrollmentS
+	(*ValidationC)(nil), // 4: phe.ValidationC
+	(*ValidationS)(nil), // 5: phe.ValidationS
 }
 var file_phe_phe_proto_depIdxs = []int32{
-	5,  // 0: phe.EnrollmentResponse.proof:type_name -> phe.ProofOfSuccess
-	5,  // 1: phe.VerifyPasswordResponse.success:type_name -> phe.ProofOfSuccess
-	6,  // 2: phe.VerifyPasswordResponse.fail:type_name -> phe.ProofOfFail
-	0,  // 3: phe.phe_workflow.ReceivePubkey:input_type -> phe.PubkeyRecord
-	2,  // 4: phe.phe_workflow.GetEnrollment:input_type -> phe.GetEnrollRecord
-	4,  // 5: phe.phe_workflow.EnrollAccount:input_type -> phe.EnrollmentRecord
-	10, // 6: phe.phe_workflow.VerifyPassword:input_type -> phe.VerifyPasswordRequest
-	7,  // 7: phe.phe_workflow.Rotate:input_type -> phe.UpdateRequest
-	1,  // 8: phe.phe_workflow.ReceivePubkey:output_type -> phe.PubkeyResponse
-	9,  // 9: phe.phe_workflow.GetEnrollment:output_type -> phe.EnrollmentResponse
-	9,  // 10: phe.phe_workflow.EnrollAccount:output_type -> phe.EnrollmentResponse
-	11, // 11: phe.phe_workflow.VerifyPassword:output_type -> phe.VerifyPasswordResponse
-	8,  // 12: phe.phe_workflow.Rotate:output_type -> phe.UpdateToken
-	8,  // [8:13] is the sub-list for method output_type
-	3,  // [3:8] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	0, // 0: phe.phe_workflow.Setup:input_type -> phe.SetupC
+	2, // 1: phe.phe_workflow.Enrollment:input_type -> phe.EnrollmentC
+	4, // 2: phe.phe_workflow.Validation:input_type -> phe.ValidationC
+	1, // 3: phe.phe_workflow.Setup:output_type -> phe.SetupS
+	3, // 4: phe.phe_workflow.Enrollment:output_type -> phe.EnrollmentS
+	5, // 5: phe.phe_workflow.Validation:output_type -> phe.ValidationS
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_phe_phe_proto_init() }
@@ -913,7 +409,7 @@ func file_phe_phe_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_phe_phe_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PubkeyRecord); i {
+			switch v := v.(*SetupC); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -925,7 +421,7 @@ func file_phe_phe_proto_init() {
 			}
 		}
 		file_phe_phe_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PubkeyResponse); i {
+			switch v := v.(*SetupS); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -937,7 +433,7 @@ func file_phe_phe_proto_init() {
 			}
 		}
 		file_phe_phe_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetEnrollRecord); i {
+			switch v := v.(*EnrollmentC); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -949,7 +445,7 @@ func file_phe_phe_proto_init() {
 			}
 		}
 		file_phe_phe_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Keypair); i {
+			switch v := v.(*EnrollmentS); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -961,7 +457,7 @@ func file_phe_phe_proto_init() {
 			}
 		}
 		file_phe_phe_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EnrollmentRecord); i {
+			switch v := v.(*ValidationC); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -973,7 +469,7 @@ func file_phe_phe_proto_init() {
 			}
 		}
 		file_phe_phe_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ProofOfSuccess); i {
+			switch v := v.(*ValidationS); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -984,82 +480,6 @@ func file_phe_phe_proto_init() {
 				return nil
 			}
 		}
-		file_phe_phe_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ProofOfFail); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_phe_phe_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_phe_phe_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateToken); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_phe_phe_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EnrollmentResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_phe_phe_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*VerifyPasswordRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_phe_phe_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*VerifyPasswordResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-	}
-	file_phe_phe_proto_msgTypes[11].OneofWrappers = []interface{}{
-		(*VerifyPasswordResponse_Success)(nil),
-		(*VerifyPasswordResponse_Fail)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1067,7 +487,7 @@ func file_phe_phe_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_phe_phe_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

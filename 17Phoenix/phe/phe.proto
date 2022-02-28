@@ -3,79 +3,35 @@ package phe;
 option go_package="../phe";
 
 service phe_workflow{
-    rpc ReceivePubkey (PubkeyRecord) returns (PubkeyResponse) {}
-    rpc GetEnrollment (GetEnrollRecord) returns (EnrollmentResponse) {}
-    rpc EnrollAccount (EnrollmentRecord) returns (EnrollmentResponse){}
-    rpc VerifyPassword (VerifyPasswordRequest) returns (VerifyPasswordResponse) {}
-    rpc Rotate (UpdateRequest) returns (UpdateToken) {}
+    rpc Setup (SetupC) returns (SetupS) {}
+    rpc Enrollment (EnrollmentC) returns (EnrollmentS) {}
+    rpc Validation (ValidationC) returns (ValidationS) {}
 }
 
-message PubkeyRecord {
-    string flag = 1;
+message SetupC {
+    bytes flag = 1;
 }
 
-message PubkeyResponse {
-    bytes public_key = 1;
+message SetupS {
+    bytes h = 1;
+    bytes z = 2;
 }
 
-message GetEnrollRecord {
-    string flag = 1;
+message EnrollmentC {
+    bytes un = 1;
 }
 
-message Keypair {
-    bytes public_key = 1;
-    bytes private_key = 2;
+message EnrollmentS {
+    bytes hs = 1;
+    bytes ns = 2;
 }
 
-message EnrollmentRecord {
-    bytes ns = 1;
-    bytes nc = 2;
-    bytes t0 = 3;
-    bytes t1 = 4;
+message ValidationC {
+    bytes c1 = 1;
+    bytes c2 = 2;
+    bytes c3 = 3;
 }
 
-message ProofOfSuccess {
-    bytes term1 = 1;
-    bytes term2 = 2;
-    bytes term3 = 3;
-    bytes blind_x = 4;
-}
-
-message ProofOfFail {
-    bytes term1 = 1;
-    bytes term2 = 2;
-    bytes term3 = 3;
-    bytes term4 = 4;
-    bytes blind_a = 5;
-    bytes blind_b = 6;
-}
-
-message UpdateRequest{
-    string flag = 1;
-}
-
-message UpdateToken {
-    bytes a = 1;
-    bytes b = 2;
-}
-
-message EnrollmentResponse {
-    bytes ns = 1;
-    bytes c0 = 2;
-    bytes c1 = 3;
-    ProofOfSuccess proof = 4;
-}
-
-message VerifyPasswordRequest {
-    bytes ns = 1;
-    bytes c0 = 2;
-}
-
-message VerifyPasswordResponse {
-    bool res = 1;
-    bytes c1 = 2;
-    oneof proof {
-        ProofOfSuccess success = 3;
-        ProofOfFail fail = 4;
-    }
+message ValidationS {
+    bool flag = 1;
 }

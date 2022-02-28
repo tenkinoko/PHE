@@ -18,11 +18,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PheWorkflowClient interface {
-	ReceivePubkey(ctx context.Context, in *PubkeyRecord, opts ...grpc.CallOption) (*PubkeyResponse, error)
-	GetEnrollment(ctx context.Context, in *GetEnrollRecord, opts ...grpc.CallOption) (*EnrollmentResponse, error)
-	EnrollAccount(ctx context.Context, in *EnrollmentRecord, opts ...grpc.CallOption) (*EnrollmentResponse, error)
-	VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*VerifyPasswordResponse, error)
-	Rotate(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateToken, error)
+	Setup(ctx context.Context, in *SetupC, opts ...grpc.CallOption) (*SetupS, error)
+	Enrollment(ctx context.Context, in *EnrollmentC, opts ...grpc.CallOption) (*EnrollmentS, error)
+	Validation(ctx context.Context, in *ValidationC, opts ...grpc.CallOption) (*ValidationS, error)
 }
 
 type pheWorkflowClient struct {
@@ -33,45 +31,27 @@ func NewPheWorkflowClient(cc grpc.ClientConnInterface) PheWorkflowClient {
 	return &pheWorkflowClient{cc}
 }
 
-func (c *pheWorkflowClient) ReceivePubkey(ctx context.Context, in *PubkeyRecord, opts ...grpc.CallOption) (*PubkeyResponse, error) {
-	out := new(PubkeyResponse)
-	err := c.cc.Invoke(ctx, "/phe.phe_workflow/ReceivePubkey", in, out, opts...)
+func (c *pheWorkflowClient) Setup(ctx context.Context, in *SetupC, opts ...grpc.CallOption) (*SetupS, error) {
+	out := new(SetupS)
+	err := c.cc.Invoke(ctx, "/phe.phe_workflow/Setup", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pheWorkflowClient) GetEnrollment(ctx context.Context, in *GetEnrollRecord, opts ...grpc.CallOption) (*EnrollmentResponse, error) {
-	out := new(EnrollmentResponse)
-	err := c.cc.Invoke(ctx, "/phe.phe_workflow/GetEnrollment", in, out, opts...)
+func (c *pheWorkflowClient) Enrollment(ctx context.Context, in *EnrollmentC, opts ...grpc.CallOption) (*EnrollmentS, error) {
+	out := new(EnrollmentS)
+	err := c.cc.Invoke(ctx, "/phe.phe_workflow/Enrollment", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pheWorkflowClient) EnrollAccount(ctx context.Context, in *EnrollmentRecord, opts ...grpc.CallOption) (*EnrollmentResponse, error) {
-	out := new(EnrollmentResponse)
-	err := c.cc.Invoke(ctx, "/phe.phe_workflow/EnrollAccount", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pheWorkflowClient) VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*VerifyPasswordResponse, error) {
-	out := new(VerifyPasswordResponse)
-	err := c.cc.Invoke(ctx, "/phe.phe_workflow/VerifyPassword", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pheWorkflowClient) Rotate(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateToken, error) {
-	out := new(UpdateToken)
-	err := c.cc.Invoke(ctx, "/phe.phe_workflow/Rotate", in, out, opts...)
+func (c *pheWorkflowClient) Validation(ctx context.Context, in *ValidationC, opts ...grpc.CallOption) (*ValidationS, error) {
+	out := new(ValidationS)
+	err := c.cc.Invoke(ctx, "/phe.phe_workflow/Validation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +62,9 @@ func (c *pheWorkflowClient) Rotate(ctx context.Context, in *UpdateRequest, opts 
 // All implementations must embed UnimplementedPheWorkflowServer
 // for forward compatibility
 type PheWorkflowServer interface {
-	ReceivePubkey(context.Context, *PubkeyRecord) (*PubkeyResponse, error)
-	GetEnrollment(context.Context, *GetEnrollRecord) (*EnrollmentResponse, error)
-	EnrollAccount(context.Context, *EnrollmentRecord) (*EnrollmentResponse, error)
-	VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordResponse, error)
-	Rotate(context.Context, *UpdateRequest) (*UpdateToken, error)
+	Setup(context.Context, *SetupC) (*SetupS, error)
+	Enrollment(context.Context, *EnrollmentC) (*EnrollmentS, error)
+	Validation(context.Context, *ValidationC) (*ValidationS, error)
 	mustEmbedUnimplementedPheWorkflowServer()
 }
 
@@ -94,20 +72,14 @@ type PheWorkflowServer interface {
 type UnimplementedPheWorkflowServer struct {
 }
 
-func (UnimplementedPheWorkflowServer) ReceivePubkey(context.Context, *PubkeyRecord) (*PubkeyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReceivePubkey not implemented")
+func (UnimplementedPheWorkflowServer) Setup(context.Context, *SetupC) (*SetupS, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Setup not implemented")
 }
-func (UnimplementedPheWorkflowServer) GetEnrollment(context.Context, *GetEnrollRecord) (*EnrollmentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollment not implemented")
+func (UnimplementedPheWorkflowServer) Enrollment(context.Context, *EnrollmentC) (*EnrollmentS, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Enrollment not implemented")
 }
-func (UnimplementedPheWorkflowServer) EnrollAccount(context.Context, *EnrollmentRecord) (*EnrollmentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EnrollAccount not implemented")
-}
-func (UnimplementedPheWorkflowServer) VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyPassword not implemented")
-}
-func (UnimplementedPheWorkflowServer) Rotate(context.Context, *UpdateRequest) (*UpdateToken, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Rotate not implemented")
+func (UnimplementedPheWorkflowServer) Validation(context.Context, *ValidationC) (*ValidationS, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Validation not implemented")
 }
 func (UnimplementedPheWorkflowServer) mustEmbedUnimplementedPheWorkflowServer() {}
 
@@ -122,92 +94,56 @@ func RegisterPheWorkflowServer(s grpc.ServiceRegistrar, srv PheWorkflowServer) {
 	s.RegisterService(&PheWorkflow_ServiceDesc, srv)
 }
 
-func _PheWorkflow_ReceivePubkey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PubkeyRecord)
+func _PheWorkflow_Setup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetupC)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PheWorkflowServer).ReceivePubkey(ctx, in)
+		return srv.(PheWorkflowServer).Setup(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/phe.phe_workflow/ReceivePubkey",
+		FullMethod: "/phe.phe_workflow/Setup",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PheWorkflowServer).ReceivePubkey(ctx, req.(*PubkeyRecord))
+		return srv.(PheWorkflowServer).Setup(ctx, req.(*SetupC))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PheWorkflow_GetEnrollment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetEnrollRecord)
+func _PheWorkflow_Enrollment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnrollmentC)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PheWorkflowServer).GetEnrollment(ctx, in)
+		return srv.(PheWorkflowServer).Enrollment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/phe.phe_workflow/GetEnrollment",
+		FullMethod: "/phe.phe_workflow/Enrollment",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PheWorkflowServer).GetEnrollment(ctx, req.(*GetEnrollRecord))
+		return srv.(PheWorkflowServer).Enrollment(ctx, req.(*EnrollmentC))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PheWorkflow_EnrollAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EnrollmentRecord)
+func _PheWorkflow_Validation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidationC)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PheWorkflowServer).EnrollAccount(ctx, in)
+		return srv.(PheWorkflowServer).Validation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/phe.phe_workflow/EnrollAccount",
+		FullMethod: "/phe.phe_workflow/Validation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PheWorkflowServer).EnrollAccount(ctx, req.(*EnrollmentRecord))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PheWorkflow_VerifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyPasswordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PheWorkflowServer).VerifyPassword(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phe.phe_workflow/VerifyPassword",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PheWorkflowServer).VerifyPassword(ctx, req.(*VerifyPasswordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PheWorkflow_Rotate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PheWorkflowServer).Rotate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phe.phe_workflow/Rotate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PheWorkflowServer).Rotate(ctx, req.(*UpdateRequest))
+		return srv.(PheWorkflowServer).Validation(ctx, req.(*ValidationC))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -220,24 +156,16 @@ var PheWorkflow_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PheWorkflowServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ReceivePubkey",
-			Handler:    _PheWorkflow_ReceivePubkey_Handler,
+			MethodName: "Setup",
+			Handler:    _PheWorkflow_Setup_Handler,
 		},
 		{
-			MethodName: "GetEnrollment",
-			Handler:    _PheWorkflow_GetEnrollment_Handler,
+			MethodName: "Enrollment",
+			Handler:    _PheWorkflow_Enrollment_Handler,
 		},
 		{
-			MethodName: "EnrollAccount",
-			Handler:    _PheWorkflow_EnrollAccount_Handler,
-		},
-		{
-			MethodName: "VerifyPassword",
-			Handler:    _PheWorkflow_VerifyPassword_Handler,
-		},
-		{
-			MethodName: "Rotate",
-			Handler:    _PheWorkflow_Rotate_Handler,
+			MethodName: "Validation",
+			Handler:    _PheWorkflow_Validation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

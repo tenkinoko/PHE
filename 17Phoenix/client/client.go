@@ -2,12 +2,10 @@ package client
 
 import (
 	. "18phe/utils"
-	"math/big"
 )
 
 var (
-	// client-generated variations at initialization
-	sk *big.Int
+	// client-generated variations at setup phase
 	un []byte
 	nc []byte
 	r []byte
@@ -27,44 +25,39 @@ var (
 	u []byte
 
 	// from server
-	h *Point
-	z *Point
-	hs *Point
-	ns []byte
-	ks []byte
-
+	//h *Point
+	//z *Point
 )
 
-// Init Phase
-func Init() {
+func SetupClient() {
 	un = RandomZ().Bytes()
 	r = RandomZ().Bytes()
 	kc = RandomZ().Bytes()
 	pw = RandomZ().Bytes()
 }
 
-// KGenC at Setup Phase
-func KGenC() []byte {
-	return RandomZ().Bytes()
-}
 
-// Enrollment phase
-func Enrollment() {
-	hc = new(Point).ScalarBaseMultInt(HashZ(un, nc)).ScalarBaseMult(kc)
+func EnrollmentClient(z_ []byte) []byte {
+	z, _ := PointUnmarshal(z_)
+	hc = new(Point).ScalarBaseMultInt(HashZ(un, pw, nc)).ScalarBaseMult(kc)
 	zr = z.ScalarMult(r)
 	gr = new(Point).ScalarBaseMult(r)
+	return un
 }
 
-// Validation Phase
-func Validation(){
+func ValidationClient(hs_ []byte, ns_ []byte, h_ []byte, z_ []byte)([]byte, []byte, []byte){
+	hs, _ := PointUnmarshal(hs_)
+	h, _ := PointUnmarshal(h_)
+	z, _ := PointUnmarshal(z_)
 	T1 = gr
 	T2 = h.ScalarMult(r).Add(hs).Add(hc)
 	T3 = zr
 
 	u = RandomZ().Bytes()
 
-	c1 := T1.Add(new(Point).ScalarMult(r))
-	c2 := T2.Add(h.ScalarMult(u)).Add(new(Point).ScalarBaseMultInt(HashZ(un, pw, nc)).ScalarMult(kc).Neg())
+	c1 := T1.Add(new(Point).ScalarBaseMult(u))
+	mid := new(Point).ScalarBaseMultInt(HashZ(un, pw, nc)).ScalarMult(kc)
+	c2 := T2.Add(h.ScalarMult(u)).Add(mid.Neg())
 	c3 := T3.Add(z.ScalarMult(u))
-
+	return c1.Marshal(), c2.Marshal(), c3.Marshal()
 }
