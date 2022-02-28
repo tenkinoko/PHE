@@ -60,8 +60,7 @@ func EncryptionA()([]byte, []byte, []byte){
 	T0 = new(Point).ScalarBaseMult(r)
 	// T1 = g^rx0 * g^H(g^rx0) * g^H(pw, n, 0)
 	grx0 := X0.ScalarMult(r)
-	//Hgrx0 := sha1.Sum(grx0.Marshal())
-	//Hgrx0_ := Hgrx0[:]
+
 	Hgrx0_ := HashZ(grx0.Marshal())
 	Hpwn0_ := HashZ(Pw, n, numZero)
 	T1e := Gf.Add(Hgrx0_, new(big.Int).Set(Hpwn0_))

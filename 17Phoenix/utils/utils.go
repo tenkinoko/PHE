@@ -41,7 +41,7 @@ import (
 	"crypto/cipher"
 	"crypto/elliptic"
 	"crypto/rand"
-	"crypto/sha512"
+	"crypto/sha256"
 	"io"
 	"math/big"
 
@@ -91,7 +91,7 @@ func RandRead(b []byte) {
 
 //hash hashes a slice of byte arrays,
 func hash(domain []byte, tuple ...[]byte) []byte {
-	hash := sha512.New()
+	hash := sha256.New()
 	/* #nosec */
 	hash.Write(domain)
 	for _, t := range tuple {
@@ -105,7 +105,7 @@ func hash(domain []byte, tuple ...[]byte) []byte {
 func initKdf(domain []byte, tuple ...[]byte) io.Reader {
 	key := hash(nil, tuple...)
 
-	return hkdf.New(sha512.New, key, domain, kdfInfoZ)
+	return hkdf.New(sha256.New, key, domain, kdfInfoZ)
 
 }
 
@@ -179,7 +179,7 @@ func Encrypt(data, key []byte) ([]byte, error) {
 	salt := make([]byte, symSaltLen)
 	RandRead(salt)
 
-	kdf := hkdf.New(sha512.New, key, salt, encrypt)
+	kdf := hkdf.New(sha256.New, key, salt, encrypt)
 
 	keyNonce := make([]byte, symKeyLen+symNonceLen)
 	_, err := kdf.Read(keyNonce)
@@ -215,7 +215,7 @@ func Decrypt(ciphertext, key []byte) ([]byte, error) {
 	}
 
 	salt := ciphertext[:symSaltLen]
-	kdf := hkdf.New(sha512.New, key, salt, encrypt)
+	kdf := hkdf.New(sha256.New, key, salt, encrypt)
 
 	keyNonce := make([]byte, symKeyLen+symNonceLen)
 	_, err := kdf.Read(keyNonce)

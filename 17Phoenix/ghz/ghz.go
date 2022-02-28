@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
-	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
 	"google.golang.org/grpc"
@@ -35,7 +35,7 @@ const (
 
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
-	hash := sha1.New()
+	hash := sha256.New()
 	/* #nosec */
 	hash.Write(domain)
 	for _, t := range tuple {

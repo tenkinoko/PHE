@@ -22,7 +22,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
-	"crypto/sha1"
+	"crypto/sha256"
 	"google.golang.org/grpc"
 	"io"
 	"log"
@@ -107,7 +107,7 @@ func (s *server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateRe
 
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
-	hash := sha1.New()
+	hash := sha256.New()
 	/* #nosec */
 	hash.Write(domain)
 	for _, t := range tuple {

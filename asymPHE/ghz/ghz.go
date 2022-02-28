@@ -3,11 +3,9 @@ package main
 import (
 	"context"
 	"crypto/rand"
-	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,20 +15,23 @@ import (
 	"runtime"
 	"time"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
+	. "simple_phe/phe"
+	. "simple_phe/server"
+
 	"github.com/bojand/ghz/printer"
 	"github.com/bojand/ghz/runner"
 	"github.com/golang/protobuf/proto"
-	. "simple_phe/phe"
-	. "simple_phe/server"
 )
 
 const (
-	address 	= "localhost:50051"
+	address = "localhost:50051"
 )
 
-
 func hashZ(domain []byte, tuple ...[]byte) []byte {
-	hash := sha1.New()
+	hash := sha256.New()
 	/* #nosec */
 	hash.Write(domain)
 	for _, t := range tuple {
@@ -60,7 +61,7 @@ func main() {
 	_, filename, _, _ := runtime.Caller(0)
 	credpath := path.Join(path.Dir(filename), datafile)
 	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+	cert, err := tls.LoadX509KeyPair(credpath+"/client.crt", credpath+"/client.key")
 	if err != nil {
 		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
 	}

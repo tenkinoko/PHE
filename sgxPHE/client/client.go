@@ -25,7 +25,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"crypto/sha1"
+	"crypto/sha256"
 	"fmt"
 	"google.golang.org/grpc"
 	"io"
@@ -60,7 +60,7 @@ const (
 )
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
-	hash := sha1.New()
+	hash := sha256.New()
 	/* #nosec */
 	hash.Write(domain)
 	for _, t := range tuple {
