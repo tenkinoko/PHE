@@ -1,0 +1,5 @@
+/home/jarvis/PHE/sgx_version/build/CMakeFiles/rebuild_cache.dir
+/home/jarvis/PHE/sgx_version/build/CMakeFiles/edit_cache.dir
+/home/jarvis/PHE/sgx_version/build/CMakeFiles/sign.dir
+/home/jarvis/PHE/sgx_version/build/CMakeFiles/enclave.dir
+/home/jarvis/PHE/sgx_version/build/CMakeFiles/app.dir
