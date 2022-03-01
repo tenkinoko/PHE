@@ -92,6 +92,24 @@ func (s_ *server)Validation(ctx context.Context, in *ValidationC) (*ValidationS,
 	return &ValidationS{Flag: flag1 && flag2}, nil
 }
 
+func (s_ *server)Rotation(ctx context.Context, in *RotationC) (*RotationS, error) {
+	alpha, beta, gamma, sigma, eta := RandomZ(), RandomZ(), RandomZ(), RandomZ(), RandomZ()
+	zeta := Gf.Add(Gf.Add(sigma, Gf.Mul(alpha, Gf.MulBytes(s, eta))), Gf.Mul(Gf.AddBytes(y, eta), beta))
+	_ = Gf.Add(Gf.MulBytes(ks, alpha), gamma)
+	s1 := Gf.Add(Gf.MulBytes(s, alpha), beta)
+	x_ := Gf.Add(Gf.MulBytes(x, alpha), sigma)
+	y_ := Gf.AddBytes(y, eta)
+	s = s1.Bytes()
+	x = x_.Bytes()
+	y = y_.Bytes()
+	return &RotationS{
+		Alpha: alpha.Bytes(),
+		Beta:  beta.Bytes(),
+		Gamma: gamma.Bytes(),
+		Zeta:  zeta.Bytes(),
+	}, nil
+}
+
 func RunServer(){
 	const datafile = "../credentials/"
 	_, filename, _, _ := runtime.Caller(1)

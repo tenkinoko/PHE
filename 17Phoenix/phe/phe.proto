@@ -6,6 +6,7 @@ service phe_workflow{
     rpc Setup (SetupC) returns (SetupS) {}
     rpc Enrollment (EnrollmentC) returns (EnrollmentS) {}
     rpc Validation (ValidationC) returns (ValidationS) {}
+    rpc Rotation (RotationC) returns (RotationS) {}
 }
 
 message SetupC {
@@ -34,4 +35,15 @@ message ValidationC {
 
 message ValidationS {
     bool flag = 1;
+}
+
+message RotationC {
+    bytes flag = 1;
+}
+
+message RotationS {
+    bytes alpha = 1;
+    bytes beta = 2;
+    bytes gamma = 3;
+    bytes zeta = 4;
 }

@@ -21,6 +21,7 @@ type PheWorkflowClient interface {
 	Setup(ctx context.Context, in *SetupC, opts ...grpc.CallOption) (*SetupS, error)
 	Enrollment(ctx context.Context, in *EnrollmentC, opts ...grpc.CallOption) (*EnrollmentS, error)
 	Validation(ctx context.Context, in *ValidationC, opts ...grpc.CallOption) (*ValidationS, error)
+	Rotation(ctx context.Context, in *RotationC, opts ...grpc.CallOption) (*RotationS, error)
 }
 
 type pheWorkflowClient struct {
@@ -58,6 +59,15 @@ func (c *pheWorkflowClient) Validation(ctx context.Context, in *ValidationC, opt
 	return out, nil
 }
 
+func (c *pheWorkflowClient) Rotation(ctx context.Context, in *RotationC, opts ...grpc.CallOption) (*RotationS, error) {
+	out := new(RotationS)
+	err := c.cc.Invoke(ctx, "/phe.phe_workflow/Rotation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PheWorkflowServer is the server API for PheWorkflow service.
 // All implementations must embed UnimplementedPheWorkflowServer
 // for forward compatibility
@@ -65,6 +75,7 @@ type PheWorkflowServer interface {
 	Setup(context.Context, *SetupC) (*SetupS, error)
 	Enrollment(context.Context, *EnrollmentC) (*EnrollmentS, error)
 	Validation(context.Context, *ValidationC) (*ValidationS, error)
+	Rotation(context.Context, *RotationC) (*RotationS, error)
 	mustEmbedUnimplementedPheWorkflowServer()
 }
 
@@ -80,6 +91,9 @@ func (UnimplementedPheWorkflowServer) Enrollment(context.Context, *EnrollmentC) 
 }
 func (UnimplementedPheWorkflowServer) Validation(context.Context, *ValidationC) (*ValidationS, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Validation not implemented")
+}
+func (UnimplementedPheWorkflowServer) Rotation(context.Context, *RotationC) (*RotationS, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Rotation not implemented")
 }
 func (UnimplementedPheWorkflowServer) mustEmbedUnimplementedPheWorkflowServer() {}
 
@@ -148,6 +162,24 @@ func _PheWorkflow_Validation_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PheWorkflow_Rotation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RotationC)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PheWorkflowServer).Rotation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phe.phe_workflow/Rotation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PheWorkflowServer).Rotation(ctx, req.(*RotationC))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PheWorkflow_ServiceDesc is the grpc.ServiceDesc for PheWorkflow service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -166,6 +198,10 @@ var PheWorkflow_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Validation",
 			Handler:    _PheWorkflow_Validation_Handler,
+		},
+		{
+			MethodName: "Rotation",
+			Handler:    _PheWorkflow_Rotation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
