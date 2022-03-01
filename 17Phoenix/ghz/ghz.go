@@ -101,24 +101,36 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	msg1 := "requestPublicKey"
-	r, err := c.ReceivePubkey(ctx, &PubkeyRecord{Flag: msg1})
-	if err != nil {
-		log.Fatalf("could not request public key: %v", err)
+	r0, err0 := c.Setup(ctx, &SetupC{Flag: RandomZ().Bytes()})
+	if err0 != nil {
+		log.Fatalf("could not setup: %v", err0)
 	}
-	log.Printf("ReceivePubkey Finish")
-	nc, _ := NewClient(r.GetPublicKey(), RandomZ().Bytes())
+	h, z := r0.GetH(), r0.GetZ()
 
-	msg2 := "requestGenEnrollment"
-	r1, err1 := c.GetEnrollment(ctx, &GetEnrollRecord{Flag: msg2})
+	SetupClient()
+	un := EnrollmentClient(z)
+	r1, err1 := c.Enrollment(ctx, &EnrollmentC{Un: un})
 	if err1 != nil {
-		log.Fatalf("could not request get enrollment: %v", err)
+		log.Fatalf("could not enroll: %v", err1)
 	}
-	log.Printf("GetEnrollment Finish")
-	enrollment, _ := proto.Marshal(r1)
-	rec, _, err := nc.EnrollAccount(pwd, enrollment)
+	C1m, C2m, C3m := ValidationClient(r1.GetHs(), r1.GetNs(), h, z)
 
-	msg3a, msg3b, _ := nc.CreateVerifyPasswordRequest(pwd, rec)
+	r2, err2 := c.Validation(ctx, &ValidationC{
+		C1: C1m,
+		C2: C2m,
+		C3: C3m,
+	})
+	if err2 != nil {
+		log.Fatalf("could not validate: %v", err2)
+	}
+	if !r2.GetFlag() {
+		log.Fatalf("cannot pass")
+	}
+	r3, err3 := c.Rotation(ctx, &RotationC{Flag: RandomZ().Bytes()})
+	if err3 != nil {
+		log.Fatalf("could not validate: %v", err3)
+	}
+	Update(r3.GetAlpha(), r3.GetBeta(), r3.GetGamma(), r3.GetZeta(), h, z, r1.GetHs())
 	//r2, err2 := c.VerifyPassword(ctx, &VerifyPasswordRequest{
 	//	Ns: msg3b,
 	//	C0: msg3a,
@@ -133,7 +145,7 @@ func main() {
 	//fmt.Println(bytes.Equal(key, keyDec))
 
 	// 组装BinaryData
-	item := VerifyPasswordRequest{Ns: msg3b, C0:msg3a}
+	item := EnrollmentC{Un: un}
 	buf := proto.Buffer{}
 	err111 := buf.EncodeMessage(&item)
 	if err111 != nil {
@@ -142,13 +154,13 @@ func main() {
 	}
 	report, err222 := runner.Run(
 		// 基本配置 call host proto文件 data
-		"phe.phe_workflow.VerifyPassword", //  'package.Service/method' or 'package.Service.Method'
+		"phe.phe_workflow.Enrollment", //  'package.Service/method' or 'package.Service.Method'
 		"localhost:50051",
-		runner.WithProtoFile("D:\\Projects\\SGX\\PHE\\18_lai_version\\phe\\phe.proto", []string{}),
+		runner.WithProtoFile("..\\phe\\phe.proto", []string{}),
 		runner.WithBinaryData(buf.Bytes()),
 		runner.WithInsecure(false),
 		runner.WithSkipTLSVerify(true),
-		runner.WithCertificate("D:\\Projects\\SGX\\PHE\\simple_version\\credentials\\client.crt", "D:\\Projects\\SGX\\PHE\\simple_version\\credentials\\client.key"),
+		runner.WithCertificate("..\\..\\17Phoenix\\credentials\\client.crt", "..\\credentials\\client.key"),
 		runner.WithTotalRequests(10000),
 		// 并发参数
 		runner.WithConcurrencySchedule(runner.ScheduleLine),

@@ -145,11 +145,11 @@ func main() {
 		// 基本配置 call host proto文件 data
 		"phe.phe_workflow.VerifyPassword", //  'package.Service/method' or 'package.Service.Method'
 		"localhost:50051",
-		runner.WithProtoFile("D:\\Projects\\SGX\\PHE\\18_lai_version\\phe\\phe.proto", []string{}),
+		runner.WithProtoFile("D:\\Projects\\SGX\\PHE\\18PHE\\phe\\phe.proto", []string{}),
 		runner.WithBinaryData(buf.Bytes()),
 		runner.WithInsecure(false),
 		runner.WithSkipTLSVerify(true),
-		runner.WithCertificate("D:\\Projects\\SGX\\PHE\\simple_version\\credentials\\client.crt", "D:\\Projects\\SGX\\PHE\\simple_version\\credentials\\client.key"),
+		runner.WithCertificate("D:\\Projects\\SGX\\PHE\\18PHE\\credentials\\client.crt", "D:\\Projects\\SGX\\PHE\\18PHE\\credentials\\client.key"),
 		runner.WithTotalRequests(10000),
 		// 并发参数
 		runner.WithConcurrencySchedule(runner.ScheduleLine),
