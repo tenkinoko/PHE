@@ -393,6 +393,7 @@ func Benchmark_Update(b *testing.B){
 			log.Fatalf("could not validate: %v", err3)
 		}
 		for j := 0; j < UpdCount; j++ {
+			MockRandom()
 			Update(r3.GetAlpha(), r3.GetBeta(), r3.GetGamma(), r3.GetZeta(), h, z, r1.GetHs())
 		}
 
