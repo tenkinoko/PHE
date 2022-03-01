@@ -24,34 +24,41 @@ const (
 )
 
 func Test_Workflow(t *testing.T){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -113,34 +120,41 @@ func Test_Workflow(t *testing.T){
 }
 
 func Benchmark_Workflow(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -208,34 +222,41 @@ func Benchmark_Workflow(b *testing.B){
 }
 
 func Benchmark_Negotiation(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -304,34 +325,41 @@ func Benchmark_Negotiation(b *testing.B){
 }
 
 func Benchmark_Encryption(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -399,34 +427,41 @@ func Benchmark_Encryption(b *testing.B){
 }
 
 func Benchmark_Decryption(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -496,34 +531,41 @@ func Benchmark_Decryption(b *testing.B){
 }
 
 func Benchmark_DecryptionOnR(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -596,34 +638,41 @@ func Benchmark_DecryptionOnR(b *testing.B){
 
 
 func Benchmark_DecryptionWrong(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -693,34 +742,41 @@ func Benchmark_DecryptionWrong(b *testing.B){
 }
 
 func Benchmark_Update(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -774,7 +830,7 @@ func Benchmark_Update(b *testing.B){
 			log.Fatalf("could not Rotate: %v", err3)
 		}
 		//log.Printf("Rotate Finish")
-		for j := 0; j < 1; j++ {
+		for j := 0; j < UpdCount; j++ {
 			delta0, _ := PointUnmarshal(r3.GetDelta0())
 			delta1, _ := PointUnmarshal(r3.GetDelta1())
 			T1 = T1.Add(delta0)

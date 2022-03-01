@@ -18,43 +18,49 @@ import (
 	. "18phe/utils"
 )
 
-var UpdCount = 1
 const (
 	address 	= "localhost:50051"
 )
 
 
 func Test_Workflow(t *testing.T){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
+
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
-
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
 	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
-	}
-
 	conn, err := grpc.Dial(address, opts...)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -103,34 +109,41 @@ func Test_Workflow(t *testing.T){
 }
 
 func Benchmark_Enrollment(b *testing.B){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(0)
-	credpath := path.Join(path.Dir(filename), datafile)
-	// TLS Based on CA
-	cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-	}
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
+	var opts []grpc.DialOption
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(0)
+		credpath := path.Join(path.Dir(filename), datafile)
+		// TLS Based on CA
+		cert, err := tls.LoadX509KeyPair(credpath + "/client.crt", credpath + "/client.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
 
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ServerName:   "localhost",
-		RootCAs:      certPool,
-	})
-
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ServerName:   "localhost",
+			RootCAs:      certPool,
+		})
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -219,9 +232,18 @@ func Benchmark_Validation(b *testing.B){
 	})
 
 	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+	var opts []grpc.DialOption
+	if Https {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)
@@ -305,10 +327,18 @@ func Benchmark_Update(b *testing.B){
 		RootCAs:      certPool,
 	})
 
-	// Set up a connection to the server.
-	opts := []grpc.DialOption{
-		// credentials.
-		grpc.WithTransportCredentials(cred),
+	var opts []grpc.DialOption
+	if Https {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithTransportCredentials(cred),
+		}
+	} else {
+		opts = []grpc.DialOption{
+			// credentials.
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+		}
 	}
 
 	conn, err := grpc.Dial(address, opts...)

@@ -111,38 +111,52 @@ func (s_ *server)Rotation(ctx context.Context, in *RotationC) (*RotationS, error
 }
 
 func RunServer(){
-	const datafile = "../credentials/"
-	_, filename, _, _ := runtime.Caller(1)
-	credpath := path.Join(path.Dir(filename), datafile)
-	cert, err := tls.LoadX509KeyPair(credpath + "/server.crt", credpath + "/server.key")
-	if err != nil {
-		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+	if Https {
+		const datafile = "../credentials/"
+		_, filename, _, _ := runtime.Caller(1)
+		credpath := path.Join(path.Dir(filename), datafile)
+		cert, err := tls.LoadX509KeyPair(credpath + "/server.crt", credpath + "/server.key")
+		if err != nil {
+			log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+		}
+
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(credpath + "/ca.crt")
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
+
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
+
+		cred := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{cert},
+			ClientAuth:   tls.RequireAndVerifyClientCert,
+			ClientCAs:    certPool,
+		})
+
+		lis, err := net.Listen("tcp", port)
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+		s_ := grpc.NewServer(grpc.Creds(cred))
+		RegisterPheWorkflowServer(s_, &server{})
+		log.Printf("server listening at %v", lis.Addr())
+		if err := s_.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	} else {
+		lis, err := net.Listen("tcp", port)
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+		s_ := grpc.NewServer()
+		RegisterPheWorkflowServer(s_, &server{})
+		log.Printf("server listening at %v", lis.Addr())
+		if err := s_.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
 	}
 
-	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(credpath + "/ca.crt")
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
-
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
-	}
-
-	cred := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-		ClientAuth:   tls.RequireAndVerifyClientCert,
-		ClientCAs:    certPool,
-	})
-
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s_ := grpc.NewServer(grpc.Creds(cred))
-	RegisterPheWorkflowServer(s_, &server{})
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s_.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
 }
