@@ -8,9 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"fmt"
-	"runtime"
 )
 func GetAppPath() string {
 	file, _ := exec.LookPath(os.Args[0])
@@ -21,7 +18,5 @@ func GetAppPath() string {
 
 func TestKeyServerNetwork(t *testing.T) {
 	log.Println(GetAppPath())
-	num := runtime.NumCPU()
-	fmt.Println(num)
 	s.RunServer()
 }

@@ -34,7 +34,11 @@ message ValidationC {
 }
 
 message ValidationS {
-    bool flag = 1;
+    bytes _h = 1;
+    bytes _c1 = 2;
+    bytes _gS = 3;
+    bytes _s = 4;
+    bytes _kS = 5;
 }
 
 message RotationC {

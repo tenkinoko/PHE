@@ -24,6 +24,9 @@ var (
 
 	// client-generated variations at validation phase
 	u []byte
+	c1 *Point
+	c2 *Point
+	c3 *Point
 )
 
 func SetupClient() {
@@ -53,11 +56,31 @@ func ValidationClient(hs_ []byte, ns_ []byte, h_ []byte, z_ []byte)([]byte, []by
 
 	u = RandomZ().Bytes()
 
-	c1 := T1.Add(new(Point).ScalarBaseMult(u))
+	c1 = T1.Add(new(Point).ScalarBaseMult(u))
 	mid := new(Point).ScalarBaseMultInt(HashZ(un, pw, nc)).ScalarMult(kc)
-	c2 := T2.Add(h.ScalarMult(u)).Add(mid.Neg())
-	c3 := T3.Add(z.ScalarMult(u))
+	c2 = T2.Add(h.ScalarMult(u)).Add(mid.Neg())
+	c3 = T3.Add(z.ScalarMult(u))
 	return c1.Marshal(), c2.Marshal(), c3.Marshal()
+}
+
+func ZKProof(_h_ []byte, _c1_ []byte, _gS_ []byte, _s []byte, _kS []byte, h_ []byte, ns_ []byte) bool{
+	_h, _ := PointUnmarshal(_h_)
+	_c1, _ := PointUnmarshal(_c1_)
+	_gS, _ := PointUnmarshal(_gS_)
+	h, _ := PointUnmarshal(h_)
+	numOne := big.NewInt(1).Bytes()
+	g := new(Point).ScalarBaseMult(numOne)
+	gS := new(Point).ScalarBaseMult(HashZ(un, ns_).Bytes())
+	c := HashZ(g.Marshal(), h.Marshal(), c1.Marshal(), c2.Marshal(), gS.Marshal(), _h.Marshal(), _c1.Marshal(), _gS.Marshal())
+	b11 := c1.ScalarMult(_s).Add(gS.ScalarBaseMult(_kS))
+	b12 := _c1.Add(_gS).Add(c2.ScalarMultInt(c))
+	b21 := new(Point).ScalarBaseMult(_s)
+	b22 := _h.Add(h.ScalarMultInt(c))
+	b11v := new(big.Int).SetBytes(b11.Marshal())
+	b12v := new(big.Int).SetBytes(b12.Marshal())
+	b21v := new(big.Int).SetBytes(b21.Marshal())
+	b22v := new(big.Int).SetBytes(b22.Marshal())
+	return b11v.Cmp(b12v) == 0 && b21v.Cmp(b22v) == 0
 }
 
 func Update(a , b, g, ze, h_, z_, hs_ []byte) {

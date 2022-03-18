@@ -98,7 +98,7 @@ func Test_Workflow(t *testing.T){
 	if err2 != nil {
 		log.Fatalf("could not validate: %v", err2)
 	}
-	if !r2.GetFlag() {
+	if ZKProof(r2.GetXH(), r2.GetXC1(), r2.GetXGS(), r2.GetXS(), r2.GetXKS(), h, r1.GetNs()) {
 		log.Fatalf("cannot pass")
 	}
 	r3, err3 := c.Rotation(ctx, &RotationC{Flag: RandomZ().Bytes()})
@@ -196,7 +196,7 @@ func Benchmark_Enrollment(b *testing.B){
 	if err2 != nil {
 		log.Fatalf("could not validate: %v", err2)
 	}
-	if !r2.GetFlag() {
+	if ZKProof(r2.GetXH(), r2.GetXC1(), r2.GetXGS(), r2.GetXS(), r2.GetXKS(), h, ns) {
 		log.Fatalf("cannot pass")
 	}
 	r3, err3 := c.Rotation(ctx, &RotationC{Flag: RandomZ().Bytes()})
@@ -290,7 +290,7 @@ func Benchmark_Validation(b *testing.B){
 		if err2 != nil {
 			log.Fatalf("could not validate: %v", err2)
 		}
-		if !r2.GetFlag() {
+		if ZKProof(r2.GetXH(), r2.GetXC1(), r2.GetXGS(), r2.GetXS(), r2.GetXKS(), h, r1.GetNs()) {
 			log.Fatalf("cannot pass")
 		}
 	}
@@ -381,7 +381,7 @@ func Benchmark_Update(b *testing.B){
 	if err2 != nil {
 		log.Fatalf("could not validate: %v", err2)
 	}
-	if !r2.GetFlag() {
+	if ZKProof(r2.GetXH(), r2.GetXC1(), r2.GetXGS(), r2.GetXS(), r2.GetXKS(), h, r1.GetNs()) {
 		log.Fatalf("cannot pass")
 	}
 	b.ReportAllocs()

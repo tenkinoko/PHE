@@ -60,7 +60,8 @@ func (s_ *server) Setup(ctx context.Context, in *SetupC) (*SetupS, error){
 
 func (s_ *server)Enrollment(ctx context.Context, in *EnrollmentC) (*EnrollmentS, error){
 	un = in.GetUn()
-	hs = new(Point).ScalarBaseMult(HashZ(un, ns).Bytes()).ScalarMult(ks)
+	hs_ := new(Point).ScalarBaseMult(HashZ(un, ns).Bytes())
+	hs = hs_.ScalarMult(ks)
 	return &EnrollmentS{
 		Hs: hs.Marshal(),
 		Ns: ns,
@@ -89,7 +90,29 @@ func (s_ *server)Validation(ctx context.Context, in *ValidationC) (*ValidationS,
 	if c3V.Cmp(prf2V) != 0 {
 		flag2 = false
 	}
-	return &ValidationS{Flag: flag1 && flag2}, nil
+	if flag1 && flag2 {
+		r1, r2 := RandomZ().Bytes(), RandomZ().Bytes()
+		_h := new(Point).ScalarBaseMult(r1)
+		_c1 := c1.ScalarMult(r1)
+		gS := new(Point).ScalarBaseMult(HashZ(un, ns).Bytes())
+		_gS := gS.ScalarMult(r2)
+		numOne := big.NewInt(1).Bytes()
+		g := new(Point).ScalarBaseMult(numOne)
+		c := HashZ(g.Marshal(), h.Marshal(), c1.Marshal(), c2.Marshal(), gS.Marshal(), _h.Marshal(), _c1.Marshal(), _gS.Marshal())
+		_s := Gf.AddBytes(r1, Gf.MulBytes(s, c))
+		_kS := Gf.AddBytes(r2, Gf.MulBytes(ks, c))
+		return &ValidationS{
+			XH:  _h.Marshal(),
+			XC1: _c1.Marshal(),
+			XGS: _gS.Marshal(),
+			XS:  _s.Bytes(),
+			XKS: _kS.Bytes(),
+		}, nil
+	} else {
+		return nil, nil
+	}
+
+
 }
 
 func (s_ *server)Rotation(ctx context.Context, in *RotationC) (*RotationS, error) {

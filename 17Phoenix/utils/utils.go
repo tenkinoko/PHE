@@ -53,7 +53,7 @@ import (
 
 var (
 	Https      = true
-	UpdCount = 1
+	UpdCount = 100
 	RandReader = rand.Reader
 	curve  = elliptic.P256()
 	CurveG = new(Point).ScalarBaseMultInt(new(big.Int).SetUint64(1)).Marshal()
