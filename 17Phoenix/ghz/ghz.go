@@ -6,8 +6,6 @@ import (
 	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,9 +15,13 @@ import (
 	"runtime"
 	"time"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
 	. "18phe/client"
 	. "18phe/phe"
 	. "18phe/utils"
+
 	"github.com/bojand/ghz/printer"
 	"github.com/bojand/ghz/runner"
 	"github.com/golang/protobuf/proto"
@@ -32,7 +34,6 @@ var (
 const (
 	address = "localhost:50051"
 )
-
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
 	hash := sha256.New()
@@ -62,8 +63,10 @@ func makeZ(reader io.Reader) *big.Int {
 
 func main() {
 	const datafile = "../credentials/"
+	const protofile = "../phe/phe.proto"
 	_, filename, _, _ := runtime.Caller(0)
 	credpath := path.Join(path.Dir(filename), datafile)
+	protopath := path.Join(path.Dir(filename), protofile)
 	// TLS Based on CA
 	cert, err := tls.LoadX509KeyPair(credpath+"/client.crt", credpath+"/client.key")
 	if err != nil {
@@ -123,7 +126,7 @@ func main() {
 	if err2 != nil {
 		log.Fatalf("could not validate: %v", err2)
 	}
-	if !r2.GetFlag() {
+	if ZKProof(r2.GetXH(), r2.GetXC1(), r2.GetXGS(), r2.GetXS(), r2.GetXKS(), h, r1.GetNs()) {
 		log.Fatalf("cannot pass")
 	}
 	r3, err3 := c.Rotation(ctx, &RotationC{Flag: RandomZ().Bytes()})
@@ -145,9 +148,12 @@ func main() {
 	//fmt.Println(bytes.Equal(key, keyDec))
 
 	// 组装BinaryData
-	item := EnrollmentC{Un: un}
+	// item := EnrollmentC{Un: un}
+	// item := ValidationC{C1: C1m, C2: C2m, C3: C3m}
+	item := RotationC{Flag: RandomZ().Bytes()}
 	buf := proto.Buffer{}
 	err111 := buf.EncodeMessage(&item)
+
 	if err111 != nil {
 		log.Fatal(err111)
 		return
@@ -156,17 +162,15 @@ func main() {
 		// 基本配置 call host proto文件 data
 		"phe.phe_workflow.Enrollment", //  'package.Service/method' or 'package.Service.Method'
 		"localhost:50051",
-		runner.WithProtoFile("..\\phe\\phe.proto", []string{}),
+		runner.WithProtoFile(protopath, []string{}),
 		runner.WithBinaryData(buf.Bytes()),
 		runner.WithInsecure(false),
 		runner.WithSkipTLSVerify(true),
-		runner.WithCertificate("..\\..\\17Phoenix\\credentials\\client.crt", "..\\credentials\\client.key"),
+		runner.WithCertificate(credpath+"/client.crt", credpath+"/client.key"),
 		runner.WithTotalRequests(10000),
 		// 并发参数
-		runner.WithConcurrencySchedule(runner.ScheduleLine),
-		runner.WithConcurrencyStep(1),
-		runner.WithConcurrencyStart(399),
-		runner.WithConcurrencyEnd(400),
+		runner.WithConcurrencySchedule(runner.ScheduleConst),
+		runner.WithConcurrency(400),
 	)
 	if err222 != nil {
 		log.Fatal(err222)

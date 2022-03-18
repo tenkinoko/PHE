@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -63,8 +65,10 @@ func makeZ(reader io.Reader) *big.Int {
 
 func main() {
 	const datafile = "../credentials/"
+	const protofile = "../phe/phe.proto"
 	_, filename, _, _ := runtime.Caller(0)
 	credpath := path.Join(path.Dir(filename), datafile)
+	protopath := path.Join(path.Dir(filename), protofile)
 	// TLS Based on CA
 	cert, err := tls.LoadX509KeyPair(credpath+"/client.crt", credpath+"/client.key")
 	if err != nil {
@@ -117,24 +121,37 @@ func main() {
 	}
 	log.Printf("GetEnrollment Finish")
 	enrollment, _ := proto.Marshal(r1)
-	rec, _, err := nc.EnrollAccount(pwd, enrollment)
+	rec, key, err := nc.EnrollAccount(pwd, enrollment)
 
 	msg3a, msg3b, _ := nc.CreateVerifyPasswordRequest(pwd, rec)
-	//r2, err2 := c.VerifyPassword(ctx, &VerifyPasswordRequest{
-	//	Ns: msg3b,
-	//	C0: msg3a,
-	//})
-	//if err2 != nil {
-	//	log.Fatalf("could not request verify password: %v", err)
-	//}
-	//log.Printf("VerifyPassword Finish")
-	//res, _ := proto.Marshal(r2)
-	//
-	//keyDec, _ := nc.CheckResponseAndDecrypt(pwd, rec, res)
-	//fmt.Println(bytes.Equal(key, keyDec))
+	r2, err2 := c.VerifyPassword(ctx, &VerifyPasswordRequest{
+		Ns: msg3b,
+		C0: msg3a,
+	})
+	if err2 != nil {
+		log.Fatalf("could not request verify password: %v", err)
+	}
+	log.Printf("VerifyPassword Finish")
+	res, _ := proto.Marshal(r2)
+
+	keyDec, _ := nc.CheckResponseAndDecrypt(pwd, rec, res)
+	fmt.Println(bytes.Equal(key, keyDec))
+
+	msg4 := "requestUpdate"
+	r4, err4 := c.Rotate(ctx, &UpdateRequest{Flag: msg4})
+	if err4 != nil {
+		log.Fatalf("could not request update: %v", err)
+	}
+	log.Printf("Rotate Finish")
+	token, _ := proto.Marshal(r4)
+	nc.Rotate(token)
+
+	_, _ = UpdateRecord(rec, token)
 
 	// 组装BinaryData
-	item := VerifyPasswordRequest{Ns: msg3b, C0: msg3a}
+	item := GetEnrollRecord{Flag: msg2}
+	//item := VerifyPasswordRequest{Ns: msg3b, C0: msg3a}
+	//item := UpdateRequest{Flag: msg4}
 	buf := proto.Buffer{}
 	err111 := buf.EncodeMessage(&item)
 	if err111 != nil {
@@ -145,17 +162,15 @@ func main() {
 		// 基本配置 call host proto文件 data
 		"phe.phe_workflow.VerifyPassword", //  'package.Service/method' or 'package.Service.Method'
 		"localhost:50051",
-		runner.WithProtoFile("D:\\Projects\\SGX\\PHE\\18PHE\\phe\\phe.proto", []string{}),
+		runner.WithProtoFile(protopath, []string{}),
 		runner.WithBinaryData(buf.Bytes()),
 		runner.WithInsecure(false),
 		runner.WithSkipTLSVerify(true),
-		runner.WithCertificate("D:\\Projects\\SGX\\PHE\\18PHE\\credentials\\client.crt", "D:\\Projects\\SGX\\PHE\\18PHE\\credentials\\client.key"),
+		runner.WithCertificate(credpath+"/client.crt", credpath+"/client.key"),
 		runner.WithTotalRequests(10000),
 		// 并发参数
-		runner.WithConcurrencySchedule(runner.ScheduleLine),
-		runner.WithConcurrencyStep(1),
-		runner.WithConcurrencyStart(399),
-		runner.WithConcurrencyEnd(400),
+		runner.WithConcurrencySchedule(runner.ScheduleConst),
+		runner.WithConcurrency(400),
 	)
 	if err222 != nil {
 		log.Fatal(err222)

@@ -7,13 +7,15 @@ import (
 	"log"
 	"math/big"
 	"os"
+	"path"
+	"runtime"
+
+	pb "sgx/sgx"
 
 	"github.com/bojand/ghz/printer"
 	"github.com/bojand/ghz/runner"
 	"github.com/golang/protobuf/proto"
-	pb "sgx/sgx"
 )
-
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
 	hash := sha256.New()
@@ -42,7 +44,16 @@ func makeZ(reader io.Reader) *big.Int {
 }
 
 func main() {
+	_, filename, _, _ := runtime.Caller(0)
+	const protofile = "../sgx/sgx.proto"
+	protopath := path.Join(path.Dir(filename), protofile)
 	// 组装BinaryData
+	// item := pb.NegoRequest{Xs: randomZ().Bytes(), N: randomZ().Bytes()}
+	// item := pb.DecryptRequest{
+	// 	C0: randomZ().Bytes(),
+	// 	N:  randomZ().Bytes(),
+	// 	Tm: randomZ().Bytes(),
+	// }
 	item := pb.UpdateRequest{
 		N:  randomZ().Bytes(),
 		Xs: randomZ().Bytes(),
@@ -57,15 +68,13 @@ func main() {
 		// 基本配置 call host proto文件 data
 		"sgx.PHE.Update", //  'package.Service/method' or 'package.Service.Method'
 		"localhost:50051",
-		runner.WithProtoFile("../sgx/sgx.proto", []string{}),
+		runner.WithProtoFile(protopath, []string{}),
 		runner.WithBinaryData(buf.Bytes()),
 		runner.WithInsecure(true),
 		runner.WithTotalRequests(10000),
 		// 并发参数
-		runner.WithConcurrencySchedule(runner.ScheduleLine),
-		runner.WithConcurrencyStep(10),
-		runner.WithConcurrencyStart(5),
-		runner.WithConcurrencyEnd(100),
+		runner.WithConcurrencySchedule(runner.ScheduleConst),
+		runner.WithConcurrency(400),
 	)
 	if err != nil {
 		log.Fatal(err)
