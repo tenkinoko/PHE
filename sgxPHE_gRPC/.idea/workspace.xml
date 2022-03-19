@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0d4ad3bf-0c5f-4093-a831-a5116ecfbb68" name="Changes" comment="Changes">
+      <change beforePath="$PROJECT_DIR$/../17Phoenix/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../17Phoenix/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../17Phoenix/test/client_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../17Phoenix/test/client_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../17Phoenix/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/../17Phoenix/utils/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../18PHE/test/client_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18PHE/test/client_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../18PHE/test/server_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18PHE/test/server_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../18PHE/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18PHE/utils/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../asymPHE/key_server/key_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../asymPHE/key_server/key_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../asymPHE/test/server_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../asymPHE/test/server_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../asymPHE/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/../asymPHE/utils/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../benchmark/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/../benchmark/result.xlsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://C:/Program Files/Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="207AwXpdDHiCtfQbkntXal0LJtv" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.formatter.settings.were.checked" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\SGX\PHE\sgx_version\ghz" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build client.go">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build client.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/client/client.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build ghz.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/ghz/ghz.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build server.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/server/server.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Benchmark_Workflow in sgx/client (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$/client" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="sgx/client" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gobench" />
+      <pattern value="^\QBenchmark_Workflow\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main_test.go (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="sgx_version" />
+      <working_directory value="$PROJECT_DIR$/client" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/client/main_test.go" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build client.go" />
+        <item itemvalue="Go Build.go build server.go" />
+        <item itemvalue="Go Build.go build ghz.go" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <created>1635744431903</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1635744431903</updated>
+      <workItem from="1635744434029" duration="35000" />
+      <workItem from="1635750148031" duration="1000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="GoApplicationRunConfiguration">
+        <watch expression="t0" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>

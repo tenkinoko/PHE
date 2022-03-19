@@ -1,0 +1,62 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option go_package = "./sgx";
+
+package sgx;
+
+// The greeting service definition.
+service PHE {
+  // Sends a greeting
+  rpc Negotiation (NegoRequest) returns (NegoReply) {}
+  rpc Decryption (DecryptRequest) returns (DecryptReply) {}
+  rpc Update (UpdateRequest) returns (UpdateReply) {}
+}
+
+// The request message containing the user's name.
+message NegoRequest {
+  bytes Xs = 1;
+  bytes N = 2;
+}
+
+// The response message containing the greetings
+message NegoReply {
+  bytes Hr0 = 1;
+  bytes Hr1 = 2;
+  bytes X = 3;
+}
+
+message DecryptRequest {
+  bytes C0 = 1;
+  bytes N = 2;
+  bytes Tm = 3;
+}
+
+message DecryptReply {
+  string Flag = 1;
+  bytes Hr1_ = 2;
+  bytes Tm = 3;
+}
+
+message UpdateRequest{
+  bytes N = 1;
+  bytes Xs = 2;
+}
+
+message UpdateReply {
+  bytes Delta0 = 1;
+  bytes Delta1 = 2;
+}
