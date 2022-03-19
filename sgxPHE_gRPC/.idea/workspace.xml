@@ -5,16 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d4ad3bf-0c5f-4093-a831-a5116ecfbb68" name="Changes" comment="Changes">
-      <change beforePath="$PROJECT_DIR$/../17Phoenix/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../17Phoenix/server/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../17Phoenix/test/client_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../17Phoenix/test/client_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../17Phoenix/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/../17Phoenix/utils/utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../18PHE/test/client_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18PHE/test/client_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../18PHE/test/server_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18PHE/test/server_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../18PHE/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/../18PHE/utils/utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../asymPHE/key_server/key_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../asymPHE/key_server/key_server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../asymPHE/test/server_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../asymPHE/test/server_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../asymPHE/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/../asymPHE/utils/utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../benchmark/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/../benchmark/result.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sgxPHE/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sgxPHE/swu/gf.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sgxPHE/swu/swu.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sgxPHE/swu/swu_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/swu/gf.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/swu/swu.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/swu/swu_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../sgxPHE/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/../sgxPHE/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE/ghz/ghz.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE/server/server.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE/sgx/sgx.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE/sgx/sgx.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE/sgx/sgx_grpc.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

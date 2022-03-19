@@ -1,22 +1,3 @@
-/*
- *
- * Copyright 2015 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Package main implements a client for Greeter service.
 package main
 
 import (
@@ -24,39 +5,42 @@ import (
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
-	"google.golang.org/grpc"
 	"io"
 	"log"
 	"math/big"
 	pb "sgx/sgx"
+	"sgx/swu"
 	"time"
+
+	"google.golang.org/grpc"
 )
 
-
 var (
-	n = randomZ()
+	n    = randomZ()
 	zero = new(big.Int).SetInt64(0)
-	one = new(big.Int).SetInt64(1)
-	pw = []byte(pw_)
-	ku = randomZ()
-	ks []byte
-	H0 []byte
-	H1 []byte
-	xs = randomZ()
+	one  = new(big.Int).SetInt64(1)
+	pw   = []byte(pw_)
+	ku   = randomZ()
+	ks   []byte
+	H0   []byte
+	H1   []byte
+	xs   = randomZ()
 
 	t0 []byte
 	t1 []byte
 
-
 	x *big.Int
-
+	curve      = elliptic.P256()
+	Gf     = swu.GF{P: curve.Params().N}
 )
+
 const (
-	address     = "localhost:50051"
-	pw_ 		= "123456"
+	address = "localhost:50051"
+	pw_     = "123456"
 )
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
@@ -87,7 +71,7 @@ func makeZ(reader io.Reader) *big.Int {
 
 // 填充数据
 func padding(src []byte, blockSize int) []byte {
-	padNum := blockSize - len(src) % blockSize
+	padNum := blockSize - len(src)%blockSize
 	pad := bytes.Repeat([]byte{byte(padNum)}, padNum)
 	return append(src, pad...)
 }
@@ -123,7 +107,7 @@ func decryptAES(src []byte, key []byte) ([]byte, error) {
 	return src, nil
 }
 
-func Encryption(resp *pb.NegoReply){
+func Encryption(resp *pb.NegoReply) {
 	H0 = hashZ(pw, n.Bytes(), zero.Bytes())
 	H1 = hashZ(pw, n.Bytes(), one.Bytes())
 	hr0 := new(big.Int).SetBytes(resp.GetHr0())
@@ -131,48 +115,48 @@ func Encryption(resp *pb.NegoReply){
 	x = new(big.Int).SetBytes(resp.GetX())
 	h0 := new(big.Int).SetBytes(H0)
 	h1 := new(big.Int).SetBytes(H1)
-	h1ku := new(big.Int).Mul(h1, ku)
-	t0_ := new(big.Int).Mul(h0, hr0)
-	t1_ := new(big.Int).Mul(h1ku, hr1)
+	h1ku := Gf.Mul(h1, ku)
+	t0_ := Gf.Mul(h0, hr0)
+	t1_ := Gf.Mul(h1ku, hr1)
 	ctxt := make([]byte, aes.BlockSize+len(t0_.Bytes()))
 	ks = ctxt[:aes.BlockSize]
 	t0, _ = encryptAES(t0_.Bytes(), ks)
 	t1, _ = encryptAES(t1_.Bytes(), ks)
 }
 
-func Validation(pw0 []byte)([]byte, []byte, []byte, []byte, []byte){
+func Validation(pw0 []byte) ([]byte, []byte, []byte, []byte, []byte) {
 	h0_ := new(big.Int).SetBytes(hashZ(pw0, n.Bytes(), zero.Bytes()))
 	t0_, _ := decryptAES(t0, ks)
 	t1_, _ := decryptAES(t1, ks)
-	c0 := new(big.Int).Div(new(big.Int).SetBytes(t0_), h0_)
+	c0 := Gf.Div(new(big.Int).SetBytes(t0_), h0_)
 	tm_ := time.Now().Format("2006-01-02 15:04:05")
 	tm := []byte(tm_)
 	rt := new(big.Int).SetBytes(hashZ(tm, x.Bytes()))
-	c0_ := new(big.Int).Mul(c0, rt)
-	n_ := new(big.Int).Mul(n, rt)
+	c0_ := Gf.Mul(c0, rt)
+	n_ := Gf.Mul(n, rt)
 	return t0_, t1_, c0_.Bytes(), n_.Bytes(), tm
 }
 
-func Decryption(resp *pb.DecryptReply, t1_ []byte){
+func Decryption(resp *pb.DecryptReply, t1_ []byte) {
 	hr1_ := resp.GetHr1_()
 	tm := resp.GetTm()
 	rt := new(big.Int).SetBytes(hashZ(tm, x.Bytes()))
-	hr1 := new(big.Int).Div(new(big.Int).SetBytes(hr1_), rt)
-	c1 := new(big.Int).Div(new(big.Int).SetBytes(t1_), hr1)
-	ku_ := new(big.Int).Div(c1, new(big.Int).SetBytes(H1))
+	hr1 := Gf.Div(new(big.Int).SetBytes(hr1_), rt)
+	c1 := Gf.Div(new(big.Int).SetBytes(t1_), hr1)
+	ku_ := Gf.Div(c1, new(big.Int).SetBytes(H1))
 	if ku.Cmp(ku_) != 0 {
 		fmt.Println("Fail After Success!")
 	}
 
 }
 
-func UpdateRecord(resp *pb.UpdateReply, x_ *big.Int)([]byte, []byte){
+func UpdateRecord(resp *pb.UpdateReply, x_ *big.Int) ([]byte, []byte) {
 	delta0 := resp.GetDelta0()
 	delta1 := resp.GetDelta1()
 	t0_, _ := decryptAES(t0, ks)
 	t1_, _ := decryptAES(t1, ks)
-	t0u_ := new(big.Int).Mul(new(big.Int).SetBytes(t0_), new(big.Int).SetBytes(delta0))
-	t1u_ := new(big.Int).Mul(new(big.Int).SetBytes(t1_), new(big.Int).SetBytes(delta1))
+	t0u_ := Gf.Mul(new(big.Int).SetBytes(t0_), new(big.Int).SetBytes(delta0))
+	t1u_ := Gf.Mul(new(big.Int).SetBytes(t1_), new(big.Int).SetBytes(delta1))
 	x = x_
 
 	ctxt := make([]byte, aes.BlockSize+len(t0u_.Bytes()))
@@ -195,7 +179,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*200)
 	defer cancel()
 	var timeNeg, timeEnc, timeVal, timeDec, timeClientDec, timeUpdate = t11, t11, t11, t11, t11, t11
-	for i := 0; i < 10000; i++{
+	for i := 0; i < 10000; i++ {
 		t3 := time.Now()
 		r0, err0 := c.Negotiation(ctx, &pb.NegoRequest{Xs: xs.Bytes(), N: n.Bytes()})
 		if err0 != nil {
@@ -224,14 +208,12 @@ func main() {
 		}
 		t8 := time.Now()
 
-
-
 		x_ := randomZ()
 		r2, err2 := c.Update(ctx, &pb.UpdateRequest{N: n.Bytes(), Xs: x_.Bytes()})
 		if err2 != nil {
 			log.Fatalf("could not Update: %v", err)
 		}
-		for j := 0; j < 1; j++{
+		for j := 0; j < 1; j++ {
 			t0Ex, _ := encryptAES(t0_, ks)
 			t1Ex, _ := encryptAES(t1_, ks)
 			UpdateRecord(r2, x_)

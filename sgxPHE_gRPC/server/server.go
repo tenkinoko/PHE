@@ -1,46 +1,35 @@
-/*
- *
- * Copyright 2015 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Package main implements a server for Greeter service.
 package main
 
 import (
 	"context"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
-	"google.golang.org/grpc"
+	"fmt"
 	"io"
 	"log"
 	"math/big"
 	"net"
 	pb "sgx/sgx"
+	"sgx/swu"
+
+	"google.golang.org/grpc"
 )
 
 var (
 	xks1 = randomZ()
 	xks2 = randomZ()
 	zero = new(big.Int).SetInt64(0)
-	one = new(big.Int).SetInt64(1)
-	xk *big.Int
-	xv *big.Int
-	hr0 []byte
-	hr1 []byte
+	one  = new(big.Int).SetInt64(1)
+	xk   *big.Int
+	xv   *big.Int
+	hr0  []byte
+	hr1  []byte
+
+	curve      = elliptic.P256()
+	Gf     = swu.GF{P: curve.Params().N}
 )
+
 const (
 	port = ":50051"
 )
@@ -59,7 +48,7 @@ func (s *server) Negotiation(ctx context.Context, in *pb.NegoRequest) (*pb.NegoR
 	return &pb.NegoReply{
 		Hr0: hr0,
 		Hr1: hr1,
-		X: xk.Bytes(),
+		X:   xk.Bytes(),
 	}, nil
 
 }
@@ -72,9 +61,10 @@ func (s *server) Decryption(ctx context.Context, in *pb.DecryptRequest) (*pb.Dec
 		xk = randomZ()
 	}
 	rt := new(big.Int).SetBytes(hashZ(tm, xk.Bytes()))
-	c0 := new(big.Int).Div(c0_, rt)
-	n := new(big.Int).Div(n_, rt)
+	c0 := Gf.Div(c0_, rt)
+	n := Gf.Div(n_, rt)
 	hxn0 := new(big.Int).SetBytes(hashZ(xk.Bytes(), n.Bytes(), zero.Bytes()))
+	fmt.Println(c0.Cmp(hxn0))
 	if c0.Cmp(hxn0) == 0 {
 		hr1_ := new(big.Int).Mul(new(big.Int).SetBytes(hr1), rt)
 		return &pb.DecryptReply{Flag: "Success", Hr1_: hr1_.Bytes(), Tm: tm}, nil
@@ -84,7 +74,7 @@ func (s *server) Decryption(ctx context.Context, in *pb.DecryptRequest) (*pb.Dec
 	}
 }
 
-func (s *server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateReply, error){
+func (s *server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateReply, error) {
 	n := in.GetN()
 	xs := in.GetXs()
 	xks1 = randomZ()
@@ -96,15 +86,13 @@ func (s *server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateRe
 	hxkn1 := hashZ(xk.Bytes(), n, one.Bytes())
 	hxkn0_ := hashZ(xk_.Bytes(), n, zero.Bytes())
 	hxkn1_ := hashZ(xk_.Bytes(), n, one.Bytes())
-	delta0 := new(big.Int).Mul(new(big.Int).SetBytes(hxkn0_), new(big.Int).SetBytes(hxkn0))
-	delta1 := new(big.Int).Mul(new(big.Int).SetBytes(hxkn1_), new(big.Int).SetBytes(hxkn1))
+	delta0 := Gf.Mul(new(big.Int).SetBytes(hxkn0_), new(big.Int).SetBytes(hxkn0))
+	delta1 := Gf.Mul(new(big.Int).SetBytes(hxkn1_), new(big.Int).SetBytes(hxkn1))
 	return &pb.UpdateReply{
 		Delta0: delta0.Bytes(),
 		Delta1: delta1.Bytes(),
 	}, nil
 }
-
-
 
 func hashZ(domain []byte, tuple ...[]byte) []byte {
 	hash := sha256.New()
@@ -131,7 +119,6 @@ func makeZ(reader io.Reader) *big.Int {
 	}
 	return new(big.Int).SetBytes(buf)
 }
-
 
 func main() {
 	lis, err := net.Listen("tcp", port)
