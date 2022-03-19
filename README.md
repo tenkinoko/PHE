@@ -15,6 +15,33 @@ sudo apt-get install cpuid
 cpuid | grep "SGX"
 ```
 
+## EGO安装
+
+```bash
+sudo apt install build-essential libssl-dev
+sudo snap install ego-dev --classic
+# OR build from source #
+mkdir build
+cd build
+cmake ..
+make
+make install
+```
+
+## sgx
+
+```bash
+. /opt/edgelessrt/share/openenclave/openenclaverc
+sudo ego install sgx-driver
+cd server
+ego-go build
+ego sign server
+ego run server
+cd ..
+. /opt/edgelessrt/share/openenclave/openenclaverc
+go run client/client.go
+```
+
 ## golang初始化
 
 ```bash
