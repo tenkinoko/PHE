@@ -5,8 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d4ad3bf-0c5f-4093-a831-a5116ecfbb68" name="Changes" comment="Changes">
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/swu/gf.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/swu/swu.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/swu/swu_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sgxPHE_gRPC/swu/gf.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sgxPHE_gRPC/swu/swu.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sgxPHE_gRPC/swu/swu_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ghz/ghz.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx/sgx.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx/sgx.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sgx/sgx_grpc.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE_gRPC/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../sgxPHE_gRPC/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE_gRPC/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/../sgxPHE_gRPC/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sgxPHE_gRPC/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../sgxPHE_gRPC/server/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -64,12 +64,14 @@ cpuid | grep "SGX"
 4. 后按照ego sample中的remote attestation进行操作
 
    ```sh
+   go mod init sgx
+   go mod tidy
    # server
-   ego-go build
+   ego-go build -o server
    ego sign server
    ego run server
    # client
-   CGO_CFLAGS=-I/opt/ego/include CGO_LDFLAGS=-L/opt/ego/lib go build ra_client/client.go
+   CGO_CFLAGS=-I/opt/ego/include CGO_LDFLAGS=-L/opt/ego/lib go build sgx_client/client.go
    ./client -s `ego signerid public.pem`
    ```
 

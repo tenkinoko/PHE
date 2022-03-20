@@ -1,0 +1,1 @@
+rm -f *.json *.pem client server sgx
